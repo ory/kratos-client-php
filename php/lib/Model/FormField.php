@@ -58,8 +58,10 @@ class FormField implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
+        'disabled' => 'string',
         'errors' => '\Ory\Kratos\Client\Model\Error[]',
         'name' => 'string',
+        'pattern' => 'string',
         'required' => 'bool',
         'type' => 'string',
         'value' => 'object'
@@ -71,8 +73,10 @@ class FormField implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
+        'disabled' => null,
         'errors' => null,
         'name' => null,
+        'pattern' => null,
         'required' => null,
         'type' => null,
         'value' => null
@@ -105,8 +109,10 @@ class FormField implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
+        'disabled' => 'disabled',
         'errors' => 'errors',
         'name' => 'name',
+        'pattern' => 'pattern',
         'required' => 'required',
         'type' => 'type',
         'value' => 'value'
@@ -118,8 +124,10 @@ class FormField implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
+        'disabled' => 'setDisabled',
         'errors' => 'setErrors',
         'name' => 'setName',
+        'pattern' => 'setPattern',
         'required' => 'setRequired',
         'type' => 'setType',
         'value' => 'setValue'
@@ -131,8 +139,10 @@ class FormField implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
+        'disabled' => 'getDisabled',
         'errors' => 'getErrors',
         'name' => 'getName',
+        'pattern' => 'getPattern',
         'required' => 'getRequired',
         'type' => 'getType',
         'value' => 'getValue'
@@ -198,8 +208,10 @@ class FormField implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
+        $this->container['disabled'] = isset($data['disabled']) ? $data['disabled'] : null;
         $this->container['errors'] = isset($data['errors']) ? $data['errors'] : null;
         $this->container['name'] = isset($data['name']) ? $data['name'] : null;
+        $this->container['pattern'] = isset($data['pattern']) ? $data['pattern'] : null;
         $this->container['required'] = isset($data['required']) ? $data['required'] : null;
         $this->container['type'] = isset($data['type']) ? $data['type'] : null;
         $this->container['value'] = isset($data['value']) ? $data['value'] : null;
@@ -228,6 +240,30 @@ class FormField implements ModelInterface, ArrayAccess
         return count($this->listInvalidProperties()) === 0;
     }
 
+
+    /**
+     * Gets disabled
+     *
+     * @return string|null
+     */
+    public function getDisabled()
+    {
+        return $this->container['disabled'];
+    }
+
+    /**
+     * Sets disabled
+     *
+     * @param string|null $disabled Disabled is the equivalent of <input disabled=\"{{.Disabled}}\">
+     *
+     * @return $this
+     */
+    public function setDisabled($disabled)
+    {
+        $this->container['disabled'] = $disabled;
+
+        return $this;
+    }
 
     /**
      * Gets errors
@@ -273,6 +309,30 @@ class FormField implements ModelInterface, ArrayAccess
     public function setName($name)
     {
         $this->container['name'] = $name;
+
+        return $this;
+    }
+
+    /**
+     * Gets pattern
+     *
+     * @return string|null
+     */
+    public function getPattern()
+    {
+        return $this->container['pattern'];
+    }
+
+    /**
+     * Sets pattern
+     *
+     * @param string|null $pattern Pattern is the equivalent of <input pattern=\"{{.Pattern}}\">
+     *
+     * @return $this
+     */
+    public function setPattern($pattern)
+    {
+        $this->container['pattern'] = $pattern;
 
         return $this;
     }
