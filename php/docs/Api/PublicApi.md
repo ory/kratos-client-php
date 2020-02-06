@@ -8,6 +8,7 @@ Method | HTTP request | Description
 [**getSelfServiceBrowserLoginRequest**](PublicApi.md#getSelfServiceBrowserLoginRequest) | **GET** /self-service/browser/flows/requests/login | Get the request context of browser-based login user flows
 [**getSelfServiceBrowserProfileManagementRequest**](PublicApi.md#getSelfServiceBrowserProfileManagementRequest) | **GET** /self-service/browser/flows/requests/profile | Get the request context of browser-based profile management flows
 [**getSelfServiceBrowserRegistrationRequest**](PublicApi.md#getSelfServiceBrowserRegistrationRequest) | **GET** /self-service/browser/flows/requests/registration | Get the request context of browser-based registration user flows
+[**getSelfServiceError**](PublicApi.md#getSelfServiceError) | **GET** /self-service/errors | Get user-facing self-service errors
 [**initializeSelfServiceBrowserLoginFlow**](PublicApi.md#initializeSelfServiceBrowserLoginFlow) | **GET** /self-service/browser/flows/login | Initialize browser-based login user flow
 [**initializeSelfServiceBrowserLogoutFlow**](PublicApi.md#initializeSelfServiceBrowserLogoutFlow) | **GET** /self-service/browser/flows/logout | Initialize Browser-Based Logout User Flow
 [**initializeSelfServiceBrowserRegistrationFlow**](PublicApi.md#initializeSelfServiceBrowserRegistrationFlow) | **GET** /self-service/browser/flows/registration | Initialize browser-based registration user flow
@@ -18,7 +19,7 @@ Method | HTTP request | Description
 
 ## completeSelfServiceBrowserProfileManagementFlow
 
-> completeSelfServiceBrowserProfileManagementFlow($body, $request)
+> completeSelfServiceBrowserProfileManagementFlow($request, $body)
 
 Complete the browser-based profile management flows
 
@@ -36,11 +37,11 @@ $apiInstance = new Ory\Kratos\Client\Api\PublicApi(
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
 );
+$request = 'request_example'; // string | Request is the request ID.
 $body = new \Ory\Kratos\Client\Model\CompleteSelfServiceBrowserProfileManagementFlowPayload(); // \Ory\Kratos\Client\Model\CompleteSelfServiceBrowserProfileManagementFlowPayload | 
-$request = 'request_example'; // string | Request is the request ID.  type: string
 
 try {
-    $apiInstance->completeSelfServiceBrowserProfileManagementFlow($body, $request);
+    $apiInstance->completeSelfServiceBrowserProfileManagementFlow($request, $body);
 } catch (Exception $e) {
     echo 'Exception when calling PublicApi->completeSelfServiceBrowserProfileManagementFlow: ', $e->getMessage(), PHP_EOL;
 }
@@ -52,8 +53,8 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
+ **request** | **string**| Request is the request ID. |
  **body** | [**\Ory\Kratos\Client\Model\CompleteSelfServiceBrowserProfileManagementFlowPayload**](../Model/CompleteSelfServiceBrowserProfileManagementFlowPayload.md)|  |
- **request** | **string**| Request is the request ID.  type: string | [optional]
 
 ### Return type
 
@@ -226,6 +227,62 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**\Ory\Kratos\Client\Model\RegistrationRequest**](../Model/RegistrationRequest.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../../README.md#documentation-for-models)
+[[Back to README]](../../README.md)
+
+
+## getSelfServiceError
+
+> \Ory\Kratos\Client\Model\ErrorContainer getSelfServiceError($id)
+
+Get user-facing self-service errors
+
+This endpoint returns the error associated with a user-facing self service errors.  When accessing this endpoint through ORY Kratos' Public API, ensure that cookies are set as they are required for CSRF to work. To prevent token scanning attacks, the public endpoint does not return 404 status codes to prevent scanning attacks.  More information can be found at [ORY Kratos User User Facing Error Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-facing-errors).
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+$apiInstance = new Ory\Kratos\Client\Api\PublicApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client()
+);
+$id = 'id_example'; // string | 
+
+try {
+    $result = $apiInstance->getSelfServiceError($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling PublicApi->getSelfServiceError: ', $e->getMessage(), PHP_EOL;
+}
+?>
+```
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **string**|  | [optional]
+
+### Return type
+
+[**\Ory\Kratos\Client\Model\ErrorContainer**](../Model/ErrorContainer.md)
 
 ### Authorization
 

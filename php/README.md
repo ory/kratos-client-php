@@ -89,17 +89,20 @@ Class | Method | HTTP request | Description
 *AdminApi* | [**getSelfServiceBrowserLoginRequest**](docs/Api/AdminApi.md#getselfservicebrowserloginrequest) | **GET** /self-service/browser/flows/requests/login | Get the request context of browser-based login user flows
 *AdminApi* | [**getSelfServiceBrowserProfileManagementRequest**](docs/Api/AdminApi.md#getselfservicebrowserprofilemanagementrequest) | **GET** /self-service/browser/flows/requests/profile | Get the request context of browser-based profile management flows
 *AdminApi* | [**getSelfServiceBrowserRegistrationRequest**](docs/Api/AdminApi.md#getselfservicebrowserregistrationrequest) | **GET** /self-service/browser/flows/requests/registration | Get the request context of browser-based registration user flows
+*AdminApi* | [**getSelfServiceError**](docs/Api/AdminApi.md#getselfserviceerror) | **GET** /self-service/errors | Get user-facing self-service errors
 *AdminApi* | [**listIdentities**](docs/Api/AdminApi.md#listidentities) | **GET** /identities | List all identities in the system
 *AdminApi* | [**updateIdentity**](docs/Api/AdminApi.md#updateidentity) | **PUT** /identities/{id} | Update an identity
 *CommonApi* | [**getSelfServiceBrowserLoginRequest**](docs/Api/CommonApi.md#getselfservicebrowserloginrequest) | **GET** /self-service/browser/flows/requests/login | Get the request context of browser-based login user flows
 *CommonApi* | [**getSelfServiceBrowserProfileManagementRequest**](docs/Api/CommonApi.md#getselfservicebrowserprofilemanagementrequest) | **GET** /self-service/browser/flows/requests/profile | Get the request context of browser-based profile management flows
 *CommonApi* | [**getSelfServiceBrowserRegistrationRequest**](docs/Api/CommonApi.md#getselfservicebrowserregistrationrequest) | **GET** /self-service/browser/flows/requests/registration | Get the request context of browser-based registration user flows
+*CommonApi* | [**getSelfServiceError**](docs/Api/CommonApi.md#getselfserviceerror) | **GET** /self-service/errors | Get user-facing self-service errors
 *HealthApi* | [**isInstanceAlive**](docs/Api/HealthApi.md#isinstancealive) | **GET** /health/alive | Check alive status
 *HealthApi* | [**isInstanceReady**](docs/Api/HealthApi.md#isinstanceready) | **GET** /health/ready | Check readiness status
 *PublicApi* | [**completeSelfServiceBrowserProfileManagementFlow**](docs/Api/PublicApi.md#completeselfservicebrowserprofilemanagementflow) | **POST** /self-service/browser/flows/profile/update | Complete the browser-based profile management flows
 *PublicApi* | [**getSelfServiceBrowserLoginRequest**](docs/Api/PublicApi.md#getselfservicebrowserloginrequest) | **GET** /self-service/browser/flows/requests/login | Get the request context of browser-based login user flows
 *PublicApi* | [**getSelfServiceBrowserProfileManagementRequest**](docs/Api/PublicApi.md#getselfservicebrowserprofilemanagementrequest) | **GET** /self-service/browser/flows/requests/profile | Get the request context of browser-based profile management flows
 *PublicApi* | [**getSelfServiceBrowserRegistrationRequest**](docs/Api/PublicApi.md#getselfservicebrowserregistrationrequest) | **GET** /self-service/browser/flows/requests/registration | Get the request context of browser-based registration user flows
+*PublicApi* | [**getSelfServiceError**](docs/Api/PublicApi.md#getselfserviceerror) | **GET** /self-service/errors | Get user-facing self-service errors
 *PublicApi* | [**initializeSelfServiceBrowserLoginFlow**](docs/Api/PublicApi.md#initializeselfservicebrowserloginflow) | **GET** /self-service/browser/flows/login | Initialize browser-based login user flow
 *PublicApi* | [**initializeSelfServiceBrowserLogoutFlow**](docs/Api/PublicApi.md#initializeselfservicebrowserlogoutflow) | **GET** /self-service/browser/flows/logout | Initialize Browser-Based Logout User Flow
 *PublicApi* | [**initializeSelfServiceBrowserRegistrationFlow**](docs/Api/PublicApi.md#initializeselfservicebrowserregistrationflow) | **GET** /self-service/browser/flows/registration | Initialize browser-based registration user flow
@@ -112,6 +115,7 @@ Class | Method | HTTP request | Description
 
  - [CompleteSelfServiceBrowserProfileManagementFlowPayload](docs/Model/CompleteSelfServiceBrowserProfileManagementFlowPayload.md)
  - [Error](docs/Model/Error.md)
+ - [ErrorContainer](docs/Model/ErrorContainer.md)
  - [Form](docs/Model/Form.md)
  - [FormField](docs/Model/FormField.md)
  - [GenericError](docs/Model/GenericError.md)

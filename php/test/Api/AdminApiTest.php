@@ -133,6 +133,16 @@ class AdminApiTest extends TestCase
     }
 
     /**
+     * Test case for getSelfServiceError
+     *
+     * Get user-facing self-service errors.
+     *
+     */
+    public function testGetSelfServiceError()
+    {
+    }
+
+    /**
      * Test case for listIdentities
      *
      * List all identities in the system.

@@ -101,4 +101,14 @@ class CommonApiTest extends TestCase
     public function testGetSelfServiceBrowserRegistrationRequest()
     {
     }
+
+    /**
+     * Test case for getSelfServiceError
+     *
+     * Get user-facing self-service errors.
+     *
+     */
+    public function testGetSelfServiceError()
+    {
+    }
 }
