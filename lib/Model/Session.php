@@ -1,6 +1,6 @@
 <?php
 /**
- * GenericError
+ * Session
  *
  * PHP version 5
  *
@@ -33,15 +33,14 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * GenericError Class Doc Comment
+ * Session Class Doc Comment
  *
  * @category Class
- * @description Error responses are sent when an error (e.g. unauthorized, bad request, ...) occurred.
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class GenericError implements ModelInterface, ArrayAccess
+class Session implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -50,7 +49,7 @@ class GenericError implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'genericError';
+    protected static $openAPIModelName = 'session';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -58,7 +57,11 @@ class GenericError implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'error' => '\Ory\Kratos\Client\Model\GenericErrorPayload'
+        'authenticatedAt' => '\DateTime',
+        'expiresAt' => '\DateTime',
+        'identity' => '\Ory\Kratos\Client\Model\Identity',
+        'issuedAt' => '\DateTime',
+        'sid' => 'string'
     ];
 
     /**
@@ -67,7 +70,11 @@ class GenericError implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'error' => null
+        'authenticatedAt' => 'date-time',
+        'expiresAt' => 'date-time',
+        'identity' => null,
+        'issuedAt' => 'date-time',
+        'sid' => 'uuid4'
     ];
 
     /**
@@ -97,7 +104,11 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        'error' => 'error'
+        'authenticatedAt' => 'authenticated_at',
+        'expiresAt' => 'expires_at',
+        'identity' => 'identity',
+        'issuedAt' => 'issued_at',
+        'sid' => 'sid'
     ];
 
     /**
@@ -106,7 +117,11 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'error' => 'setError'
+        'authenticatedAt' => 'setAuthenticatedAt',
+        'expiresAt' => 'setExpiresAt',
+        'identity' => 'setIdentity',
+        'issuedAt' => 'setIssuedAt',
+        'sid' => 'setSid'
     ];
 
     /**
@@ -115,7 +130,11 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'error' => 'getError'
+        'authenticatedAt' => 'getAuthenticatedAt',
+        'expiresAt' => 'getExpiresAt',
+        'identity' => 'getIdentity',
+        'issuedAt' => 'getIssuedAt',
+        'sid' => 'getSid'
     ];
 
     /**
@@ -178,7 +197,11 @@ class GenericError implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['error'] = isset($data['error']) ? $data['error'] : null;
+        $this->container['authenticatedAt'] = isset($data['authenticatedAt']) ? $data['authenticatedAt'] : null;
+        $this->container['expiresAt'] = isset($data['expiresAt']) ? $data['expiresAt'] : null;
+        $this->container['identity'] = isset($data['identity']) ? $data['identity'] : null;
+        $this->container['issuedAt'] = isset($data['issuedAt']) ? $data['issuedAt'] : null;
+        $this->container['sid'] = isset($data['sid']) ? $data['sid'] : null;
     }
 
     /**
@@ -190,6 +213,21 @@ class GenericError implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
+        if ($this->container['authenticatedAt'] === null) {
+            $invalidProperties[] = "'authenticatedAt' can't be null";
+        }
+        if ($this->container['expiresAt'] === null) {
+            $invalidProperties[] = "'expiresAt' can't be null";
+        }
+        if ($this->container['identity'] === null) {
+            $invalidProperties[] = "'identity' can't be null";
+        }
+        if ($this->container['issuedAt'] === null) {
+            $invalidProperties[] = "'issuedAt' can't be null";
+        }
+        if ($this->container['sid'] === null) {
+            $invalidProperties[] = "'sid' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -206,25 +244,121 @@ class GenericError implements ModelInterface, ArrayAccess
 
 
     /**
-     * Gets error
+     * Gets authenticatedAt
      *
-     * @return \Ory\Kratos\Client\Model\GenericErrorPayload|null
+     * @return \DateTime
      */
-    public function getError()
+    public function getAuthenticatedAt()
     {
-        return $this->container['error'];
+        return $this->container['authenticatedAt'];
     }
 
     /**
-     * Sets error
+     * Sets authenticatedAt
      *
-     * @param \Ory\Kratos\Client\Model\GenericErrorPayload|null $error error
+     * @param \DateTime $authenticatedAt authenticatedAt
      *
      * @return $this
      */
-    public function setError($error)
+    public function setAuthenticatedAt($authenticatedAt)
     {
-        $this->container['error'] = $error;
+        $this->container['authenticatedAt'] = $authenticatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Gets expiresAt
+     *
+     * @return \DateTime
+     */
+    public function getExpiresAt()
+    {
+        return $this->container['expiresAt'];
+    }
+
+    /**
+     * Sets expiresAt
+     *
+     * @param \DateTime $expiresAt expiresAt
+     *
+     * @return $this
+     */
+    public function setExpiresAt($expiresAt)
+    {
+        $this->container['expiresAt'] = $expiresAt;
+
+        return $this;
+    }
+
+    /**
+     * Gets identity
+     *
+     * @return \Ory\Kratos\Client\Model\Identity
+     */
+    public function getIdentity()
+    {
+        return $this->container['identity'];
+    }
+
+    /**
+     * Sets identity
+     *
+     * @param \Ory\Kratos\Client\Model\Identity $identity identity
+     *
+     * @return $this
+     */
+    public function setIdentity($identity)
+    {
+        $this->container['identity'] = $identity;
+
+        return $this;
+    }
+
+    /**
+     * Gets issuedAt
+     *
+     * @return \DateTime
+     */
+    public function getIssuedAt()
+    {
+        return $this->container['issuedAt'];
+    }
+
+    /**
+     * Sets issuedAt
+     *
+     * @param \DateTime $issuedAt issuedAt
+     *
+     * @return $this
+     */
+    public function setIssuedAt($issuedAt)
+    {
+        $this->container['issuedAt'] = $issuedAt;
+
+        return $this;
+    }
+
+    /**
+     * Gets sid
+     *
+     * @return string
+     */
+    public function getSid()
+    {
+        return $this->container['sid'];
+    }
+
+    /**
+     * Sets sid
+     *
+     * @param string $sid sid
+     *
+     * @return $this
+     */
+    public function setSid($sid)
+    {
+        $this->container['sid'] = $sid;
 
         return $this;
     }

@@ -1,6 +1,6 @@
 <?php
 /**
- * GenericError
+ * GenericErrorPayload
  *
  * PHP version 5
  *
@@ -33,15 +33,15 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * GenericError Class Doc Comment
+ * GenericErrorPayload Class Doc Comment
  *
  * @category Class
- * @description Error responses are sent when an error (e.g. unauthorized, bad request, ...) occurred.
+ * @description nolint:deadcode,unused
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class GenericError implements ModelInterface, ArrayAccess
+class GenericErrorPayload implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class GenericError implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'genericError';
+    protected static $openAPIModelName = 'genericErrorPayload';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -58,7 +58,13 @@ class GenericError implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'error' => '\Ory\Kratos\Client\Model\GenericErrorPayload'
+        'code' => 'int',
+        'debug' => 'string',
+        'details' => 'map[string,object][]',
+        'message' => 'string',
+        'reason' => 'string',
+        'request' => 'string',
+        'status' => 'string'
     ];
 
     /**
@@ -67,7 +73,13 @@ class GenericError implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'error' => null
+        'code' => 'int64',
+        'debug' => null,
+        'details' => null,
+        'message' => null,
+        'reason' => null,
+        'request' => null,
+        'status' => null
     ];
 
     /**
@@ -97,7 +109,13 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        'error' => 'error'
+        'code' => 'code',
+        'debug' => 'debug',
+        'details' => 'details',
+        'message' => 'message',
+        'reason' => 'reason',
+        'request' => 'request',
+        'status' => 'status'
     ];
 
     /**
@@ -106,7 +124,13 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'error' => 'setError'
+        'code' => 'setCode',
+        'debug' => 'setDebug',
+        'details' => 'setDetails',
+        'message' => 'setMessage',
+        'reason' => 'setReason',
+        'request' => 'setRequest',
+        'status' => 'setStatus'
     ];
 
     /**
@@ -115,7 +139,13 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'error' => 'getError'
+        'code' => 'getCode',
+        'debug' => 'getDebug',
+        'details' => 'getDetails',
+        'message' => 'getMessage',
+        'reason' => 'getReason',
+        'request' => 'getRequest',
+        'status' => 'getStatus'
     ];
 
     /**
@@ -178,7 +208,13 @@ class GenericError implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['error'] = isset($data['error']) ? $data['error'] : null;
+        $this->container['code'] = isset($data['code']) ? $data['code'] : null;
+        $this->container['debug'] = isset($data['debug']) ? $data['debug'] : null;
+        $this->container['details'] = isset($data['details']) ? $data['details'] : null;
+        $this->container['message'] = isset($data['message']) ? $data['message'] : null;
+        $this->container['reason'] = isset($data['reason']) ? $data['reason'] : null;
+        $this->container['request'] = isset($data['request']) ? $data['request'] : null;
+        $this->container['status'] = isset($data['status']) ? $data['status'] : null;
     }
 
     /**
@@ -206,25 +242,169 @@ class GenericError implements ModelInterface, ArrayAccess
 
 
     /**
-     * Gets error
+     * Gets code
      *
-     * @return \Ory\Kratos\Client\Model\GenericErrorPayload|null
+     * @return int|null
      */
-    public function getError()
+    public function getCode()
     {
-        return $this->container['error'];
+        return $this->container['code'];
     }
 
     /**
-     * Sets error
+     * Sets code
      *
-     * @param \Ory\Kratos\Client\Model\GenericErrorPayload|null $error error
+     * @param int|null $code Code represents the error status code (404, 403, 401, ...).
      *
      * @return $this
      */
-    public function setError($error)
+    public function setCode($code)
     {
-        $this->container['error'] = $error;
+        $this->container['code'] = $code;
+
+        return $this;
+    }
+
+    /**
+     * Gets debug
+     *
+     * @return string|null
+     */
+    public function getDebug()
+    {
+        return $this->container['debug'];
+    }
+
+    /**
+     * Sets debug
+     *
+     * @param string|null $debug Debug contains debug information. This is usually not available and has to be enabled.
+     *
+     * @return $this
+     */
+    public function setDebug($debug)
+    {
+        $this->container['debug'] = $debug;
+
+        return $this;
+    }
+
+    /**
+     * Gets details
+     *
+     * @return map[string,object][]|null
+     */
+    public function getDetails()
+    {
+        return $this->container['details'];
+    }
+
+    /**
+     * Sets details
+     *
+     * @param map[string,object][]|null $details details
+     *
+     * @return $this
+     */
+    public function setDetails($details)
+    {
+        $this->container['details'] = $details;
+
+        return $this;
+    }
+
+    /**
+     * Gets message
+     *
+     * @return string|null
+     */
+    public function getMessage()
+    {
+        return $this->container['message'];
+    }
+
+    /**
+     * Sets message
+     *
+     * @param string|null $message message
+     *
+     * @return $this
+     */
+    public function setMessage($message)
+    {
+        $this->container['message'] = $message;
+
+        return $this;
+    }
+
+    /**
+     * Gets reason
+     *
+     * @return string|null
+     */
+    public function getReason()
+    {
+        return $this->container['reason'];
+    }
+
+    /**
+     * Sets reason
+     *
+     * @param string|null $reason reason
+     *
+     * @return $this
+     */
+    public function setReason($reason)
+    {
+        $this->container['reason'] = $reason;
+
+        return $this;
+    }
+
+    /**
+     * Gets request
+     *
+     * @return string|null
+     */
+    public function getRequest()
+    {
+        return $this->container['request'];
+    }
+
+    /**
+     * Sets request
+     *
+     * @param string|null $request request
+     *
+     * @return $this
+     */
+    public function setRequest($request)
+    {
+        $this->container['request'] = $request;
+
+        return $this;
+    }
+
+    /**
+     * Gets status
+     *
+     * @return string|null
+     */
+    public function getStatus()
+    {
+        return $this->container['status'];
+    }
+
+    /**
+     * Sets status
+     *
+     * @param string|null $status status
+     *
+     * @return $this
+     */
+    public function setStatus($status)
+    {
+        $this->container['status'] = $status;
 
         return $this;
     }

@@ -1,6 +1,6 @@
 <?php
 /**
- * GenericError
+ * ErrorContainer
  *
  * PHP version 5
  *
@@ -33,15 +33,14 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * GenericError Class Doc Comment
+ * ErrorContainer Class Doc Comment
  *
  * @category Class
- * @description Error responses are sent when an error (e.g. unauthorized, bad request, ...) occurred.
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class GenericError implements ModelInterface, ArrayAccess
+class ErrorContainer implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -50,7 +49,7 @@ class GenericError implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'genericError';
+    protected static $openAPIModelName = 'errorContainer';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -58,7 +57,8 @@ class GenericError implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'error' => '\Ory\Kratos\Client\Model\GenericErrorPayload'
+        'errors' => 'object',
+        'id' => 'string'
     ];
 
     /**
@@ -67,7 +67,8 @@ class GenericError implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'error' => null
+        'errors' => null,
+        'id' => 'uuid4'
     ];
 
     /**
@@ -97,7 +98,8 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        'error' => 'error'
+        'errors' => 'errors',
+        'id' => 'id'
     ];
 
     /**
@@ -106,7 +108,8 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'error' => 'setError'
+        'errors' => 'setErrors',
+        'id' => 'setId'
     ];
 
     /**
@@ -115,7 +118,8 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'error' => 'getError'
+        'errors' => 'getErrors',
+        'id' => 'getId'
     ];
 
     /**
@@ -178,7 +182,8 @@ class GenericError implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['error'] = isset($data['error']) ? $data['error'] : null;
+        $this->container['errors'] = isset($data['errors']) ? $data['errors'] : null;
+        $this->container['id'] = isset($data['id']) ? $data['id'] : null;
     }
 
     /**
@@ -206,25 +211,49 @@ class GenericError implements ModelInterface, ArrayAccess
 
 
     /**
-     * Gets error
+     * Gets errors
      *
-     * @return \Ory\Kratos\Client\Model\GenericErrorPayload|null
+     * @return object|null
      */
-    public function getError()
+    public function getErrors()
     {
-        return $this->container['error'];
+        return $this->container['errors'];
     }
 
     /**
-     * Sets error
+     * Sets errors
      *
-     * @param \Ory\Kratos\Client\Model\GenericErrorPayload|null $error error
+     * @param object|null $errors errors
      *
      * @return $this
      */
-    public function setError($error)
+    public function setErrors($errors)
     {
-        $this->container['error'] = $error;
+        $this->container['errors'] = $errors;
+
+        return $this;
+    }
+
+    /**
+     * Gets id
+     *
+     * @return string|null
+     */
+    public function getId()
+    {
+        return $this->container['id'];
+    }
+
+    /**
+     * Sets id
+     *
+     * @param string|null $id id
+     *
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->container['id'] = $id;
 
         return $this;
     }

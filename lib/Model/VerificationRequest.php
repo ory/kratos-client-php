@@ -1,6 +1,6 @@
 <?php
 /**
- * GenericError
+ * VerificationRequest
  *
  * PHP version 5
  *
@@ -33,15 +33,15 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * GenericError Class Doc Comment
+ * VerificationRequest Class Doc Comment
  *
  * @category Class
- * @description Error responses are sent when an error (e.g. unauthorized, bad request, ...) occurred.
+ * @description This request is used when an identity wants to verify an out-of-band communication channel such as an email address or a phone number.  For more information head over to: https://www.ory.sh/docs/kratos/selfservice/flows/verify-email-account-activation
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class GenericError implements ModelInterface, ArrayAccess
+class VerificationRequest implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class GenericError implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'genericError';
+    protected static $openAPIModelName = 'verificationRequest';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -58,7 +58,13 @@ class GenericError implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'error' => '\Ory\Kratos\Client\Model\GenericErrorPayload'
+        'expiresAt' => '\DateTime',
+        'form' => '\Ory\Kratos\Client\Model\Form',
+        'id' => 'string',
+        'issuedAt' => '\DateTime',
+        'requestUrl' => 'string',
+        'success' => 'bool',
+        'via' => 'string'
     ];
 
     /**
@@ -67,7 +73,13 @@ class GenericError implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'error' => null
+        'expiresAt' => 'date-time',
+        'form' => null,
+        'id' => 'uuid4',
+        'issuedAt' => 'date-time',
+        'requestUrl' => null,
+        'success' => null,
+        'via' => null
     ];
 
     /**
@@ -97,7 +109,13 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        'error' => 'error'
+        'expiresAt' => 'expires_at',
+        'form' => 'form',
+        'id' => 'id',
+        'issuedAt' => 'issued_at',
+        'requestUrl' => 'request_url',
+        'success' => 'success',
+        'via' => 'via'
     ];
 
     /**
@@ -106,7 +124,13 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'error' => 'setError'
+        'expiresAt' => 'setExpiresAt',
+        'form' => 'setForm',
+        'id' => 'setId',
+        'issuedAt' => 'setIssuedAt',
+        'requestUrl' => 'setRequestUrl',
+        'success' => 'setSuccess',
+        'via' => 'setVia'
     ];
 
     /**
@@ -115,7 +139,13 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'error' => 'getError'
+        'expiresAt' => 'getExpiresAt',
+        'form' => 'getForm',
+        'id' => 'getId',
+        'issuedAt' => 'getIssuedAt',
+        'requestUrl' => 'getRequestUrl',
+        'success' => 'getSuccess',
+        'via' => 'getVia'
     ];
 
     /**
@@ -178,7 +208,13 @@ class GenericError implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['error'] = isset($data['error']) ? $data['error'] : null;
+        $this->container['expiresAt'] = isset($data['expiresAt']) ? $data['expiresAt'] : null;
+        $this->container['form'] = isset($data['form']) ? $data['form'] : null;
+        $this->container['id'] = isset($data['id']) ? $data['id'] : null;
+        $this->container['issuedAt'] = isset($data['issuedAt']) ? $data['issuedAt'] : null;
+        $this->container['requestUrl'] = isset($data['requestUrl']) ? $data['requestUrl'] : null;
+        $this->container['success'] = isset($data['success']) ? $data['success'] : null;
+        $this->container['via'] = isset($data['via']) ? $data['via'] : null;
     }
 
     /**
@@ -206,25 +242,169 @@ class GenericError implements ModelInterface, ArrayAccess
 
 
     /**
-     * Gets error
+     * Gets expiresAt
      *
-     * @return \Ory\Kratos\Client\Model\GenericErrorPayload|null
+     * @return \DateTime|null
      */
-    public function getError()
+    public function getExpiresAt()
     {
-        return $this->container['error'];
+        return $this->container['expiresAt'];
     }
 
     /**
-     * Sets error
+     * Sets expiresAt
      *
-     * @param \Ory\Kratos\Client\Model\GenericErrorPayload|null $error error
+     * @param \DateTime|null $expiresAt ExpiresAt is the time (UTC) when the request expires. If the user still wishes to update the profile, a new request has to be initiated.
      *
      * @return $this
      */
-    public function setError($error)
+    public function setExpiresAt($expiresAt)
     {
-        $this->container['error'] = $error;
+        $this->container['expiresAt'] = $expiresAt;
+
+        return $this;
+    }
+
+    /**
+     * Gets form
+     *
+     * @return \Ory\Kratos\Client\Model\Form|null
+     */
+    public function getForm()
+    {
+        return $this->container['form'];
+    }
+
+    /**
+     * Sets form
+     *
+     * @param \Ory\Kratos\Client\Model\Form|null $form form
+     *
+     * @return $this
+     */
+    public function setForm($form)
+    {
+        $this->container['form'] = $form;
+
+        return $this;
+    }
+
+    /**
+     * Gets id
+     *
+     * @return string|null
+     */
+    public function getId()
+    {
+        return $this->container['id'];
+    }
+
+    /**
+     * Sets id
+     *
+     * @param string|null $id id
+     *
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->container['id'] = $id;
+
+        return $this;
+    }
+
+    /**
+     * Gets issuedAt
+     *
+     * @return \DateTime|null
+     */
+    public function getIssuedAt()
+    {
+        return $this->container['issuedAt'];
+    }
+
+    /**
+     * Sets issuedAt
+     *
+     * @param \DateTime|null $issuedAt IssuedAt is the time (UTC) when the request occurred.
+     *
+     * @return $this
+     */
+    public function setIssuedAt($issuedAt)
+    {
+        $this->container['issuedAt'] = $issuedAt;
+
+        return $this;
+    }
+
+    /**
+     * Gets requestUrl
+     *
+     * @return string|null
+     */
+    public function getRequestUrl()
+    {
+        return $this->container['requestUrl'];
+    }
+
+    /**
+     * Sets requestUrl
+     *
+     * @param string|null $requestUrl RequestURL is the initial URL that was requested from ORY Kratos. It can be used to forward information contained in the URL's path or query for example.
+     *
+     * @return $this
+     */
+    public function setRequestUrl($requestUrl)
+    {
+        $this->container['requestUrl'] = $requestUrl;
+
+        return $this;
+    }
+
+    /**
+     * Gets success
+     *
+     * @return bool|null
+     */
+    public function getSuccess()
+    {
+        return $this->container['success'];
+    }
+
+    /**
+     * Sets success
+     *
+     * @param bool|null $success Success, if true, implies that the request was completed successfully.
+     *
+     * @return $this
+     */
+    public function setSuccess($success)
+    {
+        $this->container['success'] = $success;
+
+        return $this;
+    }
+
+    /**
+     * Gets via
+     *
+     * @return string|null
+     */
+    public function getVia()
+    {
+        return $this->container['via'];
+    }
+
+    /**
+     * Sets via
+     *
+     * @param string|null $via via
+     *
+     * @return $this
+     */
+    public function setVia($via)
+    {
+        $this->container['via'] = $via;
 
         return $this;
     }

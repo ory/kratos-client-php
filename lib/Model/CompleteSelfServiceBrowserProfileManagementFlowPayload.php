@@ -1,6 +1,6 @@
 <?php
 /**
- * GenericError
+ * CompleteSelfServiceBrowserProfileManagementFlowPayload
  *
  * PHP version 5
  *
@@ -33,15 +33,14 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * GenericError Class Doc Comment
+ * CompleteSelfServiceBrowserProfileManagementFlowPayload Class Doc Comment
  *
  * @category Class
- * @description Error responses are sent when an error (e.g. unauthorized, bad request, ...) occurred.
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class GenericError implements ModelInterface, ArrayAccess
+class CompleteSelfServiceBrowserProfileManagementFlowPayload implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -50,7 +49,7 @@ class GenericError implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'genericError';
+    protected static $openAPIModelName = 'completeSelfServiceBrowserProfileManagementFlowPayload';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -58,7 +57,7 @@ class GenericError implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'error' => '\Ory\Kratos\Client\Model\GenericErrorPayload'
+        'traits' => 'object'
     ];
 
     /**
@@ -67,7 +66,7 @@ class GenericError implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'error' => null
+        'traits' => null
     ];
 
     /**
@@ -97,7 +96,7 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        'error' => 'error'
+        'traits' => 'traits'
     ];
 
     /**
@@ -106,7 +105,7 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'error' => 'setError'
+        'traits' => 'setTraits'
     ];
 
     /**
@@ -115,7 +114,7 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'error' => 'getError'
+        'traits' => 'getTraits'
     ];
 
     /**
@@ -178,7 +177,7 @@ class GenericError implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['error'] = isset($data['error']) ? $data['error'] : null;
+        $this->container['traits'] = isset($data['traits']) ? $data['traits'] : null;
     }
 
     /**
@@ -190,6 +189,9 @@ class GenericError implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
+        if ($this->container['traits'] === null) {
+            $invalidProperties[] = "'traits' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -206,25 +208,25 @@ class GenericError implements ModelInterface, ArrayAccess
 
 
     /**
-     * Gets error
+     * Gets traits
      *
-     * @return \Ory\Kratos\Client\Model\GenericErrorPayload|null
+     * @return object
      */
-    public function getError()
+    public function getTraits()
     {
-        return $this->container['error'];
+        return $this->container['traits'];
     }
 
     /**
-     * Sets error
+     * Sets traits
      *
-     * @param \Ory\Kratos\Client\Model\GenericErrorPayload|null $error error
+     * @param object $traits Traits contains all of the identity's traits.  type: string format: binary
      *
      * @return $this
      */
-    public function setError($error)
+    public function setTraits($traits)
     {
-        $this->container['error'] = $error;
+        $this->container['traits'] = $traits;
 
         return $this;
     }

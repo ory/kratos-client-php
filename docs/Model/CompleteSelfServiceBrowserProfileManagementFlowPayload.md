@@ -1,11 +1,10 @@
-# # LoginRequestMethod
+# # CompleteSelfServiceBrowserProfileManagementFlowPayload
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**config** | [**\Ory\Kratos\Client\Model\LoginRequestMethodConfig**](LoginRequestMethodConfig.md) |  | 
-**method** | **string** | and so on. | 
+**traits** | [**object**](.md) | Traits contains all of the identity&#39;s traits.  type: string format: binary | 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * PublicApi
+ * AdminApi
  * PHP version 5
  *
  * @category Class
@@ -40,14 +40,14 @@ use Ory\Kratos\Client\HeaderSelector;
 use Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * PublicApi Class Doc Comment
+ * AdminApi Class Doc Comment
  *
  * @category Class
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class PublicApi
+class AdminApi
 {
     /**
      * @var ClientInterface
@@ -116,37 +116,36 @@ class PublicApi
     }
 
     /**
-     * Operation completeSelfServiceBrowserProfileManagementFlow
+     * Operation createIdentity
      *
-     * Complete the browser-based profile management flows
+     * Create an identity
      *
-     * @param  string $request Request is the request ID. (required)
-     * @param  \Ory\Kratos\Client\Model\CompleteSelfServiceBrowserProfileManagementFlowPayload $body body (required)
+     * @param  \Ory\Kratos\Client\Model\Identity $body body (required)
      *
      * @throws \Ory\Kratos\Client\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return \Ory\Kratos\Client\Model\Identity|\Ory\Kratos\Client\Model\GenericError|\Ory\Kratos\Client\Model\GenericError
      */
-    public function completeSelfServiceBrowserProfileManagementFlow($request, $body)
+    public function createIdentity($body)
     {
-        $this->completeSelfServiceBrowserProfileManagementFlowWithHttpInfo($request, $body);
+        list($response) = $this->createIdentityWithHttpInfo($body);
+        return $response;
     }
 
     /**
-     * Operation completeSelfServiceBrowserProfileManagementFlowWithHttpInfo
+     * Operation createIdentityWithHttpInfo
      *
-     * Complete the browser-based profile management flows
+     * Create an identity
      *
-     * @param  string $request Request is the request ID. (required)
-     * @param  \Ory\Kratos\Client\Model\CompleteSelfServiceBrowserProfileManagementFlowPayload $body (required)
+     * @param  \Ory\Kratos\Client\Model\Identity $body (required)
      *
      * @throws \Ory\Kratos\Client\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Ory\Kratos\Client\Model\Identity|\Ory\Kratos\Client\Model\GenericError|\Ory\Kratos\Client\Model\GenericError, HTTP status code, HTTP response headers (array of strings)
      */
-    public function completeSelfServiceBrowserProfileManagementFlowWithHttpInfo($request, $body)
+    public function createIdentityWithHttpInfo($body)
     {
-        $request = $this->completeSelfServiceBrowserProfileManagementFlowRequest($request, $body);
+        $request = $this->createIdentityRequest($body);
 
         try {
             $options = $this->createHttpClientOption();
@@ -176,10 +175,78 @@ class PublicApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 201:
+                    if ('\Ory\Kratos\Client\Model\Identity' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Ory\Kratos\Client\Model\Identity', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 400:
+                    if ('\Ory\Kratos\Client\Model\GenericError' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Ory\Kratos\Client\Model\GenericError', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 500:
+                    if ('\Ory\Kratos\Client\Model\GenericError' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Ory\Kratos\Client\Model\GenericError', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Ory\Kratos\Client\Model\Identity';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 201:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Ory\Kratos\Client\Model\Identity',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Ory\Kratos\Client\Model\GenericError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
                 case 500:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
@@ -194,19 +261,18 @@ class PublicApi
     }
 
     /**
-     * Operation completeSelfServiceBrowserProfileManagementFlowAsync
+     * Operation createIdentityAsync
      *
-     * Complete the browser-based profile management flows
+     * Create an identity
      *
-     * @param  string $request Request is the request ID. (required)
-     * @param  \Ory\Kratos\Client\Model\CompleteSelfServiceBrowserProfileManagementFlowPayload $body (required)
+     * @param  \Ory\Kratos\Client\Model\Identity $body (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function completeSelfServiceBrowserProfileManagementFlowAsync($request, $body)
+    public function createIdentityAsync($body)
     {
-        return $this->completeSelfServiceBrowserProfileManagementFlowAsyncWithHttpInfo($request, $body)
+        return $this->createIdentityAsyncWithHttpInfo($body)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -215,26 +281,36 @@ class PublicApi
     }
 
     /**
-     * Operation completeSelfServiceBrowserProfileManagementFlowAsyncWithHttpInfo
+     * Operation createIdentityAsyncWithHttpInfo
      *
-     * Complete the browser-based profile management flows
+     * Create an identity
      *
-     * @param  string $request Request is the request ID. (required)
-     * @param  \Ory\Kratos\Client\Model\CompleteSelfServiceBrowserProfileManagementFlowPayload $body (required)
+     * @param  \Ory\Kratos\Client\Model\Identity $body (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function completeSelfServiceBrowserProfileManagementFlowAsyncWithHttpInfo($request, $body)
+    public function createIdentityAsyncWithHttpInfo($body)
     {
-        $returnType = '';
-        $request = $this->completeSelfServiceBrowserProfileManagementFlowRequest($request, $body);
+        $returnType = '\Ory\Kratos\Client\Model\Identity';
+        $request = $this->createIdentityRequest($body);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -254,40 +330,29 @@ class PublicApi
     }
 
     /**
-     * Create request for operation 'completeSelfServiceBrowserProfileManagementFlow'
+     * Create request for operation 'createIdentity'
      *
-     * @param  string $request Request is the request ID. (required)
-     * @param  \Ory\Kratos\Client\Model\CompleteSelfServiceBrowserProfileManagementFlowPayload $body (required)
+     * @param  \Ory\Kratos\Client\Model\Identity $body (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function completeSelfServiceBrowserProfileManagementFlowRequest($request, $body)
+    protected function createIdentityRequest($body)
     {
-        // verify the required parameter 'request' is set
-        if ($request === null || (is_array($request) && count($request) === 0)) {
-            throw new \InvalidArgumentException(
-                'Missing the required parameter $request when calling completeSelfServiceBrowserProfileManagementFlow'
-            );
-        }
         // verify the required parameter 'body' is set
         if ($body === null || (is_array($body) && count($body) === 0)) {
             throw new \InvalidArgumentException(
-                'Missing the required parameter $body when calling completeSelfServiceBrowserProfileManagementFlow'
+                'Missing the required parameter $body when calling createIdentity'
             );
         }
 
-        $resourcePath = '/self-service/browser/flows/profile/update';
+        $resourcePath = '/identities';
         $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
         $multipart = false;
 
-        // query params
-        if ($request !== null) {
-            $queryParams['request'] = ObjectSerializer::toQueryValue($request);
-        }
 
 
         // body params
@@ -303,7 +368,7 @@ class PublicApi
         } else {
             $headers = $this->headerSelector->selectHeaders(
                 ['application/json'],
-                ['application/json', 'application/x-www-form-urlencoded']
+                ['application/json']
             );
         }
 
@@ -358,35 +423,35 @@ class PublicApi
     }
 
     /**
-     * Operation completeSelfServiceBrowserVerificationFlow
+     * Operation deleteIdentity
      *
-     * Complete the browser-based profile management flows
+     * Delete an identity
      *
-     * @param  string $request Request is the Request ID  The value for this parameter comes from &#x60;request&#x60; URL Query parameter sent to your application (e.g. &#x60;/verify?request&#x3D;abcde&#x60;). (required)
+     * @param  string $id ID is the identity&#39;s ID. (required)
      *
      * @throws \Ory\Kratos\Client\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function completeSelfServiceBrowserVerificationFlow($request)
+    public function deleteIdentity($id)
     {
-        $this->completeSelfServiceBrowserVerificationFlowWithHttpInfo($request);
+        $this->deleteIdentityWithHttpInfo($id);
     }
 
     /**
-     * Operation completeSelfServiceBrowserVerificationFlowWithHttpInfo
+     * Operation deleteIdentityWithHttpInfo
      *
-     * Complete the browser-based profile management flows
+     * Delete an identity
      *
-     * @param  string $request Request is the Request ID  The value for this parameter comes from &#x60;request&#x60; URL Query parameter sent to your application (e.g. &#x60;/verify?request&#x3D;abcde&#x60;). (required)
+     * @param  string $id ID is the identity&#39;s ID. (required)
      *
      * @throws \Ory\Kratos\Client\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of null, HTTP status code, HTTP response headers (array of strings)
      */
-    public function completeSelfServiceBrowserVerificationFlowWithHttpInfo($request)
+    public function deleteIdentityWithHttpInfo($id)
     {
-        $request = $this->completeSelfServiceBrowserVerificationFlowRequest($request);
+        $request = $this->deleteIdentityRequest($id);
 
         try {
             $options = $this->createHttpClientOption();
@@ -420,6 +485,14 @@ class PublicApi
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Ory\Kratos\Client\Model\GenericError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
                 case 500:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
@@ -434,18 +507,18 @@ class PublicApi
     }
 
     /**
-     * Operation completeSelfServiceBrowserVerificationFlowAsync
+     * Operation deleteIdentityAsync
      *
-     * Complete the browser-based profile management flows
+     * Delete an identity
      *
-     * @param  string $request Request is the Request ID  The value for this parameter comes from &#x60;request&#x60; URL Query parameter sent to your application (e.g. &#x60;/verify?request&#x3D;abcde&#x60;). (required)
+     * @param  string $id ID is the identity&#39;s ID. (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function completeSelfServiceBrowserVerificationFlowAsync($request)
+    public function deleteIdentityAsync($id)
     {
-        return $this->completeSelfServiceBrowserVerificationFlowAsyncWithHttpInfo($request)
+        return $this->deleteIdentityAsyncWithHttpInfo($id)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -454,19 +527,19 @@ class PublicApi
     }
 
     /**
-     * Operation completeSelfServiceBrowserVerificationFlowAsyncWithHttpInfo
+     * Operation deleteIdentityAsyncWithHttpInfo
      *
-     * Complete the browser-based profile management flows
+     * Delete an identity
      *
-     * @param  string $request Request is the Request ID  The value for this parameter comes from &#x60;request&#x60; URL Query parameter sent to your application (e.g. &#x60;/verify?request&#x3D;abcde&#x60;). (required)
+     * @param  string $id ID is the identity&#39;s ID. (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function completeSelfServiceBrowserVerificationFlowAsyncWithHttpInfo($request)
+    public function deleteIdentityAsyncWithHttpInfo($id)
     {
         $returnType = '';
-        $request = $this->completeSelfServiceBrowserVerificationFlowRequest($request);
+        $request = $this->deleteIdentityRequest($id);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -492,34 +565,38 @@ class PublicApi
     }
 
     /**
-     * Create request for operation 'completeSelfServiceBrowserVerificationFlow'
+     * Create request for operation 'deleteIdentity'
      *
-     * @param  string $request Request is the Request ID  The value for this parameter comes from &#x60;request&#x60; URL Query parameter sent to your application (e.g. &#x60;/verify?request&#x3D;abcde&#x60;). (required)
+     * @param  string $id ID is the identity&#39;s ID. (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function completeSelfServiceBrowserVerificationFlowRequest($request)
+    protected function deleteIdentityRequest($id)
     {
-        // verify the required parameter 'request' is set
-        if ($request === null || (is_array($request) && count($request) === 0)) {
+        // verify the required parameter 'id' is set
+        if ($id === null || (is_array($id) && count($id) === 0)) {
             throw new \InvalidArgumentException(
-                'Missing the required parameter $request when calling completeSelfServiceBrowserVerificationFlow'
+                'Missing the required parameter $id when calling deleteIdentity'
             );
         }
 
-        $resourcePath = '/self-service/browser/flows/verification/complete';
+        $resourcePath = '/identities/{id}';
         $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
         $multipart = false;
 
-        // query params
-        if ($request !== null) {
-            $queryParams['request'] = ObjectSerializer::toQueryValue($request);
-        }
 
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'id' . '}',
+                ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
 
         // body params
         $_tempBody = null;
@@ -578,7 +655,319 @@ class PublicApi
 
         $query = \GuzzleHttp\Psr7\build_query($queryParams);
         return new Request(
-            'POST',
+            'DELETE',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation getIdentity
+     *
+     * Get an identity
+     *
+     * @param  string $id ID must be set to the ID of identity you want to get (required)
+     *
+     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \Ory\Kratos\Client\Model\Identity|\Ory\Kratos\Client\Model\GenericError|\Ory\Kratos\Client\Model\GenericError
+     */
+    public function getIdentity($id)
+    {
+        list($response) = $this->getIdentityWithHttpInfo($id);
+        return $response;
+    }
+
+    /**
+     * Operation getIdentityWithHttpInfo
+     *
+     * Get an identity
+     *
+     * @param  string $id ID must be set to the ID of identity you want to get (required)
+     *
+     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Ory\Kratos\Client\Model\Identity|\Ory\Kratos\Client\Model\GenericError|\Ory\Kratos\Client\Model\GenericError, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function getIdentityWithHttpInfo($id)
+    {
+        $request = $this->getIdentityRequest($id);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('\Ory\Kratos\Client\Model\Identity' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Ory\Kratos\Client\Model\Identity', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 400:
+                    if ('\Ory\Kratos\Client\Model\GenericError' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Ory\Kratos\Client\Model\GenericError', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 500:
+                    if ('\Ory\Kratos\Client\Model\GenericError' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Ory\Kratos\Client\Model\GenericError', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Ory\Kratos\Client\Model\Identity';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Ory\Kratos\Client\Model\Identity',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Ory\Kratos\Client\Model\GenericError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 500:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Ory\Kratos\Client\Model\GenericError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation getIdentityAsync
+     *
+     * Get an identity
+     *
+     * @param  string $id ID must be set to the ID of identity you want to get (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getIdentityAsync($id)
+    {
+        return $this->getIdentityAsyncWithHttpInfo($id)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation getIdentityAsyncWithHttpInfo
+     *
+     * Get an identity
+     *
+     * @param  string $id ID must be set to the ID of identity you want to get (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getIdentityAsyncWithHttpInfo($id)
+    {
+        $returnType = '\Ory\Kratos\Client\Model\Identity';
+        $request = $this->getIdentityRequest($id);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getIdentity'
+     *
+     * @param  string $id ID must be set to the ID of identity you want to get (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function getIdentityRequest($id)
+    {
+        // verify the required parameter 'id' is set
+        if ($id === null || (is_array($id) && count($id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $id when calling getIdentity'
+            );
+        }
+
+        $resourcePath = '/identities/{id}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'id' . '}',
+                ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
+
+        // body params
+        $_tempBody = null;
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/json'],
+                []
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+            }
+        }
+
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        return new Request(
+            'GET',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
             $headers,
             $httpBody
@@ -2220,1350 +2609,34 @@ class PublicApi
     }
 
     /**
-     * Operation initializeSelfServiceBrowserLoginFlow
+     * Operation listIdentities
      *
-     * Initialize browser-based login user flow
-     *
-     *
-     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return void
-     */
-    public function initializeSelfServiceBrowserLoginFlow()
-    {
-        $this->initializeSelfServiceBrowserLoginFlowWithHttpInfo();
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserLoginFlowWithHttpInfo
-     *
-     * Initialize browser-based login user flow
+     * List all identities in the system
      *
      *
      * @throws \Ory\Kratos\Client\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return \Ory\Kratos\Client\Model\Identity[]|\Ory\Kratos\Client\Model\GenericError
      */
-    public function initializeSelfServiceBrowserLoginFlowWithHttpInfo()
+    public function listIdentities()
     {
-        $request = $this->initializeSelfServiceBrowserLoginFlowRequest();
-
-        try {
-            $options = $this->createHttpClientOption();
-            try {
-                $response = $this->client->send($request, $options);
-            } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
-            }
-
-            $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    $response->getBody()
-                );
-            }
-
-            return [null, $statusCode, $response->getHeaders()];
-
-        } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Ory\Kratos\Client\Model\GenericError',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
-            throw $e;
-        }
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserLoginFlowAsync
-     *
-     * Initialize browser-based login user flow
-     *
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function initializeSelfServiceBrowserLoginFlowAsync()
-    {
-        return $this->initializeSelfServiceBrowserLoginFlowAsyncWithHttpInfo()
-            ->then(
-                function ($response) {
-                    return $response[0];
-                }
-            );
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserLoginFlowAsyncWithHttpInfo
-     *
-     * Initialize browser-based login user flow
-     *
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function initializeSelfServiceBrowserLoginFlowAsyncWithHttpInfo()
-    {
-        $returnType = '';
-        $request = $this->initializeSelfServiceBrowserLoginFlowRequest();
-
-        return $this->client
-            ->sendAsync($request, $this->createHttpClientOption())
-            ->then(
-                function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
-                },
-                function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        $response->getBody()
-                    );
-                }
-            );
-    }
-
-    /**
-     * Create request for operation 'initializeSelfServiceBrowserLoginFlow'
-     *
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
-     */
-    protected function initializeSelfServiceBrowserLoginFlowRequest()
-    {
-
-        $resourcePath = '/self-service/browser/flows/login';
-        $formParams = [];
-        $queryParams = [];
-        $headerParams = [];
-        $httpBody = '';
-        $multipart = false;
-
-
-
-        // body params
-        $_tempBody = null;
-
-        if ($multipart) {
-            $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
-            );
-        } else {
-            $headers = $this->headerSelector->selectHeaders(
-                ['application/json'],
-                []
-            );
-        }
-
-        // for model (json/xml)
-        if (isset($_tempBody)) {
-            // $_tempBody is the method argument, if present
-            if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
-            } else {
-                $httpBody = $_tempBody;
-            }
-        } elseif (count($formParams) > 0) {
-            if ($multipart) {
-                $multipartContents = [];
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $multipartContents[] = [
-                        'name' => $formParamName,
-                        'contents' => $formParamValue
-                    ];
-                }
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents);
-
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
-
-            } else {
-                // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
-            }
-        }
-
-
-        $defaultHeaders = [];
-        if ($this->config->getUserAgent()) {
-            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
-        }
-
-        $headers = array_merge(
-            $defaultHeaders,
-            $headerParams,
-            $headers
-        );
-
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserLogoutFlow
-     *
-     * Initialize Browser-Based Logout User Flow
-     *
-     *
-     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return void
-     */
-    public function initializeSelfServiceBrowserLogoutFlow()
-    {
-        $this->initializeSelfServiceBrowserLogoutFlowWithHttpInfo();
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserLogoutFlowWithHttpInfo
-     *
-     * Initialize Browser-Based Logout User Flow
-     *
-     *
-     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
-     */
-    public function initializeSelfServiceBrowserLogoutFlowWithHttpInfo()
-    {
-        $request = $this->initializeSelfServiceBrowserLogoutFlowRequest();
-
-        try {
-            $options = $this->createHttpClientOption();
-            try {
-                $response = $this->client->send($request, $options);
-            } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
-            }
-
-            $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    $response->getBody()
-                );
-            }
-
-            return [null, $statusCode, $response->getHeaders()];
-
-        } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Ory\Kratos\Client\Model\GenericError',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
-            throw $e;
-        }
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserLogoutFlowAsync
-     *
-     * Initialize Browser-Based Logout User Flow
-     *
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function initializeSelfServiceBrowserLogoutFlowAsync()
-    {
-        return $this->initializeSelfServiceBrowserLogoutFlowAsyncWithHttpInfo()
-            ->then(
-                function ($response) {
-                    return $response[0];
-                }
-            );
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserLogoutFlowAsyncWithHttpInfo
-     *
-     * Initialize Browser-Based Logout User Flow
-     *
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function initializeSelfServiceBrowserLogoutFlowAsyncWithHttpInfo()
-    {
-        $returnType = '';
-        $request = $this->initializeSelfServiceBrowserLogoutFlowRequest();
-
-        return $this->client
-            ->sendAsync($request, $this->createHttpClientOption())
-            ->then(
-                function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
-                },
-                function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        $response->getBody()
-                    );
-                }
-            );
-    }
-
-    /**
-     * Create request for operation 'initializeSelfServiceBrowserLogoutFlow'
-     *
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
-     */
-    protected function initializeSelfServiceBrowserLogoutFlowRequest()
-    {
-
-        $resourcePath = '/self-service/browser/flows/logout';
-        $formParams = [];
-        $queryParams = [];
-        $headerParams = [];
-        $httpBody = '';
-        $multipart = false;
-
-
-
-        // body params
-        $_tempBody = null;
-
-        if ($multipart) {
-            $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
-            );
-        } else {
-            $headers = $this->headerSelector->selectHeaders(
-                ['application/json'],
-                []
-            );
-        }
-
-        // for model (json/xml)
-        if (isset($_tempBody)) {
-            // $_tempBody is the method argument, if present
-            if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
-            } else {
-                $httpBody = $_tempBody;
-            }
-        } elseif (count($formParams) > 0) {
-            if ($multipart) {
-                $multipartContents = [];
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $multipartContents[] = [
-                        'name' => $formParamName,
-                        'contents' => $formParamValue
-                    ];
-                }
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents);
-
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
-
-            } else {
-                // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
-            }
-        }
-
-
-        $defaultHeaders = [];
-        if ($this->config->getUserAgent()) {
-            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
-        }
-
-        $headers = array_merge(
-            $defaultHeaders,
-            $headerParams,
-            $headers
-        );
-
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserRegistrationFlow
-     *
-     * Initialize browser-based registration user flow
-     *
-     *
-     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return void
-     */
-    public function initializeSelfServiceBrowserRegistrationFlow()
-    {
-        $this->initializeSelfServiceBrowserRegistrationFlowWithHttpInfo();
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserRegistrationFlowWithHttpInfo
-     *
-     * Initialize browser-based registration user flow
-     *
-     *
-     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
-     */
-    public function initializeSelfServiceBrowserRegistrationFlowWithHttpInfo()
-    {
-        $request = $this->initializeSelfServiceBrowserRegistrationFlowRequest();
-
-        try {
-            $options = $this->createHttpClientOption();
-            try {
-                $response = $this->client->send($request, $options);
-            } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
-            }
-
-            $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    $response->getBody()
-                );
-            }
-
-            return [null, $statusCode, $response->getHeaders()];
-
-        } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Ory\Kratos\Client\Model\GenericError',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
-            throw $e;
-        }
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserRegistrationFlowAsync
-     *
-     * Initialize browser-based registration user flow
-     *
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function initializeSelfServiceBrowserRegistrationFlowAsync()
-    {
-        return $this->initializeSelfServiceBrowserRegistrationFlowAsyncWithHttpInfo()
-            ->then(
-                function ($response) {
-                    return $response[0];
-                }
-            );
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserRegistrationFlowAsyncWithHttpInfo
-     *
-     * Initialize browser-based registration user flow
-     *
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function initializeSelfServiceBrowserRegistrationFlowAsyncWithHttpInfo()
-    {
-        $returnType = '';
-        $request = $this->initializeSelfServiceBrowserRegistrationFlowRequest();
-
-        return $this->client
-            ->sendAsync($request, $this->createHttpClientOption())
-            ->then(
-                function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
-                },
-                function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        $response->getBody()
-                    );
-                }
-            );
-    }
-
-    /**
-     * Create request for operation 'initializeSelfServiceBrowserRegistrationFlow'
-     *
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
-     */
-    protected function initializeSelfServiceBrowserRegistrationFlowRequest()
-    {
-
-        $resourcePath = '/self-service/browser/flows/registration';
-        $formParams = [];
-        $queryParams = [];
-        $headerParams = [];
-        $httpBody = '';
-        $multipart = false;
-
-
-
-        // body params
-        $_tempBody = null;
-
-        if ($multipart) {
-            $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
-            );
-        } else {
-            $headers = $this->headerSelector->selectHeaders(
-                ['application/json'],
-                []
-            );
-        }
-
-        // for model (json/xml)
-        if (isset($_tempBody)) {
-            // $_tempBody is the method argument, if present
-            if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
-            } else {
-                $httpBody = $_tempBody;
-            }
-        } elseif (count($formParams) > 0) {
-            if ($multipart) {
-                $multipartContents = [];
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $multipartContents[] = [
-                        'name' => $formParamName,
-                        'contents' => $formParamValue
-                    ];
-                }
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents);
-
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
-
-            } else {
-                // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
-            }
-        }
-
-
-        $defaultHeaders = [];
-        if ($this->config->getUserAgent()) {
-            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
-        }
-
-        $headers = array_merge(
-            $defaultHeaders,
-            $headerParams,
-            $headers
-        );
-
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserVerificationFlow
-     *
-     * Initialize browser-based verification flow
-     *
-     * @param  string $via What to verify  Currently only \&quot;email\&quot; is supported. (required)
-     *
-     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return void
-     */
-    public function initializeSelfServiceBrowserVerificationFlow($via)
-    {
-        $this->initializeSelfServiceBrowserVerificationFlowWithHttpInfo($via);
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserVerificationFlowWithHttpInfo
-     *
-     * Initialize browser-based verification flow
-     *
-     * @param  string $via What to verify  Currently only \&quot;email\&quot; is supported. (required)
-     *
-     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
-     */
-    public function initializeSelfServiceBrowserVerificationFlowWithHttpInfo($via)
-    {
-        $request = $this->initializeSelfServiceBrowserVerificationFlowRequest($via);
-
-        try {
-            $options = $this->createHttpClientOption();
-            try {
-                $response = $this->client->send($request, $options);
-            } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
-            }
-
-            $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    $response->getBody()
-                );
-            }
-
-            return [null, $statusCode, $response->getHeaders()];
-
-        } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Ory\Kratos\Client\Model\GenericError',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
-            throw $e;
-        }
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserVerificationFlowAsync
-     *
-     * Initialize browser-based verification flow
-     *
-     * @param  string $via What to verify  Currently only \&quot;email\&quot; is supported. (required)
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function initializeSelfServiceBrowserVerificationFlowAsync($via)
-    {
-        return $this->initializeSelfServiceBrowserVerificationFlowAsyncWithHttpInfo($via)
-            ->then(
-                function ($response) {
-                    return $response[0];
-                }
-            );
-    }
-
-    /**
-     * Operation initializeSelfServiceBrowserVerificationFlowAsyncWithHttpInfo
-     *
-     * Initialize browser-based verification flow
-     *
-     * @param  string $via What to verify  Currently only \&quot;email\&quot; is supported. (required)
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function initializeSelfServiceBrowserVerificationFlowAsyncWithHttpInfo($via)
-    {
-        $returnType = '';
-        $request = $this->initializeSelfServiceBrowserVerificationFlowRequest($via);
-
-        return $this->client
-            ->sendAsync($request, $this->createHttpClientOption())
-            ->then(
-                function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
-                },
-                function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        $response->getBody()
-                    );
-                }
-            );
-    }
-
-    /**
-     * Create request for operation 'initializeSelfServiceBrowserVerificationFlow'
-     *
-     * @param  string $via What to verify  Currently only \&quot;email\&quot; is supported. (required)
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
-     */
-    protected function initializeSelfServiceBrowserVerificationFlowRequest($via)
-    {
-        // verify the required parameter 'via' is set
-        if ($via === null || (is_array($via) && count($via) === 0)) {
-            throw new \InvalidArgumentException(
-                'Missing the required parameter $via when calling initializeSelfServiceBrowserVerificationFlow'
-            );
-        }
-
-        $resourcePath = '/self-service/browser/flows/verification/init/{via}';
-        $formParams = [];
-        $queryParams = [];
-        $headerParams = [];
-        $httpBody = '';
-        $multipart = false;
-
-
-        // path params
-        if ($via !== null) {
-            $resourcePath = str_replace(
-                '{' . 'via' . '}',
-                ObjectSerializer::toPathValue($via),
-                $resourcePath
-            );
-        }
-
-        // body params
-        $_tempBody = null;
-
-        if ($multipart) {
-            $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
-            );
-        } else {
-            $headers = $this->headerSelector->selectHeaders(
-                ['application/json'],
-                []
-            );
-        }
-
-        // for model (json/xml)
-        if (isset($_tempBody)) {
-            // $_tempBody is the method argument, if present
-            if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
-            } else {
-                $httpBody = $_tempBody;
-            }
-        } elseif (count($formParams) > 0) {
-            if ($multipart) {
-                $multipartContents = [];
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $multipartContents[] = [
-                        'name' => $formParamName,
-                        'contents' => $formParamValue
-                    ];
-                }
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents);
-
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
-
-            } else {
-                // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
-            }
-        }
-
-
-        $defaultHeaders = [];
-        if ($this->config->getUserAgent()) {
-            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
-        }
-
-        $headers = array_merge(
-            $defaultHeaders,
-            $headerParams,
-            $headers
-        );
-
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
-    }
-
-    /**
-     * Operation initializeSelfServiceProfileManagementFlow
-     *
-     * Initialize browser-based profile management flow
-     *
-     *
-     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return void
-     */
-    public function initializeSelfServiceProfileManagementFlow()
-    {
-        $this->initializeSelfServiceProfileManagementFlowWithHttpInfo();
-    }
-
-    /**
-     * Operation initializeSelfServiceProfileManagementFlowWithHttpInfo
-     *
-     * Initialize browser-based profile management flow
-     *
-     *
-     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
-     */
-    public function initializeSelfServiceProfileManagementFlowWithHttpInfo()
-    {
-        $request = $this->initializeSelfServiceProfileManagementFlowRequest();
-
-        try {
-            $options = $this->createHttpClientOption();
-            try {
-                $response = $this->client->send($request, $options);
-            } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
-            }
-
-            $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    $response->getBody()
-                );
-            }
-
-            return [null, $statusCode, $response->getHeaders()];
-
-        } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Ory\Kratos\Client\Model\GenericError',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
-            throw $e;
-        }
-    }
-
-    /**
-     * Operation initializeSelfServiceProfileManagementFlowAsync
-     *
-     * Initialize browser-based profile management flow
-     *
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function initializeSelfServiceProfileManagementFlowAsync()
-    {
-        return $this->initializeSelfServiceProfileManagementFlowAsyncWithHttpInfo()
-            ->then(
-                function ($response) {
-                    return $response[0];
-                }
-            );
-    }
-
-    /**
-     * Operation initializeSelfServiceProfileManagementFlowAsyncWithHttpInfo
-     *
-     * Initialize browser-based profile management flow
-     *
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function initializeSelfServiceProfileManagementFlowAsyncWithHttpInfo()
-    {
-        $returnType = '';
-        $request = $this->initializeSelfServiceProfileManagementFlowRequest();
-
-        return $this->client
-            ->sendAsync($request, $this->createHttpClientOption())
-            ->then(
-                function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
-                },
-                function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        $response->getBody()
-                    );
-                }
-            );
-    }
-
-    /**
-     * Create request for operation 'initializeSelfServiceProfileManagementFlow'
-     *
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
-     */
-    protected function initializeSelfServiceProfileManagementFlowRequest()
-    {
-
-        $resourcePath = '/self-service/browser/flows/profile';
-        $formParams = [];
-        $queryParams = [];
-        $headerParams = [];
-        $httpBody = '';
-        $multipart = false;
-
-
-
-        // body params
-        $_tempBody = null;
-
-        if ($multipart) {
-            $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
-            );
-        } else {
-            $headers = $this->headerSelector->selectHeaders(
-                ['application/json'],
-                []
-            );
-        }
-
-        // for model (json/xml)
-        if (isset($_tempBody)) {
-            // $_tempBody is the method argument, if present
-            if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
-            } else {
-                $httpBody = $_tempBody;
-            }
-        } elseif (count($formParams) > 0) {
-            if ($multipart) {
-                $multipartContents = [];
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $multipartContents[] = [
-                        'name' => $formParamName,
-                        'contents' => $formParamValue
-                    ];
-                }
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents);
-
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
-
-            } else {
-                // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
-            }
-        }
-
-
-        $defaultHeaders = [];
-        if ($this->config->getUserAgent()) {
-            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
-        }
-
-        $headers = array_merge(
-            $defaultHeaders,
-            $headerParams,
-            $headers
-        );
-
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
-    }
-
-    /**
-     * Operation selfServiceBrowserVerify
-     *
-     * Complete the browser-based verification flows
-     *
-     * @param  string $code code (required)
-     *
-     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return void
-     */
-    public function selfServiceBrowserVerify($code)
-    {
-        $this->selfServiceBrowserVerifyWithHttpInfo($code);
-    }
-
-    /**
-     * Operation selfServiceBrowserVerifyWithHttpInfo
-     *
-     * Complete the browser-based verification flows
-     *
-     * @param  string $code (required)
-     *
-     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
-     */
-    public function selfServiceBrowserVerifyWithHttpInfo($code)
-    {
-        $request = $this->selfServiceBrowserVerifyRequest($code);
-
-        try {
-            $options = $this->createHttpClientOption();
-            try {
-                $response = $this->client->send($request, $options);
-            } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
-            }
-
-            $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    $response->getBody()
-                );
-            }
-
-            return [null, $statusCode, $response->getHeaders()];
-
-        } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Ory\Kratos\Client\Model\GenericError',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
-            throw $e;
-        }
-    }
-
-    /**
-     * Operation selfServiceBrowserVerifyAsync
-     *
-     * Complete the browser-based verification flows
-     *
-     * @param  string $code (required)
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function selfServiceBrowserVerifyAsync($code)
-    {
-        return $this->selfServiceBrowserVerifyAsyncWithHttpInfo($code)
-            ->then(
-                function ($response) {
-                    return $response[0];
-                }
-            );
-    }
-
-    /**
-     * Operation selfServiceBrowserVerifyAsyncWithHttpInfo
-     *
-     * Complete the browser-based verification flows
-     *
-     * @param  string $code (required)
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function selfServiceBrowserVerifyAsyncWithHttpInfo($code)
-    {
-        $returnType = '';
-        $request = $this->selfServiceBrowserVerifyRequest($code);
-
-        return $this->client
-            ->sendAsync($request, $this->createHttpClientOption())
-            ->then(
-                function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
-                },
-                function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        $response->getBody()
-                    );
-                }
-            );
-    }
-
-    /**
-     * Create request for operation 'selfServiceBrowserVerify'
-     *
-     * @param  string $code (required)
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
-     */
-    protected function selfServiceBrowserVerifyRequest($code)
-    {
-        // verify the required parameter 'code' is set
-        if ($code === null || (is_array($code) && count($code) === 0)) {
-            throw new \InvalidArgumentException(
-                'Missing the required parameter $code when calling selfServiceBrowserVerify'
-            );
-        }
-
-        $resourcePath = '/self-service/browser/flows/verification/confirm/{code}';
-        $formParams = [];
-        $queryParams = [];
-        $headerParams = [];
-        $httpBody = '';
-        $multipart = false;
-
-
-        // path params
-        if ($code !== null) {
-            $resourcePath = str_replace(
-                '{' . 'code' . '}',
-                ObjectSerializer::toPathValue($code),
-                $resourcePath
-            );
-        }
-
-        // body params
-        $_tempBody = null;
-
-        if ($multipart) {
-            $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
-            );
-        } else {
-            $headers = $this->headerSelector->selectHeaders(
-                ['application/json'],
-                []
-            );
-        }
-
-        // for model (json/xml)
-        if (isset($_tempBody)) {
-            // $_tempBody is the method argument, if present
-            if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
-            } else {
-                $httpBody = $_tempBody;
-            }
-        } elseif (count($formParams) > 0) {
-            if ($multipart) {
-                $multipartContents = [];
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $multipartContents[] = [
-                        'name' => $formParamName,
-                        'contents' => $formParamValue
-                    ];
-                }
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents);
-
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
-
-            } else {
-                // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
-            }
-        }
-
-
-        $defaultHeaders = [];
-        if ($this->config->getUserAgent()) {
-            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
-        }
-
-        $headers = array_merge(
-            $defaultHeaders,
-            $headerParams,
-            $headers
-        );
-
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
-    }
-
-    /**
-     * Operation whoami
-     *
-     * Check who the current HTTP session belongs to
-     *
-     *
-     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return \Ory\Kratos\Client\Model\Session|\Ory\Kratos\Client\Model\GenericError|\Ory\Kratos\Client\Model\GenericError
-     */
-    public function whoami()
-    {
-        list($response) = $this->whoamiWithHttpInfo();
+        list($response) = $this->listIdentitiesWithHttpInfo();
         return $response;
     }
 
     /**
-     * Operation whoamiWithHttpInfo
+     * Operation listIdentitiesWithHttpInfo
      *
-     * Check who the current HTTP session belongs to
+     * List all identities in the system
      *
      *
      * @throws \Ory\Kratos\Client\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Ory\Kratos\Client\Model\Session|\Ory\Kratos\Client\Model\GenericError|\Ory\Kratos\Client\Model\GenericError, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Ory\Kratos\Client\Model\Identity[]|\Ory\Kratos\Client\Model\GenericError, HTTP status code, HTTP response headers (array of strings)
      */
-    public function whoamiWithHttpInfo()
+    public function listIdentitiesWithHttpInfo()
     {
-        $request = $this->whoamiRequest();
+        $request = $this->listIdentitiesRequest();
 
         try {
             $options = $this->createHttpClientOption();
@@ -3596,26 +2669,14 @@ class PublicApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('\Ory\Kratos\Client\Model\Session' === '\SplFileObject') {
+                    if ('\Ory\Kratos\Client\Model\Identity[]' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Ory\Kratos\Client\Model\Session', []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-                case 403:
-                    if ('\Ory\Kratos\Client\Model\GenericError' === '\SplFileObject') {
-                        $content = $responseBody; //stream goes to serializer
-                    } else {
-                        $content = (string) $responseBody;
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, '\Ory\Kratos\Client\Model\GenericError', []),
+                        ObjectSerializer::deserialize($content, '\Ory\Kratos\Client\Model\Identity[]', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
@@ -3633,7 +2694,7 @@ class PublicApi
                     ];
             }
 
-            $returnType = '\Ory\Kratos\Client\Model\Session';
+            $returnType = '\Ory\Kratos\Client\Model\Identity[]';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -3652,15 +2713,7 @@ class PublicApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Ory\Kratos\Client\Model\Session',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 403:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Ory\Kratos\Client\Model\GenericError',
+                        '\Ory\Kratos\Client\Model\Identity[]',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -3679,17 +2732,17 @@ class PublicApi
     }
 
     /**
-     * Operation whoamiAsync
+     * Operation listIdentitiesAsync
      *
-     * Check who the current HTTP session belongs to
+     * List all identities in the system
      *
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function whoamiAsync()
+    public function listIdentitiesAsync()
     {
-        return $this->whoamiAsyncWithHttpInfo()
+        return $this->listIdentitiesAsyncWithHttpInfo()
             ->then(
                 function ($response) {
                     return $response[0];
@@ -3698,18 +2751,18 @@ class PublicApi
     }
 
     /**
-     * Operation whoamiAsyncWithHttpInfo
+     * Operation listIdentitiesAsyncWithHttpInfo
      *
-     * Check who the current HTTP session belongs to
+     * List all identities in the system
      *
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function whoamiAsyncWithHttpInfo()
+    public function listIdentitiesAsyncWithHttpInfo()
     {
-        $returnType = '\Ory\Kratos\Client\Model\Session';
-        $request = $this->whoamiRequest();
+        $returnType = '\Ory\Kratos\Client\Model\Identity[]';
+        $request = $this->listIdentitiesRequest();
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -3746,16 +2799,16 @@ class PublicApi
     }
 
     /**
-     * Create request for operation 'whoami'
+     * Create request for operation 'listIdentities'
      *
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function whoamiRequest()
+    protected function listIdentitiesRequest()
     {
 
-        $resourcePath = '/sessions/whoami';
+        $resourcePath = '/identities';
         $formParams = [];
         $queryParams = [];
         $headerParams = [];
@@ -3822,6 +2875,352 @@ class PublicApi
         $query = \GuzzleHttp\Psr7\build_query($queryParams);
         return new Request(
             'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation updateIdentity
+     *
+     * Update an identity
+     *
+     * @param  string $id ID must be set to the ID of identity you want to update (required)
+     * @param  \Ory\Kratos\Client\Model\Identity $body body (required)
+     *
+     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \Ory\Kratos\Client\Model\Identity|\Ory\Kratos\Client\Model\GenericError|\Ory\Kratos\Client\Model\GenericError|\Ory\Kratos\Client\Model\GenericError
+     */
+    public function updateIdentity($id, $body)
+    {
+        list($response) = $this->updateIdentityWithHttpInfo($id, $body);
+        return $response;
+    }
+
+    /**
+     * Operation updateIdentityWithHttpInfo
+     *
+     * Update an identity
+     *
+     * @param  string $id ID must be set to the ID of identity you want to update (required)
+     * @param  \Ory\Kratos\Client\Model\Identity $body (required)
+     *
+     * @throws \Ory\Kratos\Client\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Ory\Kratos\Client\Model\Identity|\Ory\Kratos\Client\Model\GenericError|\Ory\Kratos\Client\Model\GenericError|\Ory\Kratos\Client\Model\GenericError, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function updateIdentityWithHttpInfo($id, $body)
+    {
+        $request = $this->updateIdentityRequest($id, $body);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('\Ory\Kratos\Client\Model\Identity' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Ory\Kratos\Client\Model\Identity', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 400:
+                    if ('\Ory\Kratos\Client\Model\GenericError' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Ory\Kratos\Client\Model\GenericError', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 404:
+                    if ('\Ory\Kratos\Client\Model\GenericError' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Ory\Kratos\Client\Model\GenericError', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 500:
+                    if ('\Ory\Kratos\Client\Model\GenericError' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Ory\Kratos\Client\Model\GenericError', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Ory\Kratos\Client\Model\Identity';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Ory\Kratos\Client\Model\Identity',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Ory\Kratos\Client\Model\GenericError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Ory\Kratos\Client\Model\GenericError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 500:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Ory\Kratos\Client\Model\GenericError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation updateIdentityAsync
+     *
+     * Update an identity
+     *
+     * @param  string $id ID must be set to the ID of identity you want to update (required)
+     * @param  \Ory\Kratos\Client\Model\Identity $body (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function updateIdentityAsync($id, $body)
+    {
+        return $this->updateIdentityAsyncWithHttpInfo($id, $body)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation updateIdentityAsyncWithHttpInfo
+     *
+     * Update an identity
+     *
+     * @param  string $id ID must be set to the ID of identity you want to update (required)
+     * @param  \Ory\Kratos\Client\Model\Identity $body (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function updateIdentityAsyncWithHttpInfo($id, $body)
+    {
+        $returnType = '\Ory\Kratos\Client\Model\Identity';
+        $request = $this->updateIdentityRequest($id, $body);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'updateIdentity'
+     *
+     * @param  string $id ID must be set to the ID of identity you want to update (required)
+     * @param  \Ory\Kratos\Client\Model\Identity $body (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function updateIdentityRequest($id, $body)
+    {
+        // verify the required parameter 'id' is set
+        if ($id === null || (is_array($id) && count($id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $id when calling updateIdentity'
+            );
+        }
+        // verify the required parameter 'body' is set
+        if ($body === null || (is_array($body) && count($body) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $body when calling updateIdentity'
+            );
+        }
+
+        $resourcePath = '/identities/{id}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'id' . '}',
+                ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
+
+        // body params
+        $_tempBody = null;
+        if (isset($body)) {
+            $_tempBody = $body;
+        }
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/json'],
+                ['application/json']
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+            }
+        }
+
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        return new Request(
+            'PUT',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
             $headers,
             $httpBody

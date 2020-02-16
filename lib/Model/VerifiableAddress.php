@@ -1,6 +1,6 @@
 <?php
 /**
- * GenericError
+ * VerifiableAddress
  *
  * PHP version 5
  *
@@ -33,15 +33,14 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * GenericError Class Doc Comment
+ * VerifiableAddress Class Doc Comment
  *
  * @category Class
- * @description Error responses are sent when an error (e.g. unauthorized, bad request, ...) occurred.
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class GenericError implements ModelInterface, ArrayAccess
+class VerifiableAddress implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -50,7 +49,7 @@ class GenericError implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'genericError';
+    protected static $openAPIModelName = 'VerifiableAddress';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -58,7 +57,12 @@ class GenericError implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'error' => '\Ory\Kratos\Client\Model\GenericErrorPayload'
+        'expiresAt' => '\DateTime',
+        'id' => 'string',
+        'value' => 'string',
+        'verified' => 'bool',
+        'verifiedAt' => '\DateTime',
+        'via' => 'string'
     ];
 
     /**
@@ -67,7 +71,12 @@ class GenericError implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'error' => null
+        'expiresAt' => 'date-time',
+        'id' => 'uuid4',
+        'value' => null,
+        'verified' => null,
+        'verifiedAt' => 'date-time',
+        'via' => null
     ];
 
     /**
@@ -97,7 +106,12 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        'error' => 'error'
+        'expiresAt' => 'expires_at',
+        'id' => 'id',
+        'value' => 'value',
+        'verified' => 'verified',
+        'verifiedAt' => 'verified_at',
+        'via' => 'via'
     ];
 
     /**
@@ -106,7 +120,12 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'error' => 'setError'
+        'expiresAt' => 'setExpiresAt',
+        'id' => 'setId',
+        'value' => 'setValue',
+        'verified' => 'setVerified',
+        'verifiedAt' => 'setVerifiedAt',
+        'via' => 'setVia'
     ];
 
     /**
@@ -115,7 +134,12 @@ class GenericError implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'error' => 'getError'
+        'expiresAt' => 'getExpiresAt',
+        'id' => 'getId',
+        'value' => 'getValue',
+        'verified' => 'getVerified',
+        'verifiedAt' => 'getVerifiedAt',
+        'via' => 'getVia'
     ];
 
     /**
@@ -178,7 +202,12 @@ class GenericError implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['error'] = isset($data['error']) ? $data['error'] : null;
+        $this->container['expiresAt'] = isset($data['expiresAt']) ? $data['expiresAt'] : null;
+        $this->container['id'] = isset($data['id']) ? $data['id'] : null;
+        $this->container['value'] = isset($data['value']) ? $data['value'] : null;
+        $this->container['verified'] = isset($data['verified']) ? $data['verified'] : null;
+        $this->container['verifiedAt'] = isset($data['verifiedAt']) ? $data['verifiedAt'] : null;
+        $this->container['via'] = isset($data['via']) ? $data['via'] : null;
     }
 
     /**
@@ -190,6 +219,24 @@ class GenericError implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
+        if ($this->container['expiresAt'] === null) {
+            $invalidProperties[] = "'expiresAt' can't be null";
+        }
+        if ($this->container['id'] === null) {
+            $invalidProperties[] = "'id' can't be null";
+        }
+        if ($this->container['value'] === null) {
+            $invalidProperties[] = "'value' can't be null";
+        }
+        if ($this->container['verified'] === null) {
+            $invalidProperties[] = "'verified' can't be null";
+        }
+        if ($this->container['verifiedAt'] === null) {
+            $invalidProperties[] = "'verifiedAt' can't be null";
+        }
+        if ($this->container['via'] === null) {
+            $invalidProperties[] = "'via' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -206,25 +253,145 @@ class GenericError implements ModelInterface, ArrayAccess
 
 
     /**
-     * Gets error
+     * Gets expiresAt
      *
-     * @return \Ory\Kratos\Client\Model\GenericErrorPayload|null
+     * @return \DateTime
      */
-    public function getError()
+    public function getExpiresAt()
     {
-        return $this->container['error'];
+        return $this->container['expiresAt'];
     }
 
     /**
-     * Sets error
+     * Sets expiresAt
      *
-     * @param \Ory\Kratos\Client\Model\GenericErrorPayload|null $error error
+     * @param \DateTime $expiresAt expiresAt
      *
      * @return $this
      */
-    public function setError($error)
+    public function setExpiresAt($expiresAt)
     {
-        $this->container['error'] = $error;
+        $this->container['expiresAt'] = $expiresAt;
+
+        return $this;
+    }
+
+    /**
+     * Gets id
+     *
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->container['id'];
+    }
+
+    /**
+     * Sets id
+     *
+     * @param string $id id
+     *
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->container['id'] = $id;
+
+        return $this;
+    }
+
+    /**
+     * Gets value
+     *
+     * @return string
+     */
+    public function getValue()
+    {
+        return $this->container['value'];
+    }
+
+    /**
+     * Sets value
+     *
+     * @param string $value value
+     *
+     * @return $this
+     */
+    public function setValue($value)
+    {
+        $this->container['value'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Gets verified
+     *
+     * @return bool
+     */
+    public function getVerified()
+    {
+        return $this->container['verified'];
+    }
+
+    /**
+     * Sets verified
+     *
+     * @param bool $verified verified
+     *
+     * @return $this
+     */
+    public function setVerified($verified)
+    {
+        $this->container['verified'] = $verified;
+
+        return $this;
+    }
+
+    /**
+     * Gets verifiedAt
+     *
+     * @return \DateTime
+     */
+    public function getVerifiedAt()
+    {
+        return $this->container['verifiedAt'];
+    }
+
+    /**
+     * Sets verifiedAt
+     *
+     * @param \DateTime $verifiedAt verifiedAt
+     *
+     * @return $this
+     */
+    public function setVerifiedAt($verifiedAt)
+    {
+        $this->container['verifiedAt'] = $verifiedAt;
+
+        return $this;
+    }
+
+    /**
+     * Gets via
+     *
+     * @return string
+     */
+    public function getVia()
+    {
+        return $this->container['via'];
+    }
+
+    /**
+     * Sets via
+     *
+     * @param string $via via
+     *
+     * @return $this
+     */
+    public function setVia($via)
+    {
+        $this->container['via'] = $via;
 
         return $this;
     }
