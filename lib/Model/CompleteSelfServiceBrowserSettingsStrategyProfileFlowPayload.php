@@ -1,6 +1,6 @@
 <?php
 /**
- * LoginRequestMethodConfig
+ * CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload
  *
  * PHP version 5
  *
@@ -33,14 +33,14 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * LoginRequestMethodConfig Class Doc Comment
+ * CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload Class Doc Comment
  *
  * @category Class
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
+class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -49,7 +49,7 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'loginRequestMethodConfig';
+    protected static $openAPIModelName = 'completeSelfServiceBrowserSettingsStrategyProfileFlowPayload';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -57,11 +57,8 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'action' => 'string',
-        'errors' => '\Ory\Kratos\Client\Model\Error[]',
-        'fields' => '\Ory\Kratos\Client\Model\FormField[]',
-        'method' => 'string',
-        'providers' => '\Ory\Kratos\Client\Model\FormField[]'
+        'requestId' => 'string',
+        'traits' => 'object'
     ];
 
     /**
@@ -70,11 +67,8 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'action' => null,
-        'errors' => null,
-        'fields' => null,
-        'method' => null,
-        'providers' => null
+        'requestId' => null,
+        'traits' => null
     ];
 
     /**
@@ -104,11 +98,8 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        'action' => 'action',
-        'errors' => 'errors',
-        'fields' => 'fields',
-        'method' => 'method',
-        'providers' => 'providers'
+        'requestId' => 'request_id',
+        'traits' => 'traits'
     ];
 
     /**
@@ -117,11 +108,8 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'action' => 'setAction',
-        'errors' => 'setErrors',
-        'fields' => 'setFields',
-        'method' => 'setMethod',
-        'providers' => 'setProviders'
+        'requestId' => 'setRequestId',
+        'traits' => 'setTraits'
     ];
 
     /**
@@ -130,11 +118,8 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'action' => 'getAction',
-        'errors' => 'getErrors',
-        'fields' => 'getFields',
-        'method' => 'getMethod',
-        'providers' => 'getProviders'
+        'requestId' => 'getRequestId',
+        'traits' => 'getTraits'
     ];
 
     /**
@@ -197,11 +182,8 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['action'] = isset($data['action']) ? $data['action'] : null;
-        $this->container['errors'] = isset($data['errors']) ? $data['errors'] : null;
-        $this->container['fields'] = isset($data['fields']) ? $data['fields'] : null;
-        $this->container['method'] = isset($data['method']) ? $data['method'] : null;
-        $this->container['providers'] = isset($data['providers']) ? $data['providers'] : null;
+        $this->container['requestId'] = isset($data['requestId']) ? $data['requestId'] : null;
+        $this->container['traits'] = isset($data['traits']) ? $data['traits'] : null;
     }
 
     /**
@@ -213,14 +195,8 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
-        if ($this->container['action'] === null) {
-            $invalidProperties[] = "'action' can't be null";
-        }
-        if ($this->container['fields'] === null) {
-            $invalidProperties[] = "'fields' can't be null";
-        }
-        if ($this->container['method'] === null) {
-            $invalidProperties[] = "'method' can't be null";
+        if ($this->container['traits'] === null) {
+            $invalidProperties[] = "'traits' can't be null";
         }
         return $invalidProperties;
     }
@@ -238,121 +214,49 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
 
 
     /**
-     * Gets action
+     * Gets requestId
      *
-     * @return string
+     * @return string|null
      */
-    public function getAction()
+    public function getRequestId()
     {
-        return $this->container['action'];
+        return $this->container['requestId'];
     }
 
     /**
-     * Sets action
+     * Sets requestId
      *
-     * @param string $action Action should be used as the form action URL `<form action=\"{{ .Action }}\" method=\"post\">`.
+     * @param string|null $requestId RequestID is request ID.  in: query
      *
      * @return $this
      */
-    public function setAction($action)
+    public function setRequestId($requestId)
     {
-        $this->container['action'] = $action;
+        $this->container['requestId'] = $requestId;
 
         return $this;
     }
 
     /**
-     * Gets errors
+     * Gets traits
      *
-     * @return \Ory\Kratos\Client\Model\Error[]|null
+     * @return object
      */
-    public function getErrors()
+    public function getTraits()
     {
-        return $this->container['errors'];
+        return $this->container['traits'];
     }
 
     /**
-     * Sets errors
+     * Sets traits
      *
-     * @param \Ory\Kratos\Client\Model\Error[]|null $errors Errors contains all form errors. These will be duplicates of the individual field errors.
+     * @param object $traits Traits contains all of the identity's traits.  type: string format: binary
      *
      * @return $this
      */
-    public function setErrors($errors)
+    public function setTraits($traits)
     {
-        $this->container['errors'] = $errors;
-
-        return $this;
-    }
-
-    /**
-     * Gets fields
-     *
-     * @return \Ory\Kratos\Client\Model\FormField[]
-     */
-    public function getFields()
-    {
-        return $this->container['fields'];
-    }
-
-    /**
-     * Sets fields
-     *
-     * @param \Ory\Kratos\Client\Model\FormField[] $fields Fields contains multiple fields
-     *
-     * @return $this
-     */
-    public function setFields($fields)
-    {
-        $this->container['fields'] = $fields;
-
-        return $this;
-    }
-
-    /**
-     * Gets method
-     *
-     * @return string
-     */
-    public function getMethod()
-    {
-        return $this->container['method'];
-    }
-
-    /**
-     * Sets method
-     *
-     * @param string $method Method is the form method (e.g. POST)
-     *
-     * @return $this
-     */
-    public function setMethod($method)
-    {
-        $this->container['method'] = $method;
-
-        return $this;
-    }
-
-    /**
-     * Gets providers
-     *
-     * @return \Ory\Kratos\Client\Model\FormField[]|null
-     */
-    public function getProviders()
-    {
-        return $this->container['providers'];
-    }
-
-    /**
-     * Sets providers
-     *
-     * @param \Ory\Kratos\Client\Model\FormField[]|null $providers Providers is set for the \"oidc\" request method.
-     *
-     * @return $this
-     */
-    public function setProviders($providers)
-    {
-        $this->container['providers'] = $providers;
+        $this->container['traits'] = $traits;
 
         return $this;
     }

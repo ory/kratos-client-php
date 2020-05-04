@@ -1,6 +1,6 @@
 <?php
 /**
- * LoginRequestMethodConfig
+ * RequestMethodConfig
  *
  * PHP version 5
  *
@@ -33,14 +33,14 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * LoginRequestMethodConfig Class Doc Comment
+ * RequestMethodConfig Class Doc Comment
  *
  * @category Class
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
+class RequestMethodConfig implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -49,7 +49,7 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'loginRequestMethodConfig';
+    protected static $openAPIModelName = 'RequestMethodConfig';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -60,8 +60,7 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
         'action' => 'string',
         'errors' => '\Ory\Kratos\Client\Model\Error[]',
         'fields' => '\Ory\Kratos\Client\Model\FormField[]',
-        'method' => 'string',
-        'providers' => '\Ory\Kratos\Client\Model\FormField[]'
+        'method' => 'string'
     ];
 
     /**
@@ -73,8 +72,7 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
         'action' => null,
         'errors' => null,
         'fields' => null,
-        'method' => null,
-        'providers' => null
+        'method' => null
     ];
 
     /**
@@ -107,8 +105,7 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
         'action' => 'action',
         'errors' => 'errors',
         'fields' => 'fields',
-        'method' => 'method',
-        'providers' => 'providers'
+        'method' => 'method'
     ];
 
     /**
@@ -120,8 +117,7 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
         'action' => 'setAction',
         'errors' => 'setErrors',
         'fields' => 'setFields',
-        'method' => 'setMethod',
-        'providers' => 'setProviders'
+        'method' => 'setMethod'
     ];
 
     /**
@@ -133,8 +129,7 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
         'action' => 'getAction',
         'errors' => 'getErrors',
         'fields' => 'getFields',
-        'method' => 'getMethod',
-        'providers' => 'getProviders'
+        'method' => 'getMethod'
     ];
 
     /**
@@ -201,7 +196,6 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
         $this->container['errors'] = isset($data['errors']) ? $data['errors'] : null;
         $this->container['fields'] = isset($data['fields']) ? $data['fields'] : null;
         $this->container['method'] = isset($data['method']) ? $data['method'] : null;
-        $this->container['providers'] = isset($data['providers']) ? $data['providers'] : null;
     }
 
     /**
@@ -329,30 +323,6 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
     public function setMethod($method)
     {
         $this->container['method'] = $method;
-
-        return $this;
-    }
-
-    /**
-     * Gets providers
-     *
-     * @return \Ory\Kratos\Client\Model\FormField[]|null
-     */
-    public function getProviders()
-    {
-        return $this->container['providers'];
-    }
-
-    /**
-     * Sets providers
-     *
-     * @param \Ory\Kratos\Client\Model\FormField[]|null $providers Providers is set for the \"oidc\" request method.
-     *
-     * @return $this
-     */
-    public function setProviders($providers)
-    {
-        $this->container['providers'] = $providers;
 
         return $this;
     }

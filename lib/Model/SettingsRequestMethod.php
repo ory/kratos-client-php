@@ -1,6 +1,6 @@
 <?php
 /**
- * LoginRequestMethodConfig
+ * SettingsRequestMethod
  *
  * PHP version 5
  *
@@ -33,14 +33,14 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * LoginRequestMethodConfig Class Doc Comment
+ * SettingsRequestMethod Class Doc Comment
  *
  * @category Class
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
+class SettingsRequestMethod implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -49,7 +49,7 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'loginRequestMethodConfig';
+    protected static $openAPIModelName = 'settingsRequestMethod';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -57,11 +57,8 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'action' => 'string',
-        'errors' => '\Ory\Kratos\Client\Model\Error[]',
-        'fields' => '\Ory\Kratos\Client\Model\FormField[]',
-        'method' => 'string',
-        'providers' => '\Ory\Kratos\Client\Model\FormField[]'
+        'config' => '\Ory\Kratos\Client\Model\RequestMethodConfig',
+        'method' => 'string'
     ];
 
     /**
@@ -70,11 +67,8 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'action' => null,
-        'errors' => null,
-        'fields' => null,
-        'method' => null,
-        'providers' => null
+        'config' => null,
+        'method' => null
     ];
 
     /**
@@ -104,11 +98,8 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        'action' => 'action',
-        'errors' => 'errors',
-        'fields' => 'fields',
-        'method' => 'method',
-        'providers' => 'providers'
+        'config' => 'config',
+        'method' => 'method'
     ];
 
     /**
@@ -117,11 +108,8 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'action' => 'setAction',
-        'errors' => 'setErrors',
-        'fields' => 'setFields',
-        'method' => 'setMethod',
-        'providers' => 'setProviders'
+        'config' => 'setConfig',
+        'method' => 'setMethod'
     ];
 
     /**
@@ -130,11 +118,8 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'action' => 'getAction',
-        'errors' => 'getErrors',
-        'fields' => 'getFields',
-        'method' => 'getMethod',
-        'providers' => 'getProviders'
+        'config' => 'getConfig',
+        'method' => 'getMethod'
     ];
 
     /**
@@ -197,11 +182,8 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['action'] = isset($data['action']) ? $data['action'] : null;
-        $this->container['errors'] = isset($data['errors']) ? $data['errors'] : null;
-        $this->container['fields'] = isset($data['fields']) ? $data['fields'] : null;
+        $this->container['config'] = isset($data['config']) ? $data['config'] : null;
         $this->container['method'] = isset($data['method']) ? $data['method'] : null;
-        $this->container['providers'] = isset($data['providers']) ? $data['providers'] : null;
     }
 
     /**
@@ -213,15 +195,6 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
-        if ($this->container['action'] === null) {
-            $invalidProperties[] = "'action' can't be null";
-        }
-        if ($this->container['fields'] === null) {
-            $invalidProperties[] = "'fields' can't be null";
-        }
-        if ($this->container['method'] === null) {
-            $invalidProperties[] = "'method' can't be null";
-        }
         return $invalidProperties;
     }
 
@@ -238,73 +211,25 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
 
 
     /**
-     * Gets action
+     * Gets config
      *
-     * @return string
+     * @return \Ory\Kratos\Client\Model\RequestMethodConfig|null
      */
-    public function getAction()
+    public function getConfig()
     {
-        return $this->container['action'];
+        return $this->container['config'];
     }
 
     /**
-     * Sets action
+     * Sets config
      *
-     * @param string $action Action should be used as the form action URL `<form action=\"{{ .Action }}\" method=\"post\">`.
+     * @param \Ory\Kratos\Client\Model\RequestMethodConfig|null $config config
      *
      * @return $this
      */
-    public function setAction($action)
+    public function setConfig($config)
     {
-        $this->container['action'] = $action;
-
-        return $this;
-    }
-
-    /**
-     * Gets errors
-     *
-     * @return \Ory\Kratos\Client\Model\Error[]|null
-     */
-    public function getErrors()
-    {
-        return $this->container['errors'];
-    }
-
-    /**
-     * Sets errors
-     *
-     * @param \Ory\Kratos\Client\Model\Error[]|null $errors Errors contains all form errors. These will be duplicates of the individual field errors.
-     *
-     * @return $this
-     */
-    public function setErrors($errors)
-    {
-        $this->container['errors'] = $errors;
-
-        return $this;
-    }
-
-    /**
-     * Gets fields
-     *
-     * @return \Ory\Kratos\Client\Model\FormField[]
-     */
-    public function getFields()
-    {
-        return $this->container['fields'];
-    }
-
-    /**
-     * Sets fields
-     *
-     * @param \Ory\Kratos\Client\Model\FormField[] $fields Fields contains multiple fields
-     *
-     * @return $this
-     */
-    public function setFields($fields)
-    {
-        $this->container['fields'] = $fields;
+        $this->container['config'] = $config;
 
         return $this;
     }
@@ -312,7 +237,7 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
     /**
      * Gets method
      *
-     * @return string
+     * @return string|null
      */
     public function getMethod()
     {
@@ -322,37 +247,13 @@ class LoginRequestMethodConfig implements ModelInterface, ArrayAccess
     /**
      * Sets method
      *
-     * @param string $method Method is the form method (e.g. POST)
+     * @param string|null $method Method contains the request credentials type.
      *
      * @return $this
      */
     public function setMethod($method)
     {
         $this->container['method'] = $method;
-
-        return $this;
-    }
-
-    /**
-     * Gets providers
-     *
-     * @return \Ory\Kratos\Client\Model\FormField[]|null
-     */
-    public function getProviders()
-    {
-        return $this->container['providers'];
-    }
-
-    /**
-     * Sets providers
-     *
-     * @param \Ory\Kratos\Client\Model\FormField[]|null $providers Providers is set for the \"oidc\" request method.
-     *
-     * @return $this
-     */
-    public function setProviders($providers)
-    {
-        $this->container['providers'] = $providers;
 
         return $this;
     }

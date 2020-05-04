@@ -1,6 +1,6 @@
 <?php
 /**
- * VerificationRequest
+ * SettingsRequest
  *
  * PHP version 5
  *
@@ -33,15 +33,15 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * VerificationRequest Class Doc Comment
+ * SettingsRequest Class Doc Comment
  *
  * @category Class
- * @description This request is used when an identity wants to verify an out-of-band communication channel such as an email address or a phone number.  For more information head over to: https://www.ory.sh/docs/kratos/selfservice/flows/verify-email-account-activation
+ * @description This request is used when an identity wants to update settings (e.g. profile data, passwords, ...) in a selfservice manner.  For more information head over to: https://www.ory.sh/docs/kratos/selfservice/flows/user-settings-profile-management
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class VerificationRequest implements ModelInterface, ArrayAccess
+class SettingsRequest implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class VerificationRequest implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'verificationRequest';
+    protected static $openAPIModelName = 'settingsRequest';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -58,13 +58,14 @@ class VerificationRequest implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
+        'active' => 'string',
         'expiresAt' => '\DateTime',
-        'form' => '\Ory\Kratos\Client\Model\Form',
         'id' => 'string',
+        'identity' => '\Ory\Kratos\Client\Model\Identity',
         'issuedAt' => '\DateTime',
+        'methods' => 'map[string,\Ory\Kratos\Client\Model\SettingsRequestMethod]',
         'requestUrl' => 'string',
-        'success' => 'bool',
-        'via' => 'string'
+        'updateSuccessful' => 'bool'
     ];
 
     /**
@@ -73,13 +74,14 @@ class VerificationRequest implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
+        'active' => null,
         'expiresAt' => 'date-time',
-        'form' => null,
         'id' => 'uuid4',
+        'identity' => null,
         'issuedAt' => 'date-time',
+        'methods' => null,
         'requestUrl' => null,
-        'success' => null,
-        'via' => null
+        'updateSuccessful' => null
     ];
 
     /**
@@ -109,13 +111,14 @@ class VerificationRequest implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
+        'active' => 'active',
         'expiresAt' => 'expires_at',
-        'form' => 'form',
         'id' => 'id',
+        'identity' => 'identity',
         'issuedAt' => 'issued_at',
+        'methods' => 'methods',
         'requestUrl' => 'request_url',
-        'success' => 'success',
-        'via' => 'via'
+        'updateSuccessful' => 'update_successful'
     ];
 
     /**
@@ -124,13 +127,14 @@ class VerificationRequest implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
+        'active' => 'setActive',
         'expiresAt' => 'setExpiresAt',
-        'form' => 'setForm',
         'id' => 'setId',
+        'identity' => 'setIdentity',
         'issuedAt' => 'setIssuedAt',
+        'methods' => 'setMethods',
         'requestUrl' => 'setRequestUrl',
-        'success' => 'setSuccess',
-        'via' => 'setVia'
+        'updateSuccessful' => 'setUpdateSuccessful'
     ];
 
     /**
@@ -139,13 +143,14 @@ class VerificationRequest implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
+        'active' => 'getActive',
         'expiresAt' => 'getExpiresAt',
-        'form' => 'getForm',
         'id' => 'getId',
+        'identity' => 'getIdentity',
         'issuedAt' => 'getIssuedAt',
+        'methods' => 'getMethods',
         'requestUrl' => 'getRequestUrl',
-        'success' => 'getSuccess',
-        'via' => 'getVia'
+        'updateSuccessful' => 'getUpdateSuccessful'
     ];
 
     /**
@@ -208,13 +213,14 @@ class VerificationRequest implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
+        $this->container['active'] = isset($data['active']) ? $data['active'] : null;
         $this->container['expiresAt'] = isset($data['expiresAt']) ? $data['expiresAt'] : null;
-        $this->container['form'] = isset($data['form']) ? $data['form'] : null;
         $this->container['id'] = isset($data['id']) ? $data['id'] : null;
+        $this->container['identity'] = isset($data['identity']) ? $data['identity'] : null;
         $this->container['issuedAt'] = isset($data['issuedAt']) ? $data['issuedAt'] : null;
+        $this->container['methods'] = isset($data['methods']) ? $data['methods'] : null;
         $this->container['requestUrl'] = isset($data['requestUrl']) ? $data['requestUrl'] : null;
-        $this->container['success'] = isset($data['success']) ? $data['success'] : null;
-        $this->container['via'] = isset($data['via']) ? $data['via'] : null;
+        $this->container['updateSuccessful'] = isset($data['updateSuccessful']) ? $data['updateSuccessful'] : null;
     }
 
     /**
@@ -226,6 +232,27 @@ class VerificationRequest implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
+        if ($this->container['expiresAt'] === null) {
+            $invalidProperties[] = "'expiresAt' can't be null";
+        }
+        if ($this->container['id'] === null) {
+            $invalidProperties[] = "'id' can't be null";
+        }
+        if ($this->container['identity'] === null) {
+            $invalidProperties[] = "'identity' can't be null";
+        }
+        if ($this->container['issuedAt'] === null) {
+            $invalidProperties[] = "'issuedAt' can't be null";
+        }
+        if ($this->container['methods'] === null) {
+            $invalidProperties[] = "'methods' can't be null";
+        }
+        if ($this->container['requestUrl'] === null) {
+            $invalidProperties[] = "'requestUrl' can't be null";
+        }
+        if ($this->container['updateSuccessful'] === null) {
+            $invalidProperties[] = "'updateSuccessful' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -242,9 +269,33 @@ class VerificationRequest implements ModelInterface, ArrayAccess
 
 
     /**
+     * Gets active
+     *
+     * @return string|null
+     */
+    public function getActive()
+    {
+        return $this->container['active'];
+    }
+
+    /**
+     * Sets active
+     *
+     * @param string|null $active Active, if set, contains the registration method that is being used. It is initially not set.
+     *
+     * @return $this
+     */
+    public function setActive($active)
+    {
+        $this->container['active'] = $active;
+
+        return $this;
+    }
+
+    /**
      * Gets expiresAt
      *
-     * @return \DateTime|null
+     * @return \DateTime
      */
     public function getExpiresAt()
     {
@@ -254,7 +305,7 @@ class VerificationRequest implements ModelInterface, ArrayAccess
     /**
      * Sets expiresAt
      *
-     * @param \DateTime|null $expiresAt ExpiresAt is the time (UTC) when the request expires. If the user still wishes to verify the address, a new request has to be initiated.
+     * @param \DateTime $expiresAt ExpiresAt is the time (UTC) when the request expires. If the user still wishes to update the setting, a new request has to be initiated.
      *
      * @return $this
      */
@@ -266,33 +317,9 @@ class VerificationRequest implements ModelInterface, ArrayAccess
     }
 
     /**
-     * Gets form
-     *
-     * @return \Ory\Kratos\Client\Model\Form|null
-     */
-    public function getForm()
-    {
-        return $this->container['form'];
-    }
-
-    /**
-     * Sets form
-     *
-     * @param \Ory\Kratos\Client\Model\Form|null $form form
-     *
-     * @return $this
-     */
-    public function setForm($form)
-    {
-        $this->container['form'] = $form;
-
-        return $this;
-    }
-
-    /**
      * Gets id
      *
-     * @return string|null
+     * @return string
      */
     public function getId()
     {
@@ -302,7 +329,7 @@ class VerificationRequest implements ModelInterface, ArrayAccess
     /**
      * Sets id
      *
-     * @param string|null $id id
+     * @param string $id id
      *
      * @return $this
      */
@@ -314,9 +341,33 @@ class VerificationRequest implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets identity
+     *
+     * @return \Ory\Kratos\Client\Model\Identity
+     */
+    public function getIdentity()
+    {
+        return $this->container['identity'];
+    }
+
+    /**
+     * Sets identity
+     *
+     * @param \Ory\Kratos\Client\Model\Identity $identity identity
+     *
+     * @return $this
+     */
+    public function setIdentity($identity)
+    {
+        $this->container['identity'] = $identity;
+
+        return $this;
+    }
+
+    /**
      * Gets issuedAt
      *
-     * @return \DateTime|null
+     * @return \DateTime
      */
     public function getIssuedAt()
     {
@@ -326,7 +377,7 @@ class VerificationRequest implements ModelInterface, ArrayAccess
     /**
      * Sets issuedAt
      *
-     * @param \DateTime|null $issuedAt IssuedAt is the time (UTC) when the request occurred.
+     * @param \DateTime $issuedAt IssuedAt is the time (UTC) when the request occurred.
      *
      * @return $this
      */
@@ -338,9 +389,33 @@ class VerificationRequest implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets methods
+     *
+     * @return map[string,\Ory\Kratos\Client\Model\SettingsRequestMethod]
+     */
+    public function getMethods()
+    {
+        return $this->container['methods'];
+    }
+
+    /**
+     * Sets methods
+     *
+     * @param map[string,\Ory\Kratos\Client\Model\SettingsRequestMethod] $methods Methods contains context for all enabled registration methods. If a registration request has been processed, but for example the password is incorrect, this will contain error messages.
+     *
+     * @return $this
+     */
+    public function setMethods($methods)
+    {
+        $this->container['methods'] = $methods;
+
+        return $this;
+    }
+
+    /**
      * Gets requestUrl
      *
-     * @return string|null
+     * @return string
      */
     public function getRequestUrl()
     {
@@ -350,7 +425,7 @@ class VerificationRequest implements ModelInterface, ArrayAccess
     /**
      * Sets requestUrl
      *
-     * @param string|null $requestUrl RequestURL is the initial URL that was requested from ORY Kratos. It can be used to forward information contained in the URL's path or query for example.
+     * @param string $requestUrl RequestURL is the initial URL that was requested from ORY Kratos. It can be used to forward information contained in the URL's path or query for example.
      *
      * @return $this
      */
@@ -362,49 +437,25 @@ class VerificationRequest implements ModelInterface, ArrayAccess
     }
 
     /**
-     * Gets success
+     * Gets updateSuccessful
      *
-     * @return bool|null
+     * @return bool
      */
-    public function getSuccess()
+    public function getUpdateSuccessful()
     {
-        return $this->container['success'];
+        return $this->container['updateSuccessful'];
     }
 
     /**
-     * Sets success
+     * Sets updateSuccessful
      *
-     * @param bool|null $success Success, if true, implies that the request was completed successfully.
+     * @param bool $updateSuccessful UpdateSuccessful, if true, indicates that the settings request has been updated successfully with the provided data. Done will stay true when repeatedly checking. If set to true, done will revert back to false only when a request with invalid (e.g. \"please use a valid phone number\") data was sent.
      *
      * @return $this
      */
-    public function setSuccess($success)
+    public function setUpdateSuccessful($updateSuccessful)
     {
-        $this->container['success'] = $success;
-
-        return $this;
-    }
-
-    /**
-     * Gets via
-     *
-     * @return string|null
-     */
-    public function getVia()
-    {
-        return $this->container['via'];
-    }
-
-    /**
-     * Sets via
-     *
-     * @param string|null $via via
-     *
-     * @return $this
-     */
-    public function setVia($via)
-    {
-        $this->container['via'] = $via;
+        $this->container['updateSuccessful'] = $updateSuccessful;
 
         return $this;
     }
