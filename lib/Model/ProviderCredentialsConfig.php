@@ -1,6 +1,6 @@
 <?php
 /**
- * RegistrationRequest
+ * ProviderCredentialsConfig
  *
  * PHP version 5
  *
@@ -33,14 +33,14 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * RegistrationRequest Class Doc Comment
+ * ProviderCredentialsConfig Class Doc Comment
  *
  * @category Class
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class RegistrationRequest implements ModelInterface, ArrayAccess
+class ProviderCredentialsConfig implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -49,7 +49,7 @@ class RegistrationRequest implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'registrationRequest';
+    protected static $openAPIModelName = 'ProviderCredentialsConfig';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -57,12 +57,8 @@ class RegistrationRequest implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'active' => 'string',
-        'expiresAt' => '\DateTime',
-        'id' => 'string',
-        'issuedAt' => '\DateTime',
-        'methods' => 'map[string,\Ory\Kratos\Client\Model\RegistrationRequestMethod]',
-        'requestUrl' => 'string'
+        'provider' => 'string',
+        'subject' => 'string'
     ];
 
     /**
@@ -71,12 +67,8 @@ class RegistrationRequest implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'active' => null,
-        'expiresAt' => 'date-time',
-        'id' => 'uuid4',
-        'issuedAt' => 'date-time',
-        'methods' => null,
-        'requestUrl' => null
+        'provider' => null,
+        'subject' => null
     ];
 
     /**
@@ -106,12 +98,8 @@ class RegistrationRequest implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        'active' => 'active',
-        'expiresAt' => 'expires_at',
-        'id' => 'id',
-        'issuedAt' => 'issued_at',
-        'methods' => 'methods',
-        'requestUrl' => 'request_url'
+        'provider' => 'provider',
+        'subject' => 'subject'
     ];
 
     /**
@@ -120,12 +108,8 @@ class RegistrationRequest implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'active' => 'setActive',
-        'expiresAt' => 'setExpiresAt',
-        'id' => 'setId',
-        'issuedAt' => 'setIssuedAt',
-        'methods' => 'setMethods',
-        'requestUrl' => 'setRequestUrl'
+        'provider' => 'setProvider',
+        'subject' => 'setSubject'
     ];
 
     /**
@@ -134,12 +118,8 @@ class RegistrationRequest implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'active' => 'getActive',
-        'expiresAt' => 'getExpiresAt',
-        'id' => 'getId',
-        'issuedAt' => 'getIssuedAt',
-        'methods' => 'getMethods',
-        'requestUrl' => 'getRequestUrl'
+        'provider' => 'getProvider',
+        'subject' => 'getSubject'
     ];
 
     /**
@@ -202,12 +182,8 @@ class RegistrationRequest implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['active'] = isset($data['active']) ? $data['active'] : null;
-        $this->container['expiresAt'] = isset($data['expiresAt']) ? $data['expiresAt'] : null;
-        $this->container['id'] = isset($data['id']) ? $data['id'] : null;
-        $this->container['issuedAt'] = isset($data['issuedAt']) ? $data['issuedAt'] : null;
-        $this->container['methods'] = isset($data['methods']) ? $data['methods'] : null;
-        $this->container['requestUrl'] = isset($data['requestUrl']) ? $data['requestUrl'] : null;
+        $this->container['provider'] = isset($data['provider']) ? $data['provider'] : null;
+        $this->container['subject'] = isset($data['subject']) ? $data['subject'] : null;
     }
 
     /**
@@ -219,21 +195,6 @@ class RegistrationRequest implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
-        if ($this->container['expiresAt'] === null) {
-            $invalidProperties[] = "'expiresAt' can't be null";
-        }
-        if ($this->container['id'] === null) {
-            $invalidProperties[] = "'id' can't be null";
-        }
-        if ($this->container['issuedAt'] === null) {
-            $invalidProperties[] = "'issuedAt' can't be null";
-        }
-        if ($this->container['methods'] === null) {
-            $invalidProperties[] = "'methods' can't be null";
-        }
-        if ($this->container['requestUrl'] === null) {
-            $invalidProperties[] = "'requestUrl' can't be null";
-        }
         return $invalidProperties;
     }
 
@@ -250,145 +211,49 @@ class RegistrationRequest implements ModelInterface, ArrayAccess
 
 
     /**
-     * Gets active
+     * Gets provider
      *
      * @return string|null
      */
-    public function getActive()
+    public function getProvider()
     {
-        return $this->container['active'];
+        return $this->container['provider'];
     }
 
     /**
-     * Sets active
+     * Sets provider
      *
-     * @param string|null $active and so on.
+     * @param string|null $provider provider
      *
      * @return $this
      */
-    public function setActive($active)
+    public function setProvider($provider)
     {
-        $this->container['active'] = $active;
+        $this->container['provider'] = $provider;
 
         return $this;
     }
 
     /**
-     * Gets expiresAt
+     * Gets subject
      *
-     * @return \DateTime
+     * @return string|null
      */
-    public function getExpiresAt()
+    public function getSubject()
     {
-        return $this->container['expiresAt'];
+        return $this->container['subject'];
     }
 
     /**
-     * Sets expiresAt
+     * Sets subject
      *
-     * @param \DateTime $expiresAt ExpiresAt is the time (UTC) when the request expires. If the user still wishes to log in, a new request has to be initiated.
+     * @param string|null $subject subject
      *
      * @return $this
      */
-    public function setExpiresAt($expiresAt)
+    public function setSubject($subject)
     {
-        $this->container['expiresAt'] = $expiresAt;
-
-        return $this;
-    }
-
-    /**
-     * Gets id
-     *
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->container['id'];
-    }
-
-    /**
-     * Sets id
-     *
-     * @param string $id id
-     *
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->container['id'] = $id;
-
-        return $this;
-    }
-
-    /**
-     * Gets issuedAt
-     *
-     * @return \DateTime
-     */
-    public function getIssuedAt()
-    {
-        return $this->container['issuedAt'];
-    }
-
-    /**
-     * Sets issuedAt
-     *
-     * @param \DateTime $issuedAt IssuedAt is the time (UTC) when the request occurred.
-     *
-     * @return $this
-     */
-    public function setIssuedAt($issuedAt)
-    {
-        $this->container['issuedAt'] = $issuedAt;
-
-        return $this;
-    }
-
-    /**
-     * Gets methods
-     *
-     * @return map[string,\Ory\Kratos\Client\Model\RegistrationRequestMethod]
-     */
-    public function getMethods()
-    {
-        return $this->container['methods'];
-    }
-
-    /**
-     * Sets methods
-     *
-     * @param map[string,\Ory\Kratos\Client\Model\RegistrationRequestMethod] $methods Methods contains context for all enabled registration methods. If a registration request has been processed, but for example the password is incorrect, this will contain error messages.
-     *
-     * @return $this
-     */
-    public function setMethods($methods)
-    {
-        $this->container['methods'] = $methods;
-
-        return $this;
-    }
-
-    /**
-     * Gets requestUrl
-     *
-     * @return string
-     */
-    public function getRequestUrl()
-    {
-        return $this->container['requestUrl'];
-    }
-
-    /**
-     * Sets requestUrl
-     *
-     * @param string $requestUrl RequestURL is the initial URL that was requested from ORY Kratos. It can be used to forward information contained in the URL's path or query for example.
-     *
-     * @return $this
-     */
-    public function setRequestUrl($requestUrl)
-    {
-        $this->container['requestUrl'] = $requestUrl;
+        $this->container['subject'] = $subject;
 
         return $this;
     }
