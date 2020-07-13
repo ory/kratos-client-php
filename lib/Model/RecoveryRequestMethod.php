@@ -1,6 +1,6 @@
 <?php
 /**
- * CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload
+ * RecoveryRequestMethod
  *
  * PHP version 5
  *
@@ -33,14 +33,14 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload Class Doc Comment
+ * RecoveryRequestMethod Class Doc Comment
  *
  * @category Class
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements ModelInterface, ArrayAccess
+class RecoveryRequestMethod implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -49,7 +49,7 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
       *
       * @var string
       */
-    protected static $openAPIModelName = 'completeSelfServiceBrowserSettingsStrategyProfileFlowPayload';
+    protected static $openAPIModelName = 'recoveryRequestMethod';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -57,8 +57,8 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
       * @var string[]
       */
     protected static $openAPITypes = [
-        'requestId' => 'string',
-        'traits' => 'object'
+        'config' => '\Ory\Kratos\Client\Model\RequestMethodConfig',
+        'method' => 'string'
     ];
 
     /**
@@ -67,8 +67,8 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'requestId' => null,
-        'traits' => null
+        'config' => null,
+        'method' => null
     ];
 
     /**
@@ -98,8 +98,8 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
      * @var string[]
      */
     protected static $attributeMap = [
-        'requestId' => 'request_id',
-        'traits' => 'traits'
+        'config' => 'config',
+        'method' => 'method'
     ];
 
     /**
@@ -108,8 +108,8 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
      * @var string[]
      */
     protected static $setters = [
-        'requestId' => 'setRequestId',
-        'traits' => 'setTraits'
+        'config' => 'setConfig',
+        'method' => 'setMethod'
     ];
 
     /**
@@ -118,8 +118,8 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
      * @var string[]
      */
     protected static $getters = [
-        'requestId' => 'getRequestId',
-        'traits' => 'getTraits'
+        'config' => 'getConfig',
+        'method' => 'getMethod'
     ];
 
     /**
@@ -182,8 +182,8 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
      */
     public function __construct(array $data = null)
     {
-        $this->container['requestId'] = isset($data['requestId']) ? $data['requestId'] : null;
-        $this->container['traits'] = isset($data['traits']) ? $data['traits'] : null;
+        $this->container['config'] = isset($data['config']) ? $data['config'] : null;
+        $this->container['method'] = isset($data['method']) ? $data['method'] : null;
     }
 
     /**
@@ -195,9 +195,6 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
     {
         $invalidProperties = [];
 
-        if ($this->container['traits'] === null) {
-            $invalidProperties[] = "'traits' can't be null";
-        }
         return $invalidProperties;
     }
 
@@ -214,49 +211,49 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
 
 
     /**
-     * Gets requestId
+     * Gets config
      *
-     * @return string|null
+     * @return \Ory\Kratos\Client\Model\RequestMethodConfig|null
      */
-    public function getRequestId()
+    public function getConfig()
     {
-        return $this->container['requestId'];
+        return $this->container['config'];
     }
 
     /**
-     * Sets requestId
+     * Sets config
      *
-     * @param string|null $requestId RequestID is request ID.  in: query
+     * @param \Ory\Kratos\Client\Model\RequestMethodConfig|null $config config
      *
      * @return $this
      */
-    public function setRequestId($requestId)
+    public function setConfig($config)
     {
-        $this->container['requestId'] = $requestId;
+        $this->container['config'] = $config;
 
         return $this;
     }
 
     /**
-     * Gets traits
+     * Gets method
      *
-     * @return object
+     * @return string|null
      */
-    public function getTraits()
+    public function getMethod()
     {
-        return $this->container['traits'];
+        return $this->container['method'];
     }
 
     /**
-     * Sets traits
+     * Sets method
      *
-     * @param object $traits Traits contains all of the identity's traits.  type: string format: binary
+     * @param string|null $method Method contains the request credentials type.
      *
      * @return $this
      */
-    public function setTraits($traits)
+    public function setMethod($method)
     {
-        $this->container['traits'] = $traits;
+        $this->container['method'] = $method;
 
         return $this;
     }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Identity
+ * RecoveryRequest
  *
  * PHP version 5
  *
@@ -33,14 +33,15 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * Identity Class Doc Comment
+ * RecoveryRequest Class Doc Comment
  *
  * @category Class
+ * @description This request is used when an identity wants to recover their account.  We recommend reading the [Account Recovery Documentation](../self-service/flows/password-reset-account-recovery)
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class Identity implements ModelInterface, ArrayAccess
+class RecoveryRequest implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -49,7 +50,7 @@ class Identity implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'Identity';
+    protected static $openAPIModelName = 'recoveryRequest';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -57,12 +58,14 @@ class Identity implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
+        'active' => 'string',
+        'expiresAt' => '\DateTime',
         'id' => 'string',
-        'recoveryAddresses' => '\Ory\Kratos\Client\Model\RecoveryAddress[]',
-        'schemaId' => 'string',
-        'schemaUrl' => 'string',
-        'traits' => 'object',
-        'verifiableAddresses' => '\Ory\Kratos\Client\Model\VerifiableAddress[]'
+        'issuedAt' => '\DateTime',
+        'messages' => '\Ory\Kratos\Client\Model\Message[]',
+        'methods' => 'map[string,\Ory\Kratos\Client\Model\RecoveryRequestMethod]',
+        'requestUrl' => 'string',
+        'state' => 'string'
     ];
 
     /**
@@ -71,12 +74,14 @@ class Identity implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
+        'active' => null,
+        'expiresAt' => 'date-time',
         'id' => 'uuid4',
-        'recoveryAddresses' => null,
-        'schemaId' => null,
-        'schemaUrl' => null,
-        'traits' => null,
-        'verifiableAddresses' => null
+        'issuedAt' => 'date-time',
+        'messages' => null,
+        'methods' => null,
+        'requestUrl' => null,
+        'state' => null
     ];
 
     /**
@@ -106,12 +111,14 @@ class Identity implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
+        'active' => 'active',
+        'expiresAt' => 'expires_at',
         'id' => 'id',
-        'recoveryAddresses' => 'recovery_addresses',
-        'schemaId' => 'schema_id',
-        'schemaUrl' => 'schema_url',
-        'traits' => 'traits',
-        'verifiableAddresses' => 'verifiable_addresses'
+        'issuedAt' => 'issued_at',
+        'messages' => 'messages',
+        'methods' => 'methods',
+        'requestUrl' => 'request_url',
+        'state' => 'state'
     ];
 
     /**
@@ -120,12 +127,14 @@ class Identity implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
+        'active' => 'setActive',
+        'expiresAt' => 'setExpiresAt',
         'id' => 'setId',
-        'recoveryAddresses' => 'setRecoveryAddresses',
-        'schemaId' => 'setSchemaId',
-        'schemaUrl' => 'setSchemaUrl',
-        'traits' => 'setTraits',
-        'verifiableAddresses' => 'setVerifiableAddresses'
+        'issuedAt' => 'setIssuedAt',
+        'messages' => 'setMessages',
+        'methods' => 'setMethods',
+        'requestUrl' => 'setRequestUrl',
+        'state' => 'setState'
     ];
 
     /**
@@ -134,12 +143,14 @@ class Identity implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
+        'active' => 'getActive',
+        'expiresAt' => 'getExpiresAt',
         'id' => 'getId',
-        'recoveryAddresses' => 'getRecoveryAddresses',
-        'schemaId' => 'getSchemaId',
-        'schemaUrl' => 'getSchemaUrl',
-        'traits' => 'getTraits',
-        'verifiableAddresses' => 'getVerifiableAddresses'
+        'issuedAt' => 'getIssuedAt',
+        'messages' => 'getMessages',
+        'methods' => 'getMethods',
+        'requestUrl' => 'getRequestUrl',
+        'state' => 'getState'
     ];
 
     /**
@@ -202,12 +213,14 @@ class Identity implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
+        $this->container['active'] = isset($data['active']) ? $data['active'] : null;
+        $this->container['expiresAt'] = isset($data['expiresAt']) ? $data['expiresAt'] : null;
         $this->container['id'] = isset($data['id']) ? $data['id'] : null;
-        $this->container['recoveryAddresses'] = isset($data['recoveryAddresses']) ? $data['recoveryAddresses'] : null;
-        $this->container['schemaId'] = isset($data['schemaId']) ? $data['schemaId'] : null;
-        $this->container['schemaUrl'] = isset($data['schemaUrl']) ? $data['schemaUrl'] : null;
-        $this->container['traits'] = isset($data['traits']) ? $data['traits'] : null;
-        $this->container['verifiableAddresses'] = isset($data['verifiableAddresses']) ? $data['verifiableAddresses'] : null;
+        $this->container['issuedAt'] = isset($data['issuedAt']) ? $data['issuedAt'] : null;
+        $this->container['messages'] = isset($data['messages']) ? $data['messages'] : null;
+        $this->container['methods'] = isset($data['methods']) ? $data['methods'] : null;
+        $this->container['requestUrl'] = isset($data['requestUrl']) ? $data['requestUrl'] : null;
+        $this->container['state'] = isset($data['state']) ? $data['state'] : null;
     }
 
     /**
@@ -219,14 +232,23 @@ class Identity implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
+        if ($this->container['expiresAt'] === null) {
+            $invalidProperties[] = "'expiresAt' can't be null";
+        }
         if ($this->container['id'] === null) {
             $invalidProperties[] = "'id' can't be null";
         }
-        if ($this->container['schemaId'] === null) {
-            $invalidProperties[] = "'schemaId' can't be null";
+        if ($this->container['issuedAt'] === null) {
+            $invalidProperties[] = "'issuedAt' can't be null";
         }
-        if ($this->container['traits'] === null) {
-            $invalidProperties[] = "'traits' can't be null";
+        if ($this->container['methods'] === null) {
+            $invalidProperties[] = "'methods' can't be null";
+        }
+        if ($this->container['requestUrl'] === null) {
+            $invalidProperties[] = "'requestUrl' can't be null";
+        }
+        if ($this->container['state'] === null) {
+            $invalidProperties[] = "'state' can't be null";
         }
         return $invalidProperties;
     }
@@ -242,6 +264,54 @@ class Identity implements ModelInterface, ArrayAccess
         return count($this->listInvalidProperties()) === 0;
     }
 
+
+    /**
+     * Gets active
+     *
+     * @return string|null
+     */
+    public function getActive()
+    {
+        return $this->container['active'];
+    }
+
+    /**
+     * Sets active
+     *
+     * @param string|null $active Active, if set, contains the registration method that is being used. It is initially not set.
+     *
+     * @return $this
+     */
+    public function setActive($active)
+    {
+        $this->container['active'] = $active;
+
+        return $this;
+    }
+
+    /**
+     * Gets expiresAt
+     *
+     * @return \DateTime
+     */
+    public function getExpiresAt()
+    {
+        return $this->container['expiresAt'];
+    }
+
+    /**
+     * Sets expiresAt
+     *
+     * @param \DateTime $expiresAt ExpiresAt is the time (UTC) when the request expires. If the user still wishes to update the setting, a new request has to be initiated.
+     *
+     * @return $this
+     */
+    public function setExpiresAt($expiresAt)
+    {
+        $this->container['expiresAt'] = $expiresAt;
+
+        return $this;
+    }
 
     /**
      * Gets id
@@ -268,121 +338,121 @@ class Identity implements ModelInterface, ArrayAccess
     }
 
     /**
-     * Gets recoveryAddresses
+     * Gets issuedAt
      *
-     * @return \Ory\Kratos\Client\Model\RecoveryAddress[]|null
+     * @return \DateTime
      */
-    public function getRecoveryAddresses()
+    public function getIssuedAt()
     {
-        return $this->container['recoveryAddresses'];
+        return $this->container['issuedAt'];
     }
 
     /**
-     * Sets recoveryAddresses
+     * Sets issuedAt
      *
-     * @param \Ory\Kratos\Client\Model\RecoveryAddress[]|null $recoveryAddresses RecoveryAddresses contains all the addresses that can be used to recover an identity.
+     * @param \DateTime $issuedAt IssuedAt is the time (UTC) when the request occurred.
      *
      * @return $this
      */
-    public function setRecoveryAddresses($recoveryAddresses)
+    public function setIssuedAt($issuedAt)
     {
-        $this->container['recoveryAddresses'] = $recoveryAddresses;
+        $this->container['issuedAt'] = $issuedAt;
 
         return $this;
     }
 
     /**
-     * Gets schemaId
+     * Gets messages
+     *
+     * @return \Ory\Kratos\Client\Model\Message[]|null
+     */
+    public function getMessages()
+    {
+        return $this->container['messages'];
+    }
+
+    /**
+     * Sets messages
+     *
+     * @param \Ory\Kratos\Client\Model\Message[]|null $messages messages
+     *
+     * @return $this
+     */
+    public function setMessages($messages)
+    {
+        $this->container['messages'] = $messages;
+
+        return $this;
+    }
+
+    /**
+     * Gets methods
+     *
+     * @return map[string,\Ory\Kratos\Client\Model\RecoveryRequestMethod]
+     */
+    public function getMethods()
+    {
+        return $this->container['methods'];
+    }
+
+    /**
+     * Sets methods
+     *
+     * @param map[string,\Ory\Kratos\Client\Model\RecoveryRequestMethod] $methods Methods contains context for all account recovery methods. If a registration request has been processed, but for example the password is incorrect, this will contain error messages.
+     *
+     * @return $this
+     */
+    public function setMethods($methods)
+    {
+        $this->container['methods'] = $methods;
+
+        return $this;
+    }
+
+    /**
+     * Gets requestUrl
      *
      * @return string
      */
-    public function getSchemaId()
+    public function getRequestUrl()
     {
-        return $this->container['schemaId'];
+        return $this->container['requestUrl'];
     }
 
     /**
-     * Sets schemaId
+     * Sets requestUrl
      *
-     * @param string $schemaId SchemaID is the ID of the JSON Schema to be used for validating the identity's traits.
+     * @param string $requestUrl RequestURL is the initial URL that was requested from ORY Kratos. It can be used to forward information contained in the URL's path or query for example.
      *
      * @return $this
      */
-    public function setSchemaId($schemaId)
+    public function setRequestUrl($requestUrl)
     {
-        $this->container['schemaId'] = $schemaId;
+        $this->container['requestUrl'] = $requestUrl;
 
         return $this;
     }
 
     /**
-     * Gets schemaUrl
+     * Gets state
      *
-     * @return string|null
+     * @return string
      */
-    public function getSchemaUrl()
+    public function getState()
     {
-        return $this->container['schemaUrl'];
+        return $this->container['state'];
     }
 
     /**
-     * Sets schemaUrl
+     * Sets state
      *
-     * @param string|null $schemaUrl SchemaURL is the URL of the endpoint where the identity's traits schema can be fetched from.  format: url
+     * @param string $state state
      *
      * @return $this
      */
-    public function setSchemaUrl($schemaUrl)
+    public function setState($state)
     {
-        $this->container['schemaUrl'] = $schemaUrl;
-
-        return $this;
-    }
-
-    /**
-     * Gets traits
-     *
-     * @return object
-     */
-    public function getTraits()
-    {
-        return $this->container['traits'];
-    }
-
-    /**
-     * Sets traits
-     *
-     * @param object $traits traits
-     *
-     * @return $this
-     */
-    public function setTraits($traits)
-    {
-        $this->container['traits'] = $traits;
-
-        return $this;
-    }
-
-    /**
-     * Gets verifiableAddresses
-     *
-     * @return \Ory\Kratos\Client\Model\VerifiableAddress[]|null
-     */
-    public function getVerifiableAddresses()
-    {
-        return $this->container['verifiableAddresses'];
-    }
-
-    /**
-     * Sets verifiableAddresses
-     *
-     * @param \Ory\Kratos\Client\Model\VerifiableAddress[]|null $verifiableAddresses VerifiableAddresses contains all the addresses that can be verified by the user.
-     *
-     * @return $this
-     */
-    public function setVerifiableAddresses($verifiableAddresses)
-    {
-        $this->container['verifiableAddresses'] = $verifiableAddresses;
+        $this->container['state'] = $state;
 
         return $this;
     }

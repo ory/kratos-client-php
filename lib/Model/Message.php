@@ -1,6 +1,6 @@
 <?php
 /**
- * CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload
+ * Message
  *
  * PHP version 5
  *
@@ -33,14 +33,14 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload Class Doc Comment
+ * Message Class Doc Comment
  *
  * @category Class
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements ModelInterface, ArrayAccess
+class Message implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -49,7 +49,7 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
       *
       * @var string
       */
-    protected static $openAPIModelName = 'completeSelfServiceBrowserSettingsStrategyProfileFlowPayload';
+    protected static $openAPIModelName = 'Message';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -57,8 +57,10 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
       * @var string[]
       */
     protected static $openAPITypes = [
-        'requestId' => 'string',
-        'traits' => 'object'
+        'context' => 'object',
+        'id' => 'int',
+        'text' => 'string',
+        'type' => 'string'
     ];
 
     /**
@@ -67,8 +69,10 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'requestId' => null,
-        'traits' => null
+        'context' => null,
+        'id' => 'int64',
+        'text' => null,
+        'type' => null
     ];
 
     /**
@@ -98,8 +102,10 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
      * @var string[]
      */
     protected static $attributeMap = [
-        'requestId' => 'request_id',
-        'traits' => 'traits'
+        'context' => 'context',
+        'id' => 'id',
+        'text' => 'text',
+        'type' => 'type'
     ];
 
     /**
@@ -108,8 +114,10 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
      * @var string[]
      */
     protected static $setters = [
-        'requestId' => 'setRequestId',
-        'traits' => 'setTraits'
+        'context' => 'setContext',
+        'id' => 'setId',
+        'text' => 'setText',
+        'type' => 'setType'
     ];
 
     /**
@@ -118,8 +126,10 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
      * @var string[]
      */
     protected static $getters = [
-        'requestId' => 'getRequestId',
-        'traits' => 'getTraits'
+        'context' => 'getContext',
+        'id' => 'getId',
+        'text' => 'getText',
+        'type' => 'getType'
     ];
 
     /**
@@ -182,8 +192,10 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
      */
     public function __construct(array $data = null)
     {
-        $this->container['requestId'] = isset($data['requestId']) ? $data['requestId'] : null;
-        $this->container['traits'] = isset($data['traits']) ? $data['traits'] : null;
+        $this->container['context'] = isset($data['context']) ? $data['context'] : null;
+        $this->container['id'] = isset($data['id']) ? $data['id'] : null;
+        $this->container['text'] = isset($data['text']) ? $data['text'] : null;
+        $this->container['type'] = isset($data['type']) ? $data['type'] : null;
     }
 
     /**
@@ -195,9 +207,6 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
     {
         $invalidProperties = [];
 
-        if ($this->container['traits'] === null) {
-            $invalidProperties[] = "'traits' can't be null";
-        }
         return $invalidProperties;
     }
 
@@ -214,49 +223,97 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
 
 
     /**
-     * Gets requestId
+     * Gets context
      *
-     * @return string|null
+     * @return object|null
      */
-    public function getRequestId()
+    public function getContext()
     {
-        return $this->container['requestId'];
+        return $this->container['context'];
     }
 
     /**
-     * Sets requestId
+     * Sets context
      *
-     * @param string|null $requestId RequestID is request ID.  in: query
+     * @param object|null $context context
      *
      * @return $this
      */
-    public function setRequestId($requestId)
+    public function setContext($context)
     {
-        $this->container['requestId'] = $requestId;
+        $this->container['context'] = $context;
 
         return $this;
     }
 
     /**
-     * Gets traits
+     * Gets id
      *
-     * @return object
+     * @return int|null
      */
-    public function getTraits()
+    public function getId()
     {
-        return $this->container['traits'];
+        return $this->container['id'];
     }
 
     /**
-     * Sets traits
+     * Sets id
      *
-     * @param object $traits Traits contains all of the identity's traits.  type: string format: binary
+     * @param int|null $id id
      *
      * @return $this
      */
-    public function setTraits($traits)
+    public function setId($id)
     {
-        $this->container['traits'] = $traits;
+        $this->container['id'] = $id;
+
+        return $this;
+    }
+
+    /**
+     * Gets text
+     *
+     * @return string|null
+     */
+    public function getText()
+    {
+        return $this->container['text'];
+    }
+
+    /**
+     * Sets text
+     *
+     * @param string|null $text text
+     *
+     * @return $this
+     */
+    public function setText($text)
+    {
+        $this->container['text'] = $text;
+
+        return $this;
+    }
+
+    /**
+     * Gets type
+     *
+     * @return string|null
+     */
+    public function getType()
+    {
+        return $this->container['type'];
+    }
+
+    /**
+     * Sets type
+     *
+     * @param string|null $type type
+     *
+     * @return $this
+     */
+    public function setType($type)
+    {
+        $this->container['type'] = $type;
 
         return $this;
     }

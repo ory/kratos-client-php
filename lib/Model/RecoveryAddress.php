@@ -1,6 +1,6 @@
 <?php
 /**
- * CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload
+ * RecoveryAddress
  *
  * PHP version 5
  *
@@ -33,14 +33,14 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload Class Doc Comment
+ * RecoveryAddress Class Doc Comment
  *
  * @category Class
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements ModelInterface, ArrayAccess
+class RecoveryAddress implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -49,7 +49,7 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
       *
       * @var string
       */
-    protected static $openAPIModelName = 'completeSelfServiceBrowserSettingsStrategyProfileFlowPayload';
+    protected static $openAPIModelName = 'RecoveryAddress';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -57,8 +57,9 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
       * @var string[]
       */
     protected static $openAPITypes = [
-        'requestId' => 'string',
-        'traits' => 'object'
+        'id' => 'string',
+        'value' => 'string',
+        'via' => 'string'
     ];
 
     /**
@@ -67,8 +68,9 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'requestId' => null,
-        'traits' => null
+        'id' => 'uuid4',
+        'value' => null,
+        'via' => null
     ];
 
     /**
@@ -98,8 +100,9 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
      * @var string[]
      */
     protected static $attributeMap = [
-        'requestId' => 'request_id',
-        'traits' => 'traits'
+        'id' => 'id',
+        'value' => 'value',
+        'via' => 'via'
     ];
 
     /**
@@ -108,8 +111,9 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
      * @var string[]
      */
     protected static $setters = [
-        'requestId' => 'setRequestId',
-        'traits' => 'setTraits'
+        'id' => 'setId',
+        'value' => 'setValue',
+        'via' => 'setVia'
     ];
 
     /**
@@ -118,8 +122,9 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
      * @var string[]
      */
     protected static $getters = [
-        'requestId' => 'getRequestId',
-        'traits' => 'getTraits'
+        'id' => 'getId',
+        'value' => 'getValue',
+        'via' => 'getVia'
     ];
 
     /**
@@ -182,8 +187,9 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
      */
     public function __construct(array $data = null)
     {
-        $this->container['requestId'] = isset($data['requestId']) ? $data['requestId'] : null;
-        $this->container['traits'] = isset($data['traits']) ? $data['traits'] : null;
+        $this->container['id'] = isset($data['id']) ? $data['id'] : null;
+        $this->container['value'] = isset($data['value']) ? $data['value'] : null;
+        $this->container['via'] = isset($data['via']) ? $data['via'] : null;
     }
 
     /**
@@ -195,8 +201,14 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
     {
         $invalidProperties = [];
 
-        if ($this->container['traits'] === null) {
-            $invalidProperties[] = "'traits' can't be null";
+        if ($this->container['id'] === null) {
+            $invalidProperties[] = "'id' can't be null";
+        }
+        if ($this->container['value'] === null) {
+            $invalidProperties[] = "'value' can't be null";
+        }
+        if ($this->container['via'] === null) {
+            $invalidProperties[] = "'via' can't be null";
         }
         return $invalidProperties;
     }
@@ -214,49 +226,73 @@ class CompleteSelfServiceBrowserSettingsStrategyProfileFlowPayload implements Mo
 
 
     /**
-     * Gets requestId
+     * Gets id
      *
-     * @return string|null
+     * @return string
      */
-    public function getRequestId()
+    public function getId()
     {
-        return $this->container['requestId'];
+        return $this->container['id'];
     }
 
     /**
-     * Sets requestId
+     * Sets id
      *
-     * @param string|null $requestId RequestID is request ID.  in: query
+     * @param string $id id
      *
      * @return $this
      */
-    public function setRequestId($requestId)
+    public function setId($id)
     {
-        $this->container['requestId'] = $requestId;
+        $this->container['id'] = $id;
 
         return $this;
     }
 
     /**
-     * Gets traits
+     * Gets value
      *
-     * @return object
+     * @return string
      */
-    public function getTraits()
+    public function getValue()
     {
-        return $this->container['traits'];
+        return $this->container['value'];
     }
 
     /**
-     * Sets traits
+     * Sets value
      *
-     * @param object $traits Traits contains all of the identity's traits.  type: string format: binary
+     * @param string $value value
      *
      * @return $this
      */
-    public function setTraits($traits)
+    public function setValue($value)
     {
-        $this->container['traits'] = $traits;
+        $this->container['value'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Gets via
+     *
+     * @return string
+     */
+    public function getVia()
+    {
+        return $this->container['via'];
+    }
+
+    /**
+     * Sets via
+     *
+     * @param string $via via
+     *
+     * @return $this
+     */
+    public function setVia($via)
+    {
+        $this->container['via'] = $via;
 
         return $this;
     }
