@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit362d56b5ae0cd0504b6a45692d5b1f20
+class ComposerStaticInitfb6395e3c0a64ee0596bbf5546929f4e
 {
     public static $files = array (
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
@@ -56,6 +56,7 @@ class ComposerStaticInit362d56b5ae0cd0504b6a45692d5b1f20
         ),
         'O' => 
         array (
+            'Ory\\Kratos\\Client\\Test\\' => 23,
             'Ory\\Kratos\\Client\\' => 18,
         ),
         'G' => 
@@ -169,10 +170,13 @@ class ComposerStaticInit362d56b5ae0cd0504b6a45692d5b1f20
         array (
             0 => __DIR__ . '/..' . '/friendsofphp/php-cs-fixer/src',
         ),
+        'Ory\\Kratos\\Client\\Test\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/test',
+        ),
         'Ory\\Kratos\\Client\\' => 
         array (
             0 => __DIR__ . '/../..' . '/lib',
-            1 => __DIR__ . '/../..' . '/test',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -1075,9 +1079,9 @@ class ComposerStaticInit362d56b5ae0cd0504b6a45692d5b1f20
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit362d56b5ae0cd0504b6a45692d5b1f20::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit362d56b5ae0cd0504b6a45692d5b1f20::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit362d56b5ae0cd0504b6a45692d5b1f20::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitfb6395e3c0a64ee0596bbf5546929f4e::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitfb6395e3c0a64ee0596bbf5546929f4e::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitfb6395e3c0a64ee0596bbf5546929f4e::$classMap;
 
         }, null, ClassLoader::class);
     }
