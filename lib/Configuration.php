@@ -66,6 +66,20 @@ class Configuration
     protected $accessToken = '';
 
     /**
+     * Session cookie name
+     *
+     * @var string
+     */
+    protected $cookieName = 'ory_kratos_session';
+
+    /**
+     * Session cookie domain
+     *
+     * @var string
+     */
+    protected $cookieHost = 'localhost';
+
+    /**
      * Username for HTTP basic authentication
      *
      * @var string
@@ -198,6 +212,34 @@ class Configuration
     }
 
     /**
+     * @return string
+     */
+    public function getCookieName(): string {
+        return $this->cookieName;
+    }
+
+    /**
+     * @param string $cookieName
+     */
+    public function setCookieName( string $cookieName ): void {
+        $this->cookieName = $cookieName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCookieHost(): string {
+        return $this->cookieHost;
+    }
+
+    /**
+     * @param string $cookieHost
+     */
+    public function setCookieHost( string $cookieHost ): void {
+        $this->cookieHost = $cookieHost;
+    }
+
+    /**
      * Sets the username for HTTP basic authentication
      *
      * @param string $username Username for HTTP basic authentication
@@ -253,6 +295,8 @@ class Configuration
     public function setHost($host)
     {
         $this->host = $host;
+        $url = parse_url($host);
+        $this->setCookieHost($url['host']);
         return $this;
     }
 
