@@ -1,7 +1,7 @@
 --TEST--
 Test incorrect testFile is reported
 --ARGS--
---no-configuration tests nonExistingFile.php
+--no-configuration nonExistingFile.php
 --FILE--
 <?php declare(strict_types=1);
 require __DIR__ . '/../../bootstrap.php';

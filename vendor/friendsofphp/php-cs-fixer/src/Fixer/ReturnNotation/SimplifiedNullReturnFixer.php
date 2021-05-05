@@ -52,11 +52,12 @@ EOT
 
     /**
      * {@inheritdoc}
+     *
+     * Must run before NoUselessReturnFixer, VoidReturnFixer.
      */
     public function getPriority()
     {
-        // should be run before NoUselessReturnFixer
-        return -17;
+        return 16;
     }
 
     /**

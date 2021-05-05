@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -7,17 +7,19 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\InvalidParameterGroupException;
 use PHPUnit\Framework\TestCase;
 
-class ConsecutiveParametersTest extends TestCase
+/**
+ * @small
+ */
+final class ConsecutiveParametersTest extends TestCase
 {
     public function testIntegration(): void
     {
         $mock = $this->getMockBuilder(stdClass::class)
-                     ->setMethods(['foo'])
+                     ->addMethods(['foo'])
                      ->getMock();
 
         $mock->expects($this->any())
@@ -34,7 +36,7 @@ class ConsecutiveParametersTest extends TestCase
     public function testIntegrationWithLessAssertionsThanMethodCalls(): void
     {
         $mock = $this->getMockBuilder(stdClass::class)
-                     ->setMethods(['foo'])
+                     ->addMethods(['foo'])
                      ->getMock();
 
         $mock->expects($this->any())
@@ -50,7 +52,7 @@ class ConsecutiveParametersTest extends TestCase
     public function testIntegrationExpectingException(): void
     {
         $mock = $this->getMockBuilder(stdClass::class)
-                     ->setMethods(['foo'])
+                     ->addMethods(['foo'])
                      ->getMock();
 
         $mock->expects($this->any())
@@ -70,7 +72,7 @@ class ConsecutiveParametersTest extends TestCase
     public function testIntegrationFailsWithNonIterableParameterGroup(): void
     {
         $mock = $this->getMockBuilder(stdClass::class)
-            ->setMethods(['foo'])
+            ->addMethods(['foo'])
             ->getMock();
 
         $this->expectException(InvalidParameterGroupException::class);

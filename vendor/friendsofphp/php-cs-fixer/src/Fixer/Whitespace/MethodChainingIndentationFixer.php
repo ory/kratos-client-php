@@ -39,12 +39,13 @@ final class MethodChainingIndentationFixer extends AbstractFixer implements Whit
 
     /**
      * {@inheritdoc}
+     *
+     * Must run before ArrayIndentationFixer, MethodArgumentSpaceFixer.
+     * Must run after BracesFixer.
      */
     public function getPriority()
     {
-        // Should run after BracesFixer
-        // Should run before ArrayIndentationFixer
-        return -29;
+        return 34;
     }
 
     /**
@@ -52,7 +53,7 @@ final class MethodChainingIndentationFixer extends AbstractFixer implements Whit
      */
     public function isCandidate(Tokens $tokens)
     {
-        return $tokens->isTokenKindFound(T_OBJECT_OPERATOR);
+        return $tokens->isAnyTokenKindsFound(Token::getObjectOperatorKinds());
     }
 
     /**
@@ -63,7 +64,7 @@ final class MethodChainingIndentationFixer extends AbstractFixer implements Whit
         $lineEnding = $this->whitespacesConfig->getLineEnding();
 
         for ($index = 1, $count = \count($tokens); $index < $count; ++$index) {
-            if (!$tokens[$index]->isGivenKind(T_OBJECT_OPERATOR)) {
+            if (!$tokens[$index]->isObjectOperator()) {
                 continue;
             }
 
@@ -120,7 +121,7 @@ final class MethodChainingIndentationFixer extends AbstractFixer implements Whit
     }
 
     /**
-     * @param int $index position of the T_OBJECT_OPERATOR token
+     * @param int $index position of the object operator token ("->" or "?->")
      *
      * @return bool
      */
@@ -151,7 +152,7 @@ final class MethodChainingIndentationFixer extends AbstractFixer implements Whit
      */
     private function getIndentAt(Tokens $tokens, $index)
     {
-        if (1 === Preg::match('/\R{1}([ \t]*)$/', $this->getIndentContentAt($tokens, $index), $matches)) {
+        if (1 === Preg::match('/\R{1}(\h*)$/', $this->getIndentContentAt($tokens, $index), $matches)) {
             return $matches[1];
         }
 
@@ -185,7 +186,7 @@ final class MethodChainingIndentationFixer extends AbstractFixer implements Whit
      */
     private function currentLineRequiresExtraIndentLevel(Tokens $tokens, $start, $end)
     {
-        if ($tokens[$start + 1]->isGivenKind(T_OBJECT_OPERATOR)) {
+        if ($tokens[$start + 1]->isObjectOperator()) {
             return false;
         }
 

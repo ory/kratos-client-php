@@ -1,12 +1,12 @@
 --TEST--
-phpunit --filter /balanceIsInitiallyZero/i BankAccountTest ../../_files/BankAccountTest.php
+phpunit --filter /balanceIsInitiallyZero/i ../../_files/BankAccountTest.php
 --FILE--
-<?php
-$_SERVER['argv'][1] = '--no-configuration';
-$_SERVER['argv'][2] = '--filter';
-$_SERVER['argv'][3] = '/balanceIsInitiallyZero/i';
-$_SERVER['argv'][4] = 'BankAccountTest';
-$_SERVER['argv'][5] = __DIR__ . '/../_files/BankAccountTest.php';
+<?php declare(strict_types=1);
+$_SERVER['argv'][] = '--do-not-cache-result';
+$_SERVER['argv'][] = '--no-configuration';
+$_SERVER['argv'][] = '--filter';
+$_SERVER['argv'][] = '/balanceIsInitiallyZero/i';
+$_SERVER['argv'][] = __DIR__ . '/../_files/BankAccountTest.php';
 
 require __DIR__ . '/../bootstrap.php';
 PHPUnit\TextUI\Command::main();

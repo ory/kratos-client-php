@@ -18,8 +18,8 @@ use PhpCsFixer\Console\ConfigurationResolver;
 use PhpCsFixer\Console\Output\ErrorOutput;
 use PhpCsFixer\Console\Output\NullOutput;
 use PhpCsFixer\Console\Output\ProcessOutput;
+use PhpCsFixer\Console\Report\FixReport\ReportSummary;
 use PhpCsFixer\Error\ErrorsManager;
-use PhpCsFixer\Report\ReportSummary;
 use PhpCsFixer\Runner\Runner;
 use PhpCsFixer\ToolInfoInterface;
 use Symfony\Component\Console\Command\Command;
@@ -98,9 +98,9 @@ final class FixCommand extends Command
             ->setDefinition(
                 [
                     new InputArgument('path', InputArgument::IS_ARRAY, 'The path.'),
-                    new InputOption('path-mode', '', InputOption::VALUE_REQUIRED, 'Specify path mode (can be override or intersection).', 'override'),
+                    new InputOption('path-mode', '', InputOption::VALUE_REQUIRED, 'Specify path mode (can be override or intersection).', ConfigurationResolver::PATH_MODE_OVERRIDE),
                     new InputOption('allow-risky', '', InputOption::VALUE_REQUIRED, 'Are risky fixers allowed (can be yes or no).'),
-                    new InputOption('config', '', InputOption::VALUE_REQUIRED, 'The path to a .php_cs file.'),
+                    new InputOption('config', '', InputOption::VALUE_REQUIRED, 'The path to a .php-cs-fixer.php file.'),
                     new InputOption('dry-run', '', InputOption::VALUE_NONE, 'Only shows which files would have been modified.'),
                     new InputOption('rules', '', InputOption::VALUE_REQUIRED, 'The rules.'),
                     new InputOption('using-cache', '', InputOption::VALUE_REQUIRED, 'Does cache should be used (can be yes or no).'),
@@ -156,6 +156,11 @@ final class FixCommand extends Command
         ;
 
         if (null !== $stdErr) {
+            if (OutputInterface::VERBOSITY_VERBOSE <= $verbosity) {
+                $stdErr->writeln($this->getApplication()->getLongVersion());
+                $stdErr->writeln(sprintf('Runtime: <info>PHP %s</info>', PHP_VERSION));
+            }
+
             if (null !== $passedConfig && null !== $passedRules) {
                 if (getenv('PHP_CS_FIXER_FUTURE_MODE')) {
                     throw new \RuntimeException('Passing both `config` and `rules` options is not possible. This check was performed as `PHP_CS_FIXER_FUTURE_MODE` env var is set.');
@@ -172,6 +177,7 @@ final class FixCommand extends Command
 
             if ($resolver->getUsingCache()) {
                 $cacheFile = $resolver->getCacheFile();
+
                 if (is_file($cacheFile)) {
                     $stdErr->writeln(sprintf('Using cache file "%s".', $cacheFile));
                 }
@@ -227,7 +233,7 @@ final class FixCommand extends Command
             $changed,
             $fixEvent->getDuration(),
             $fixEvent->getMemory(),
-            OutputInterface::VERBOSITY_VERBOSE <= $output->getVerbosity(),
+            OutputInterface::VERBOSITY_VERBOSE <= $verbosity,
             $resolver->isDryRun(),
             $output->isDecorated()
         );

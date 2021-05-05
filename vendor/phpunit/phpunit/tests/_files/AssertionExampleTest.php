@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -8,6 +8,7 @@
  * file that was distributed with this source code.
  */
 use PHPUnit\Framework\TestCase;
+use PHPUnit\TestFixture\AssertionExample;
 
 class AssertionExampleTest extends TestCase
 {

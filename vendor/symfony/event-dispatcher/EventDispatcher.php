@@ -37,7 +37,7 @@ class EventDispatcher implements EventDispatcherInterface
 
     public function __construct()
     {
-        if (__CLASS__ === \get_class($this)) {
+        if (__CLASS__ === static::class) {
             $this->optimized = [];
         }
     }
@@ -49,7 +49,7 @@ class EventDispatcher implements EventDispatcherInterface
     {
         $eventName = $eventName ?? \get_class($event);
 
-        if (null !== $this->optimized && null !== $eventName) {
+        if (null !== $this->optimized) {
             $listeners = $this->optimized[$eventName] ?? (empty($this->listeners[$eventName]) ? [] : $this->optimizeListeners($eventName));
         } else {
             $listeners = $this->getListeners($eventName);
@@ -184,10 +184,10 @@ class EventDispatcher implements EventDispatcherInterface
             if (\is_string($params)) {
                 $this->addListener($eventName, [$subscriber, $params]);
             } elseif (\is_string($params[0])) {
-                $this->addListener($eventName, [$subscriber, $params[0]], isset($params[1]) ? $params[1] : 0);
+                $this->addListener($eventName, [$subscriber, $params[0]], $params[1] ?? 0);
             } else {
                 foreach ($params as $listener) {
-                    $this->addListener($eventName, [$subscriber, $listener[0]], isset($listener[1]) ? $listener[1] : 0);
+                    $this->addListener($eventName, [$subscriber, $listener[0]], $listener[1] ?? 0);
                 }
             }
         }
@@ -240,7 +240,7 @@ class EventDispatcher implements EventDispatcherInterface
         $this->sorted[$eventName] = [];
 
         foreach ($this->listeners[$eventName] as &$listeners) {
-            foreach ($listeners as $k => $listener) {
+            foreach ($listeners as $k => &$listener) {
                 if (\is_array($listener) && isset($listener[0]) && $listener[0] instanceof \Closure && 2 >= \count($listener)) {
                     $listener[0] = $listener[0]();
                     $listener[1] = $listener[1] ?? '__invoke';

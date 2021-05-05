@@ -42,14 +42,6 @@ final class MultilineWhitespaceBeforeSemicolonsFixer extends AbstractFixer imple
     /**
      * {@inheritdoc}
      */
-    public function isCandidate(Tokens $tokens)
-    {
-        return $tokens->isTokenKindFound(';');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getDefinition()
     {
         return new FixerDefinition(
@@ -74,6 +66,25 @@ function foo () {
                 ),
             ]
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * Must run before SpaceAfterSemicolonFixer.
+     * Must run after CombineConsecutiveIssetsFixer, NoEmptyStatementFixer, SingleImportPerStatementFixer.
+     */
+    public function getPriority()
+    {
+        return 0;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isCandidate(Tokens $tokens)
+    {
+        return $tokens->isTokenKindFound(';');
     }
 
     /**
@@ -226,8 +237,8 @@ function foo () {
             return null;
         }
 
-        // -> or ::
-        if (!$tokens[--$index]->isGivenKind([T_OBJECT_OPERATOR, T_DOUBLE_COLON])) {
+        // ->, ?-> or ::
+        if (!$tokens[--$index]->isObjectOperator() && !$tokens[$index]->isGivenKind(T_DOUBLE_COLON)) {
             return null;
         }
 
@@ -284,7 +295,7 @@ function foo () {
             $content = $tokens[$index]->getContent().$content;
         }
 
-        if (1 === Preg::match('/\R{1}([ \t]*)$/', $content, $matches)) {
+        if (1 === Preg::match('/\R{1}(\h*)$/', $content, $matches)) {
             return $matches[1];
         }
 

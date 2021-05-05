@@ -26,6 +26,7 @@ use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use PhpCsFixer\Utils;
 use Symfony\Component\OptionsResolver\Options;
 
 /**
@@ -104,7 +105,7 @@ final class NoExtraBlankLinesFixer extends AbstractFixer implements Configuratio
             T_DEFAULT => 'fixAfterToken',
             T_RETURN => 'fixAfterToken',
             T_SWITCH => 'fixAfterToken',
-            T_THROW => 'fixAfterToken',
+            T_THROW => 'fixAfterThrowToken',
             T_USE => 'removeBetweenUse',
             T_WHITESPACE => 'removeMultipleBlankLines',
             CT::T_USE_TRAIT => 'removeBetweenUse',
@@ -276,10 +277,12 @@ switch($a) {
 
     /**
      * {@inheritdoc}
+     *
+     * Must run before BlankLineBeforeStatementFixer.
+     * Must run after CombineConsecutiveUnsetsFixer, FunctionToConstantFixer, NoEmptyCommentFixer, NoEmptyPhpdocFixer, NoEmptyStatementFixer, NoUnusedImportsFixer, NoUselessElseFixer, NoUselessReturnFixer, NoUselessSprintfFixer.
      */
     public function getPriority()
     {
-        // should be run after the NoUnusedImportsFixer, NoEmptyPhpdocFixer, CombineConsecutiveUnsetsFixer and NoUselessElseFixer
         return -20;
     }
 
@@ -317,13 +320,10 @@ switch($a) {
                 ->setNormalizer(static function (Options $options, $tokens) use ($that) {
                     foreach ($tokens as &$token) {
                         if ('useTrait' === $token) {
-                            $message = "Token \"useTrait\" in option \"tokens\" for rule \"{$that->getName()}\" is deprecated and will be removed in 3.0, use \"use_trait\" instead.";
-
-                            if (getenv('PHP_CS_FIXER_FUTURE_MODE')) {
-                                throw new InvalidConfigurationException("{$message} This check was performed as `PHP_CS_FIXER_FUTURE_MODE` env var is set.");
-                            }
-
-                            @trigger_error($message, E_USER_DEPRECATED);
+                            Utils::triggerDeprecation(
+                                "Token \"useTrait\" in option \"tokens\" for rule \"{$that->getName()}\" is deprecated and will be removed in 3.0, use \"use_trait\" instead.",
+                                InvalidConfigurationException::class
+                            );
                             $token = 'use_trait';
 
                             break;
@@ -368,11 +368,11 @@ switch($a) {
         }
 
         $nextUseCandidate = $this->tokens->getNextMeaningfulToken($next);
-        if (null === $nextUseCandidate || 1 === $nextUseCandidate - $next || !$this->tokens[$nextUseCandidate]->isGivenKind($this->tokens[$index]->getId())) {
+        if (null === $nextUseCandidate || !$this->tokens[$nextUseCandidate]->isGivenKind($this->tokens[$index]->getId()) || !$this->containsLinebreak($index, $nextUseCandidate)) {
             return;
         }
 
-        return $this->removeEmptyLinesAfterLineWithTokenAt($next);
+        $this->removeEmptyLinesAfterLineWithTokenAt($next);
     }
 
     private function removeMultipleBlankLines($index)
@@ -404,6 +404,13 @@ switch($a) {
         }
 
         $this->removeEmptyLinesAfterLineWithTokenAt($index);
+    }
+
+    private function fixAfterThrowToken($index)
+    {
+        if ($this->tokens[$this->tokens->getPrevMeaningfulToken($index)]->equalsAny([';', '{', '}', ':', [T_OPEN_TAG]])) {
+            $this->fixAfterToken($index);
+        }
     }
 
     /**
@@ -461,5 +468,22 @@ switch($a) {
 
             $this->tokens[$i] = new Token([T_WHITESPACE, $newContent]);
         }
+    }
+
+    /**
+     * @param int $startIndex
+     * @param int $endIndex
+     *
+     * @return bool
+     */
+    private function containsLinebreak($startIndex, $endIndex)
+    {
+        for ($i = $endIndex; $i > $startIndex; --$i) {
+            if (Preg::match('/\R/', $this->tokens[$i]->getContent())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

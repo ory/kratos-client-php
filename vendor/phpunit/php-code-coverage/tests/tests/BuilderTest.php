@@ -1,50 +1,51 @@
-<?php
+<?php declare(strict_types=1);
 /*
- * This file is part of the php-code-coverage package.
+ * This file is part of phpunit/php-code-coverage.
  *
  * (c) Sebastian Bergmann <sebastian@phpunit.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage\Report;
 
-use SebastianBergmann\CodeCoverage\Driver\Driver;
-use SebastianBergmann\CodeCoverage\CodeCoverage;
-use SebastianBergmann\CodeCoverage\Filter;
-use SebastianBergmann\CodeCoverage\TestCase;
+use const DIRECTORY_SEPARATOR;
+use function rtrim;
+use ReflectionMethod;
 use SebastianBergmann\CodeCoverage\Node\Builder;
+use SebastianBergmann\CodeCoverage\ProcessedCodeCoverageData;
+use SebastianBergmann\CodeCoverage\StaticAnalysis\ParsingCoveredFileAnalyser;
+use SebastianBergmann\CodeCoverage\TestCase;
 
-class BuilderTest extends TestCase
+final class BuilderTest extends TestCase
 {
-    protected $factory;
+    private $factory;
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->factory = new Builder;
+        $this->factory = new Builder(new ParsingCoveredFileAnalyser(true, true));
     }
 
-    public function testSomething()
+    public function testSomething(): void
     {
-        $root = $this->getCoverageForBankAccount()->getReport();
+        $root = $this->getLineCoverageForBankAccount()->getReport();
 
         $expectedPath = rtrim(TEST_FILES_PATH, DIRECTORY_SEPARATOR);
-        $this->assertEquals($expectedPath, $root->getName());
-        $this->assertEquals($expectedPath, $root->getPath());
-        $this->assertEquals(10, $root->getNumExecutableLines());
-        $this->assertEquals(5, $root->getNumExecutedLines());
-        $this->assertEquals(1, $root->getNumClasses());
-        $this->assertEquals(0, $root->getNumTestedClasses());
-        $this->assertEquals(4, $root->getNumMethods());
-        $this->assertEquals(3, $root->getNumTestedMethods());
-        $this->assertEquals('0.00%', $root->getTestedClassesPercent());
-        $this->assertEquals('75.00%', $root->getTestedMethodsPercent());
-        $this->assertEquals('50.00%', $root->getLineExecutedPercent());
-        $this->assertEquals(0, $root->getNumFunctions());
-        $this->assertEquals(0, $root->getNumTestedFunctions());
-        $this->assertNull($root->getParent());
-        $this->assertEquals([], $root->getDirectories());
+        $this->assertEquals($expectedPath, $root->name());
+        $this->assertEquals($expectedPath, $root->pathAsString());
+        $this->assertEquals(10, $root->numberOfExecutableLines());
+        $this->assertEquals(5, $root->numberOfExecutedLines());
+        $this->assertEquals(1, $root->numberOfClasses());
+        $this->assertEquals(0, $root->numberOfTestedClasses());
+        $this->assertEquals(4, $root->numberOfMethods());
+        $this->assertEquals(3, $root->numberOfTestedMethods());
+        $this->assertEquals('0.00%', $root->percentageOfTestedClasses()->asString());
+        $this->assertEquals('75.00%', $root->percentageOfTestedMethods()->asString());
+        $this->assertEquals('50.00%', $root->percentageOfExecutedLines()->asString());
+        $this->assertEquals(0, $root->numberOfFunctions());
+        $this->assertEquals(0, $root->numberOfTestedFunctions());
+        $this->assertNull($root->parent());
+        $this->assertEquals([], $root->directories());
         #$this->assertEquals(array(), $root->getFiles());
         #$this->assertEquals(array(), $root->getChildNodes());
 
@@ -53,101 +54,100 @@ class BuilderTest extends TestCase
                 'BankAccount' => [
                     'methods' => [
                         'getBalance' => [
-                            'signature'       => 'getBalance()',
-                            'startLine'       => 6,
-                            'endLine'         => 9,
-                            'executableLines' => 1,
-                            'executedLines'   => 1,
-                            'ccn'             => 1,
-                            'coverage'        => 100,
-                            'crap'            => '1',
-                            'link'            => 'BankAccount.php.html#6',
-                            'methodName'      => 'getBalance',
-                            'visibility'      => 'public',
+                            'signature'          => 'getBalance()',
+                            'startLine'          => 6,
+                            'endLine'            => 9,
+                            'executableLines'    => 1,
+                            'executedLines'      => 1,
+                            'executableBranches' => 0,
+                            'executedBranches'   => 0,
+                            'executablePaths'    => 0,
+                            'executedPaths'      => 0,
+                            'ccn'                => 1,
+                            'coverage'           => 100,
+                            'crap'               => '1',
+                            'link'               => 'BankAccount.php.html#6',
+                            'methodName'         => 'getBalance',
+                            'visibility'         => 'public',
                         ],
                         'setBalance' => [
-                            'signature'       => 'setBalance($balance)',
-                            'startLine'       => 11,
-                            'endLine'         => 18,
-                            'executableLines' => 5,
-                            'executedLines'   => 0,
-                            'ccn'             => 2,
-                            'coverage'        => 0,
-                            'crap'            => 6,
-                            'link'            => 'BankAccount.php.html#11',
-                            'methodName'      => 'setBalance',
-                            'visibility'      => 'protected',
+                            'signature'          => 'setBalance($balance)',
+                            'startLine'          => 11,
+                            'endLine'            => 18,
+                            'executableLines'    => 5,
+                            'executedLines'      => 0,
+                            'executableBranches' => 0,
+                            'executedBranches'   => 0,
+                            'executablePaths'    => 0,
+                            'executedPaths'      => 0,
+                            'ccn'                => 2,
+                            'coverage'           => 0,
+                            'crap'               => 6,
+                            'link'               => 'BankAccount.php.html#11',
+                            'methodName'         => 'setBalance',
+                            'visibility'         => 'protected',
                         ],
                         'depositMoney' => [
-                            'signature'       => 'depositMoney($balance)',
-                            'startLine'       => 20,
-                            'endLine'         => 25,
-                            'executableLines' => 2,
-                            'executedLines'   => 2,
-                            'ccn'             => 1,
-                            'coverage'        => 100,
-                            'crap'            => '1',
-                            'link'            => 'BankAccount.php.html#20',
-                            'methodName'      => 'depositMoney',
-                            'visibility'      => 'public',
+                            'signature'          => 'depositMoney($balance)',
+                            'startLine'          => 20,
+                            'endLine'            => 25,
+                            'executableLines'    => 2,
+                            'executedLines'      => 2,
+                            'executableBranches' => 0,
+                            'executedBranches'   => 0,
+                            'executablePaths'    => 0,
+                            'executedPaths'      => 0,
+                            'ccn'                => 1,
+                            'coverage'           => 100,
+                            'crap'               => '1',
+                            'link'               => 'BankAccount.php.html#20',
+                            'methodName'         => 'depositMoney',
+                            'visibility'         => 'public',
                         ],
                         'withdrawMoney' => [
-                            'signature'       => 'withdrawMoney($balance)',
-                            'startLine'       => 27,
-                            'endLine'         => 32,
-                            'executableLines' => 2,
-                            'executedLines'   => 2,
-                            'ccn'             => 1,
-                            'coverage'        => 100,
-                            'crap'            => '1',
-                            'link'            => 'BankAccount.php.html#27',
-                            'methodName'      => 'withdrawMoney',
-                            'visibility'      => 'public',
+                            'signature'          => 'withdrawMoney($balance)',
+                            'startLine'          => 27,
+                            'endLine'            => 32,
+                            'executableLines'    => 2,
+                            'executedLines'      => 2,
+                            'executableBranches' => 0,
+                            'executedBranches'   => 0,
+                            'executablePaths'    => 0,
+                            'executedPaths'      => 0,
+                            'ccn'                => 1,
+                            'coverage'           => 100,
+                            'crap'               => '1',
+                            'link'               => 'BankAccount.php.html#27',
+                            'methodName'         => 'withdrawMoney',
+                            'visibility'         => 'public',
                         ],
                     ],
-                    'startLine'       => 2,
-                    'executableLines' => 10,
-                    'executedLines'   => 5,
-                    'ccn'             => 5,
-                    'coverage'        => 50,
-                    'crap'            => '8.12',
-                    'package'         => [
-                        'namespace'   => '',
-                        'fullPackage' => '',
-                        'category'    => '',
-                        'package'     => '',
-                        'subpackage'  => ''
-                    ],
-                    'link'      => 'BankAccount.php.html#2',
-                    'className' => 'BankAccount'
-                ]
+                    'startLine'          => 2,
+                    'executableLines'    => 10,
+                    'executedLines'      => 5,
+                    'executableBranches' => 0,
+                    'executedBranches'   => 0,
+                    'executablePaths'    => 0,
+                    'executedPaths'      => 0,
+                    'ccn'                => 5,
+                    'coverage'           => 50,
+                    'crap'               => '8.12',
+                    'link'               => 'BankAccount.php.html#2',
+                    'className'          => 'BankAccount',
+                    'namespace'          => '',
+                ],
             ],
-            $root->getClasses()
+            $root->classes()
         );
 
-        $this->assertEquals([], $root->getFunctions());
+        $this->assertEquals([], $root->functions());
     }
 
-    public function testNotCrashParsing()
+    public function testBuildDirectoryStructure(): void
     {
-        $coverage = $this->getCoverageForCrashParsing();
-        $root = $coverage->getReport();
+        $s = DIRECTORY_SEPARATOR;
 
-        $expectedPath = rtrim(TEST_FILES_PATH, DIRECTORY_SEPARATOR);
-        $this->assertEquals($expectedPath, $root->getName());
-        $this->assertEquals($expectedPath, $root->getPath());
-        $this->assertEquals(2, $root->getNumExecutableLines());
-        $this->assertEquals(0, $root->getNumExecutedLines());
-        $data = $coverage->getData();
-        $expectedFile = $expectedPath . DIRECTORY_SEPARATOR . 'Crash.php';
-        $this->assertSame([$expectedFile => [1 => [], 2 => []]], $data);
-    }
-
-    public function testBuildDirectoryStructure()
-    {
-        $s = \DIRECTORY_SEPARATOR;
-
-        $method = new \ReflectionMethod(
+        $method = new ReflectionMethod(
             Builder::class,
             'buildDirectoryStructure'
         );
@@ -157,24 +157,33 @@ class BuilderTest extends TestCase
         $this->assertEquals(
             [
                 'src' => [
-                    'Money.php/f'    => [],
-                    'MoneyBag.php/f' => [],
+                    'Money.php/f' => [
+                        'lineCoverage'     => [],
+                        'functionCoverage' => [],
+                    ],
+                    'MoneyBag.php/f' => [
+                        'lineCoverage'     => [],
+                        'functionCoverage' => [],
+                    ],
                     'Foo' => [
                         'Bar' => [
                             'Baz' => [
-                                'Foo.php/f' => [],
+                                'Foo.php/f' => [
+                                    'lineCoverage'     => [],
+                                    'functionCoverage' => [],
+                                ],
                             ],
                         ],
                     ],
-                ]
+                ],
             ],
             $method->invoke(
                 $this->factory,
-                [
-                    "src{$s}Money.php" => [],
-                    "src{$s}MoneyBag.php" => [],
+                $this->pathsToProcessedDataObjectHelper([
+                    "src{$s}Money.php"                    => [],
+                    "src{$s}MoneyBag.php"                 => [],
                     "src{$s}Foo{$s}Bar{$s}Baz{$s}Foo.php" => [],
-                ]
+                ])
             )
         );
     }
@@ -182,69 +191,75 @@ class BuilderTest extends TestCase
     /**
      * @dataProvider reducePathsProvider
      */
-    public function testReducePaths($reducedPaths, $commonPath, $paths)
+    public function testReducePaths(array $reducedPaths, string $commonPath, ProcessedCodeCoverageData $paths): void
     {
-        $method = new \ReflectionMethod(
+        $method = new ReflectionMethod(
             Builder::class,
             'reducePaths'
         );
 
         $method->setAccessible(true);
 
-        $_commonPath = $method->invokeArgs($this->factory, [&$paths]);
+        $_commonPath = $method->invokeArgs($this->factory, [$paths]);
 
-        $this->assertEquals($reducedPaths, $paths);
+        $this->assertEquals($reducedPaths, $paths->lineCoverage());
         $this->assertEquals($commonPath, $_commonPath);
     }
 
     public function reducePathsProvider()
     {
-        $s = \DIRECTORY_SEPARATOR;
+        $s = DIRECTORY_SEPARATOR;
 
         yield [
             [],
-            ".",
-            []
+            '.',
+            $this->pathsToProcessedDataObjectHelper([]),
         ];
 
-        $prefixes = ["C:$s", "$s"];
-
-        foreach($prefixes as $p){
+        foreach (["C:{$s}", "{$s}"] as $p) {
             yield [
                 [
-                    "Money.php" => []
+                    'Money.php' => [],
                 ],
                 "{$p}home{$s}sb{$s}Money{$s}",
-                [
-                    "{$p}home{$s}sb{$s}Money{$s}Money.php" => []
-                ]
+                $this->pathsToProcessedDataObjectHelper([
+                    "{$p}home{$s}sb{$s}Money{$s}Money.php" => [],
+                ]),
             ];
 
             yield [
                 [
-                    "Money.php"    => [],
-                    "MoneyBag.php" => []
+                    'Money.php'    => [],
+                    'MoneyBag.php' => [],
                 ],
                 "{$p}home{$s}sb{$s}Money",
-                [
+                $this->pathsToProcessedDataObjectHelper([
                     "{$p}home{$s}sb{$s}Money{$s}Money.php"    => [],
-                    "{$p}home{$s}sb{$s}Money{$s}MoneyBag.php" => []
-                ]
+                    "{$p}home{$s}sb{$s}Money{$s}MoneyBag.php" => [],
+                ]),
             ];
 
             yield [
                 [
-                    "Money.php"          => [],
-                    "MoneyBag.php"       => [],
+                    'Money.php'             => [],
+                    'MoneyBag.php'          => [],
                     "Cash.phar{$s}Cash.php" => [],
                 ],
                 "{$p}home{$s}sb{$s}Money",
-                [
-                    "{$p}home{$s}sb{$s}Money{$s}Money.php"                 => [],
-                    "{$p}home{$s}sb{$s}Money{$s}MoneyBag.php"              => [],
+                $this->pathsToProcessedDataObjectHelper([
+                    "{$p}home{$s}sb{$s}Money{$s}Money.php"                    => [],
+                    "{$p}home{$s}sb{$s}Money{$s}MoneyBag.php"                 => [],
                     "phar://{$p}home{$s}sb{$s}Money{$s}Cash.phar{$s}Cash.php" => [],
-                ],
+                ]),
             ];
         }
+    }
+
+    private function pathsToProcessedDataObjectHelper(array $paths): ProcessedCodeCoverageData
+    {
+        $coverage = new ProcessedCodeCoverageData;
+        $coverage->setLineCoverage($paths);
+
+        return $coverage;
     }
 }

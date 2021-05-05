@@ -40,9 +40,28 @@ final class CommentsAnalyzer
             throw new \InvalidArgumentException('Given index must point to a comment.');
         }
 
-        $prevIndex = $tokens->getPrevMeaningfulToken($index);
+        if (null === $tokens->getNextMeaningfulToken($index)) {
+            return false;
+        }
 
-        return $tokens[$prevIndex]->isGivenKind(T_OPEN_TAG) && null !== $tokens->getNextMeaningfulToken($index);
+        $prevIndex = $tokens->getPrevNonWhitespace($index);
+
+        if ($tokens[$prevIndex]->equals(';')) {
+            $braceCloseIndex = $tokens->getPrevMeaningfulToken($prevIndex);
+            if (!$tokens[$braceCloseIndex]->equals(')')) {
+                return false;
+            }
+
+            $braceOpenIndex = $tokens->findBlockStart(Tokens::BLOCK_TYPE_PARENTHESIS_BRACE, $braceCloseIndex);
+            $declareIndex = $tokens->getPrevMeaningfulToken($braceOpenIndex);
+            if (!$tokens[$declareIndex]->isGivenKind(T_DECLARE)) {
+                return false;
+            }
+
+            $prevIndex = $tokens->getPrevNonWhitespace($declareIndex);
+        }
+
+        return $tokens[$prevIndex]->isGivenKind(T_OPEN_TAG);
     }
 
     /**
@@ -65,6 +84,14 @@ final class CommentsAnalyzer
         $nextIndex = $index;
         do {
             $nextIndex = $tokens->getNextMeaningfulToken($nextIndex);
+
+            // @TODO: drop condition when PHP 8.0+ is required
+            if (\defined('T_ATTRIBUTE')) {
+                while (null !== $nextIndex && $tokens[$nextIndex]->isGivenKind(T_ATTRIBUTE)) {
+                    $nextIndex = $tokens->findBlockEnd(Tokens::BLOCK_TYPE_ATTRIBUTE, $nextIndex);
+                    $nextIndex = $tokens->getNextMeaningfulToken($nextIndex);
+                }
+            }
         } while (null !== $nextIndex && $tokens[$nextIndex]->equals('('));
 
         if (null === $nextIndex || $tokens[$nextIndex]->equals('}')) {
@@ -191,8 +218,8 @@ final class CommentsAnalyzer
             $token = $tokens[$index];
 
             if (
-                $token->isGivenKind(T_VARIABLE) &&
-                false !== strpos($docsContent, $token->getContent())
+                $token->isGivenKind(T_VARIABLE)
+                && false !== strpos($docsContent, $token->getContent())
             ) {
                 return true;
             }
@@ -224,8 +251,7 @@ final class CommentsAnalyzer
 
         $endKind = $tokens[$languageConstructIndex]->isGivenKind(CT::T_DESTRUCTURING_SQUARE_BRACE_OPEN)
             ? [CT::T_DESTRUCTURING_SQUARE_BRACE_CLOSE]
-            : ')'
-        ;
+            : ')';
 
         $endIndex = $tokens->getNextTokenOfKind($languageConstructIndex, [$endKind]);
 

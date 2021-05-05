@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -12,7 +12,10 @@ namespace PHPUnit\Framework\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestFailure;
 
-class StringStartsWithTest extends ConstraintTestCase
+/**
+ * @small
+ */
+final class StringStartsWithTest extends ConstraintTestCase
 {
     public function testConstraintStringStartsWithCorrectValueAndReturnResult(): void
     {
@@ -71,7 +74,7 @@ class StringStartsWithTest extends ConstraintTestCase
             $constraint->evaluate('error');
         } catch (ExpectationFailedException $e) {
             $this->assertEquals(
-                <<<EOF
+                <<<'EOF'
 Failed asserting that 'error' starts with "prefix".
 
 EOF
@@ -93,7 +96,7 @@ EOF
             $constraint->evaluate('error', 'custom message');
         } catch (ExpectationFailedException $e) {
             $this->assertEquals(
-                <<<EOF
+                <<<'EOF'
 custom message
 Failed asserting that 'error' starts with "prefix".
 

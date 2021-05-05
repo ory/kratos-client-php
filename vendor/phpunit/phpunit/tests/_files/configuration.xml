@@ -2,7 +2,6 @@
 <phpunit backupGlobals="true"
          backupStaticAttributes="false"
          bootstrap="/path/to/bootstrap.php"
-         cacheTokens="false"
          columns="80"
          colors="false"
          stderr="false"
@@ -13,10 +12,12 @@
          forceCoversAnnotation="false"
          stopOnFailure="false"
          stopOnWarning="false"
-         failOnWarning="false"
+         failOnIncomplete="false"
          failOnRisky="false"
+         failOnSkipped="false"
+         failOnWarning="false"
          extensionsDirectory="/tmp"
-         printerClass="PHPUnit\TextUI\ResultPrinter"
+         printerClass="PHPUnit\TextUI\DefaultResultPrinter"
          testSuiteLoaderClass="PHPUnit\Runner\StandardTestSuiteLoader"
          defaultTestSuite="My Test Suite"
          beStrictAboutChangesToGlobalState="false"
@@ -27,12 +28,12 @@
          beStrictAboutCoversAnnotation="false"
          defaultTimeLimit="123"
          enforceTimeLimit="false"
-         ignoreDeprecatedCodeUnitsFromCodeCoverage="false"
          timeoutForSmallTests="1"
          timeoutForMediumTests="10"
          timeoutForLargeTests="60"
          verbose="false"
-         executionOrder="default">
+         executionOrder="default"
+         noInteraction="true">
     <testsuites>
         <testsuite name="My Test Suite">
             <directory suffix="Test.php" phpVersion="5.3.0" phpVersionOperator=">=">/path/to/files</directory>
@@ -57,21 +58,6 @@
             <group>name</group>
         </exclude>
     </testdoxGroups>
-
-    <filter>
-        <whitelist addUncoveredFilesFromWhitelist="true"
-                   processUncoveredFilesFromWhitelist="false">
-            <directory suffix=".php">/path/to/files</directory>
-            <file>/path/to/file</file>
-            <file>
-                /path/to/file
-            </file>
-            <exclude>
-                <directory suffix=".php">/path/to/files</directory>
-                <file>/path/to/file</file>
-            </exclude>
-        </whitelist>
-    </filter>
 
     <listeners>
         <listener class="MyListener" file="/optional/path/to/MyListener.php">
@@ -125,26 +111,11 @@
         </extension>
     </extensions>
 
-    <logging>
-        <log type="coverage-html" target="/tmp/report" lowUpperBound="50" highLowerBound="90"/>
-        <log type="coverage-clover" target="/tmp/clover.xml"/>
-        <log type="coverage-crap4j" threshold="50" target="/tmp/crap4j.xml"/>
-        <log type="coverage-text" showUncoveredFiles="true" showOnlySummary="true" target="/tmp/coverage.txt"/>
-        <log type="json" target="/tmp/logfile.json"/>
-        <log type="plain" target="/tmp/logfile.txt"/>
-        <log type="tap" target="/tmp/logfile.tap"/>
-        <log type="junit" target="/tmp/logfile.xml"/>
-        <log type="testdox-html" target="/tmp/testdox.html"/>
-        <log type="testdox-text" target="/tmp/testdox.txt"/>
-        <log type="testdox-xml" target="/tmp/testdox.xml"/>
-    </logging>
-
     <php>
         <includePath>.</includePath>
         <includePath>/path/to/lib</includePath>
         <ini name="foo" value="bar"/>
         <ini name="highlight.keyword" value="#123456"/>
-        <ini name="highlight.string" value="TEST_FILES_PATH"/>
         <const name="FOO" value="false"/>
         <const name="BAR" value="true"/>
         <var name="foo" value="false"/>

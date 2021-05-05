@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -9,18 +9,24 @@
  */
 namespace PHPUnit\Framework\Constraint;
 
+use function json_encode;
+use function sprintf;
 use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\TestFailure;
 use PHPUnit\Util\Json;
 
-class JsonMatchesTest extends ConstraintTestCase
+/**
+ * @small
+ */
+final class JsonMatchesTest extends ConstraintTestCase
 {
     public static function evaluateDataprovider(): array
     {
         return [
-            'valid JSON'                              => [true, \json_encode(['Mascott'                           => 'Tux']), \json_encode(['Mascott'                           => 'Tux'])],
-            'error syntax'                            => [false, '{"Mascott"::}', \json_encode(['Mascott'         => 'Tux'])],
-            'error UTF-8'                             => [false, \json_encode('\xB1\x31'), \json_encode(['Mascott' => 'Tux'])],
-            'invalid JSON in class instantiation'     => [false, \json_encode(['Mascott'                          => 'Tux']), '{"Mascott"::}'],
+            'valid JSON'                              => [true, json_encode(['Mascott' => 'Tux']), json_encode(['Mascott' => 'Tux'])],
+            'error syntax'                            => [false, '{"Mascott"::}', json_encode(['Mascott' => 'Tux'])],
+            'error UTF-8'                             => [false, json_encode('\xB1\x31'), json_encode(['Mascott' => 'Tux'])],
+            'invalid JSON in class instantiation'     => [false, json_encode(['Mascott' => 'Tux']), '{"Mascott"::}'],
             'string type not equals number'           => [false, '{"age": "5"}', '{"age": 5}'],
             'string type not equals boolean'          => [false, '{"age": "true"}', '{"age": true}'],
             'string type not equals null'             => [false, '{"age": "null"}', '{"age": null}'],
@@ -38,11 +44,11 @@ class JsonMatchesTest extends ConstraintTestCase
     public static function evaluateThrowsExpectationFailedExceptionWhenJsonIsValidButDoesNotMatchDataprovider(): array
     {
         return [
-            'error UTF-8'                             => [\json_encode('\xB1\x31'), \json_encode(['Mascott' => 'Tux'])],
+            'error UTF-8'                             => [json_encode('\xB1\x31'), json_encode(['Mascott' => 'Tux'])],
             'string type not equals number'           => ['{"age": "5"}', '{"age": 5}'],
             'string type not equals boolean'          => ['{"age": "true"}', '{"age": true}'],
             'string type not equals null'             => ['{"age": "null"}', '{"age": null}'],
-            'null field different from missing field' => ['{"present": true, "missing": null}', '{"present": true}'],
+            'null field different from missing field' => ['{"missing": null, "present": true}', '{"present": true}'],
             'array elements are ordered'              => ['["first", "second"]', '["second", "first"]'],
         ];
     }
@@ -50,8 +56,8 @@ class JsonMatchesTest extends ConstraintTestCase
     /**
      * @dataProvider evaluateDataprovider
      *
-     * @throws ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws ExpectationFailedException
      */
     public function testEvaluate($expected, $jsonOther, $jsonValue): void
     {
@@ -63,10 +69,10 @@ class JsonMatchesTest extends ConstraintTestCase
     /**
      * @dataProvider evaluateThrowsExpectationFailedExceptionWhenJsonIsValidButDoesNotMatchDataprovider
      *
-     * @throws ExpectationFailedException
      * @throws \PHPUnit\Framework\AssertionFailedError
      * @throws \PHPUnit\Framework\Exception
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws ExpectationFailedException
      */
     public function testEvaluateThrowsExpectationFailedExceptionWhenJsonIsValidButDoesNotMatch($jsonOther, $jsonValue): void
     {
@@ -74,21 +80,116 @@ class JsonMatchesTest extends ConstraintTestCase
 
         try {
             $constraint->evaluate($jsonOther, '', false);
-            $this->fail(\sprintf('Expected %s to be thrown.', ExpectationFailedException::class));
+            $this->fail(sprintf('Expected %s to be thrown.', ExpectationFailedException::class));
         } catch (ExpectationFailedException $expectedException) {
             $comparisonFailure = $expectedException->getComparisonFailure();
             $this->assertNotNull($comparisonFailure);
-            $this->assertSame(Json::prettify($jsonOther), $comparisonFailure->getActualAsString());
-            $this->assertSame(Json::prettify($jsonValue), $comparisonFailure->getExpectedAsString());
+
+            [$error, $jsonOtherCanonicalized] = Json::canonicalize($jsonOther);
+            [$error, $jsonValueCanonicalized] = Json::canonicalize($jsonValue);
+
+            $this->assertSame(Json::prettify($jsonOtherCanonicalized), $comparisonFailure->getActualAsString());
+            $this->assertSame(Json::prettify($jsonValueCanonicalized), $comparisonFailure->getExpectedAsString());
             $this->assertSame('Failed asserting that two json values are equal.', $comparisonFailure->getMessage());
         }
     }
 
     public function testToString(): void
     {
-        $jsonValue  = \json_encode(['Mascott' => 'Tux']);
+        $jsonValue  = json_encode(['Mascott' => 'Tux']);
         $constraint = new JsonMatches($jsonValue);
 
         $this->assertEquals('matches JSON string "' . $jsonValue . '"', $constraint->toString());
+    }
+
+    public function testFailErrorWithInvalidValueAndOther(): void
+    {
+        $constraint = new JsonMatches('{"Mascott"::}');
+
+        try {
+            $constraint->evaluate('{"Mascott"::}', '', false);
+            $this->fail(sprintf('Expected %s to be thrown.', ExpectationFailedException::class));
+        } catch (ExpectationFailedException $e) {
+            $this->assertEquals(
+                <<<'EOF'
+Failed asserting that '{"Mascott"::}' matches JSON string "{"Mascott"::}".
+
+EOF
+                ,
+                TestFailure::exceptionToString($e)
+            );
+        }
+    }
+
+    public function testFailErrorWithValidValueAndInvalidOther(): void
+    {
+        $constraint = new JsonMatches('{"Mascott"::}');
+
+        try {
+            $constraint->evaluate('{"Mascott":"Tux"}', '', false);
+            $this->fail(sprintf('Expected %s to be thrown.', ExpectationFailedException::class));
+        } catch (ExpectationFailedException $e) {
+            $this->assertEquals(
+                <<<'EOF'
+Failed asserting that '{"Mascott":"Tux"}' matches JSON string "{"Mascott"::}".
+
+EOF
+                ,
+                TestFailure::exceptionToString($e)
+            );
+        }
+    }
+
+    public function testEmptyObjectNotConvertedToArrayInDiff(): void
+    {
+        $constraint = new JsonMatches('{"obj": {}, "val": 1}');
+
+        try {
+            $constraint->evaluate('{"obj": {}, "val": 2}', '', false);
+        } catch (ExpectationFailedException $e) {
+            $this->assertEquals(
+                <<<'EOF'
+Failed asserting that '{"obj": {}, "val": 2}' matches JSON string "{"obj": {}, "val": 1}".
+--- Expected
++++ Actual
+@@ @@
+ {
+     "obj": {},
+-    "val": 1
++    "val": 2
+ }
+
+EOF
+                ,
+                TestFailure::exceptionToString($e)
+            );
+        }
+    }
+
+    public function testObjectAreCanonicalizedInDiff(): void
+    {
+        $constraint = new JsonMatches('{"obj": {"x": 1, "y": 2}, "val": 1}');
+
+        try {
+            $constraint->evaluate('{"obj": {"y": 2, "x": 1}, "val": 2}', '', false);
+        } catch (ExpectationFailedException $e) {
+            $this->assertEquals(
+                <<<'EOF'
+Failed asserting that '{"obj": {"y": 2, "x": 1}, "val": 2}' matches JSON string "{"obj": {"x": 1, "y": 2}, "val": 1}".
+--- Expected
++++ Actual
+@@ @@
+         "x": 1,
+         "y": 2
+     },
+-    "val": 1
++    "val": 2
+ }
+
+EOF
+                ,
+                TestFailure::exceptionToString($e)
+            );
+        }
     }
 }

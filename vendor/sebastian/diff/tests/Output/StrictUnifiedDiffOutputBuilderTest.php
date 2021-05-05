@@ -7,29 +7,31 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Diff\Output;
 
+use function array_merge;
+use function preg_quote;
+use function sprintf;
+use function substr;
+use function time;
 use PHPUnit\Framework\TestCase;
 use SebastianBergmann\Diff\ConfigurationException;
 use SebastianBergmann\Diff\Differ;
 use SebastianBergmann\Diff\Utils\UnifiedDiffAssertTrait;
+use SplFileInfo;
 
 /**
- * @covers SebastianBergmann\Diff\Output\StrictUnifiedDiffOutputBuilder
+ * @covers \SebastianBergmann\Diff\Output\StrictUnifiedDiffOutputBuilder
  *
- * @uses SebastianBergmann\Diff\Differ
+ * @uses \SebastianBergmann\Diff\Differ
+ * @uses \SebastianBergmann\Diff\TimeEfficientLongestCommonSubsequenceCalculator
+ * @uses \SebastianBergmann\Diff\ConfigurationException
  */
 final class StrictUnifiedDiffOutputBuilderTest extends TestCase
 {
     use UnifiedDiffAssertTrait;
 
     /**
-     * @param string $expected
-     * @param string $from
-     * @param string $to
-     * @param array  $options
-     *
      * @dataProvider provideOutputBuildingCases
      */
     public function testOutputBuilding(string $expected, string $from, string $to, array $options): void
@@ -41,11 +43,6 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
     }
 
     /**
-     * @param string $expected
-     * @param string $from
-     * @param string $to
-     * @param array  $options
-     *
      * @dataProvider provideSample
      */
     public function testSample(string $expected, string $from, string $to, array $options): void
@@ -81,10 +78,6 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
     }
 
     /**
-     * @param string $expected
-     * @param string $from
-     * @param string $to
-     *
      * @dataProvider provideBasicDiffGeneration
      */
     public function testBasicDiffGeneration(string $expected, string $from, string $to): void
@@ -104,16 +97,11 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
     }
 
     /**
-     * @param string $expected
-     * @param string $from
-     * @param string $to
-     * @param array  $config
-     *
      * @dataProvider provideConfiguredDiffGeneration
      */
     public function testConfiguredDiffGeneration(string $expected, string $from, string $to, array $config = []): void
     {
-        $diff = $this->getDiffer(\array_merge([
+        $diff = $this->getDiffer(array_merge([
             'fromFile' => 'input.txt',
             'toFile'   => 'output.txt',
         ], $config))->diff($from, $to);
@@ -148,7 +136,7 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
                 "1\n",
             ],
             [
-'--- input.txt
+                '--- input.txt
 +++ output.txt
 @@ -4 +4 @@
 -X
@@ -161,7 +149,7 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
                 ],
             ],
             [
-'--- input.txt
+                '--- input.txt
 +++ output.txt
 @@ -3,3 +3,3 @@
  3
@@ -176,7 +164,7 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
                 ],
             ],
             [
-'--- input.txt
+                '--- input.txt
 +++ output.txt
 @@ -1,10 +1,10 @@
  1
@@ -198,7 +186,7 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
                 ],
             ],
             [
-'--- input.txt
+                '--- input.txt
 +++ output.txt
 @@ -1,0 +1,2 @@
 +
@@ -208,7 +196,7 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
                 "\nA\n",
             ],
             [
-'--- input.txt
+                '--- input.txt
 +++ output.txt
 @@ -1,2 +1,0 @@
 -
@@ -273,7 +261,7 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
 
         $diff = $differ->diff("A\nB\n", "A\nX\n");
         $this->assertSame(
-'--- input.txt
+            '--- input.txt
 +++ output.txt
 @@ -1,2 +1,2 @@
  A
@@ -304,22 +292,19 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
     }
 
     /**
-     * @param array  $options
-     * @param string $message
-     *
      * @dataProvider provideInvalidConfiguration
      */
     public function testInvalidConfiguration(array $options, string $message): void
     {
         $this->expectException(ConfigurationException::class);
-        $this->expectExceptionMessageRegExp(\sprintf('#^%s$#', \preg_quote($message, '#')));
+        $this->expectExceptionMessageMatches(sprintf('#^%s$#', preg_quote($message, '#')));
 
         new StrictUnifiedDiffOutputBuilder($options);
     }
 
     public function provideInvalidConfiguration(): array
     {
-        $time = \time();
+        $time = time();
 
         return [
             [
@@ -339,7 +324,7 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
                 'Option "commonLineThreshold" must be an int > 0, got "integer#0".',
             ],
             [
-                ['fromFile' => new \SplFileInfo(__FILE__)],
+                ['fromFile' => new SplFileInfo(__FILE__)],
                 'Option "fromFile" must be a string, got "SplFileInfo".',
             ],
             [
@@ -369,11 +354,6 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
     }
 
     /**
-     * @param string $expected
-     * @param string $from
-     * @param string $to
-     * @param int    $threshold
-     *
      * @dataProvider provideCommonLineThresholdCases
      */
     public function testCommonLineThreshold(string $expected, string $from, string $to, int $threshold): void
@@ -393,7 +373,7 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
     {
         return [
             [
-'--- input.txt
+                '--- input.txt
 +++ output.txt
 @@ -2,3 +2,3 @@
 -X
@@ -410,7 +390,7 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
                 2,
             ],
             [
-'--- input.txt
+                '--- input.txt
 +++ output.txt
 @@ -2 +2 @@
 -X
@@ -427,12 +407,6 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
     }
 
     /**
-     * @param string $expected
-     * @param string $from
-     * @param string $to
-     * @param int    $contextLines
-     * @param int    $commonLineThreshold
-     *
      * @dataProvider provideContextLineConfigurationCases
      */
     public function testContextLineConfiguration(string $expected, string $from, string $to, int $contextLines, int $commonLineThreshold = 6): void
@@ -476,7 +450,7 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
                 "A\nB\nX",
                 "A\nB\nY",
                 1,
-],
+            ],
             'EOF 2' => [
                 "--- input.txt\n+++ output.txt\n@@ -1,3 +1,3 @@
  A
@@ -554,25 +528,25 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
             'M no linebreak EOF .1' => [
                 "--- input.txt\n+++ output.txt\n@@ -1,14 +1,14 @@\n A\n B\n C\n D\n E\n F\n-X\n+Y\n G\n H\n I\n J\n K\n L\n-M\n+M\n\\ No newline at end of file\n",
                 $from,
-                \substr($to, 0, -1),
+                substr($to, 0, -1),
                 7,
             ],
             'M no linebreak EOF .2' => [
                 "--- input.txt\n+++ output.txt\n@@ -1,14 +1,14 @@\n A\n B\n C\n D\n E\n F\n-X\n+Y\n G\n H\n I\n J\n K\n L\n-M\n\\ No newline at end of file\n+M\n",
-                \substr($from, 0, -1),
+                substr($from, 0, -1),
                 $to,
                 7,
             ],
             'M no linebreak EOF .3' => [
                 "--- input.txt\n+++ output.txt\n@@ -1,14 +1,14 @@\n A\n B\n C\n D\n E\n F\n-X\n+Y\n G\n H\n I\n J\n K\n L\n M\n",
-                \substr($from, 0, -1),
-                \substr($to, 0, -1),
+                substr($from, 0, -1),
+                substr($to, 0, -1),
                 7,
             ],
             'M no linebreak EOF .4' => [
                 "--- input.txt\n+++ output.txt\n@@ -1,14 +1,14 @@\n A\n B\n C\n D\n E\n F\n-X\n+Y\n G\n H\n I\n J\n K\n L\n M\n\\ No newline at end of file\n",
-                \substr($from, 0, -1),
-                \substr($to, 0, -1),
+                substr($from, 0, -1),
+                substr($to, 0, -1),
                 10000,
                 10000,
             ],
@@ -672,10 +646,6 @@ final class StrictUnifiedDiffOutputBuilderTest extends TestCase
 
     /**
      * Returns a new instance of a Differ with a new instance of the class (DiffOutputBuilderInterface) under test.
-     *
-     * @param array $options
-     *
-     * @return Differ
      */
     private function getDiffer(array $options = []): Differ
     {

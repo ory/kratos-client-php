@@ -1,25 +1,25 @@
 --TEST--
 https://github.com/sebastianbergmann/phpunit/issues/3380
 --FILE--
-<?php
-$tmpResultCache = tempnam(sys_get_temp_dir(), __FILE__);
+<?php declare(strict_types=1);
+$tmpResultCache = sys_get_temp_dir() . DIRECTORY_SEPARATOR . sha1(__FILE__);
+
 file_put_contents($tmpResultCache, file_get_contents(__DIR__ . '/../../../../_files/DataproviderExecutionOrderTest_result_cache.txt'));
 
-$_SERVER['argv'][1] = '--no-configuration';
-$_SERVER['argv'][2] = '--order-by=defects';
-$_SERVER['argv'][3] = '--testdox';
-$_SERVER['argv'][4] = '--cache-result';
-$_SERVER['argv'][5] = '--cache-result-file=' . $tmpResultCache;
-$_SERVER['argv'][6] = \dirname(\dirname(\dirname(__DIR__))) . '/../_files/DataproviderExecutionOrderTest.php';
+$_SERVER['argv'][] = '--do-not-cache-result';
+$_SERVER['argv'][] = '--no-configuration';
+$_SERVER['argv'][] = '--order-by=defects';
+$_SERVER['argv'][] = '--testdox';
+$_SERVER['argv'][] = '--cache-result';
+$_SERVER['argv'][] = '--cache-result-file=' . $tmpResultCache;
+$_SERVER['argv'][] = \dirname(\dirname(\dirname(__DIR__))) . '/../_files/DataproviderExecutionOrderTest.php';
 
 require __DIR__ . '/../../../../bootstrap.php';
 PHPUnit\TextUI\Command::main();
-
-unlink($tmpResultCache);
 --EXPECTF--
 PHPUnit %s by Sebastian Bergmann and contributors.
 
-DataproviderExecutionOrder
+Dataprovider Execution Order
  ✔ First test that always works
  ✔ Add numbers with a dataprovider with data set "1+2=3"
  ✔ Add numbers with a dataprovider with data set "2+1=3"
@@ -44,7 +44,7 @@ Time: %s, Memory: %s
 
 Summary of non-successful tests:
 
-DataproviderExecutionOrder
+Dataprovider Execution Order
  ✘ Add numbers with a dataprovider with data set "1+1=3"
    │
    │ Failed asserting that 2 is identical to 3.
@@ -61,3 +61,6 @@ DataproviderExecutionOrder
 
 FAILURES!
 Tests: 8, Assertions: 8, Failures: 2.
+--CLEAN--
+<?php declare(strict_types=1);
+unlink(sys_get_temp_dir() . DIRECTORY_SEPARATOR . sha1(__FILE__));

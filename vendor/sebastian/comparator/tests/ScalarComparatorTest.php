@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of sebastian/comparator.
  *
@@ -9,6 +9,7 @@
  */
 namespace SebastianBergmann\Comparator;
 
+use function tmpfile;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -46,7 +47,7 @@ final class ScalarComparatorTest extends TestCase
             ['1', true],
             [1, true],
             [0, false],
-            [0.1, '0.1']
+            [0.1, '0.1'],
         ];
     }
 
@@ -57,7 +58,7 @@ final class ScalarComparatorTest extends TestCase
             ['string', []],
             [new ClassWithToString, new ClassWithToString],
             [false, new ClassWithToString],
-            [\tmpfile(), \tmpfile()]
+            [tmpfile(), tmpfile()],
         ];
     }
 
@@ -81,7 +82,7 @@ final class ScalarComparatorTest extends TestCase
             [false, null],
             [false, false],
             [true, true],
-            [null, null]
+            [null, null],
         ];
     }
 
@@ -122,7 +123,7 @@ final class ScalarComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -132,7 +133,7 @@ final class ScalarComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 

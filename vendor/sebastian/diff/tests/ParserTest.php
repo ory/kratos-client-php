@@ -7,18 +7,18 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Diff;
 
+use function unserialize;
 use PHPUnit\Framework\TestCase;
 use SebastianBergmann\Diff\Utils\FileUtils;
 
 /**
- * @covers SebastianBergmann\Diff\Parser
+ * @covers \SebastianBergmann\Diff\Parser
  *
- * @uses SebastianBergmann\Diff\Chunk
- * @uses SebastianBergmann\Diff\Diff
- * @uses SebastianBergmann\Diff\Line
+ * @uses \SebastianBergmann\Diff\Chunk
+ * @uses \SebastianBergmann\Diff\Diff
+ * @uses \SebastianBergmann\Diff\Line
  */
 final class ParserTest extends TestCase
 {
@@ -69,6 +69,49 @@ final class ParserTest extends TestCase
         $this->assertCount(5, $chunks[0]->getLines());
         $this->assertCount(5, $chunks[1]->getLines());
         $this->assertCount(4, $chunks[2]->getLines());
+    }
+
+    public function testParseWithSpacesInFileNames(): void
+    {
+        $content =
+<<<PATCH
+diff --git a/Foo Bar.txt b/Foo Bar.txt
+index abcdefg..abcdefh 100644
+--- a/Foo Bar.txt
++++ b/Foo Bar.txt
+@@ -20,4 +20,5 @@ class Foo
+     const ONE = 1;
+     const TWO = 2;
++    const THREE = 3;
+     const FOUR = 4;
+
+PATCH;
+
+        $diffs = $this->parser->parse($content);
+
+        $this->assertEquals('a/Foo Bar.txt', $diffs[0]->getFrom());
+        $this->assertEquals('b/Foo Bar.txt', $diffs[0]->getTo());
+    }
+
+    public function testParseWithSpacesInFileNamesAndTimesamp(): void
+    {
+        $content =
+            <<<PATCH
+diff --git a/Foo Bar.txt b/Foo Bar.txt
+index abcdefg..abcdefh 100644
+--- "a/Foo Bar.txt"  2020-10-02 13:31:52.938811371 +0200
++++ "b/Foo Bar.txt"  2020-10-02 13:31:50.022792064 +0200
+@@ -20,4 +20,5 @@ class Foo
+     const ONE = 1;
+     const TWO = 2;
++    const THREE = 3;
+     const FOUR = 4;
+PATCH;
+
+        $diffs = $this->parser->parse($content);
+
+        $this->assertEquals('a/Foo Bar.txt', $diffs[0]->getFrom());
+        $this->assertEquals('b/Foo Bar.txt', $diffs[0]->getTo());
     }
 
     public function testParseWithRemovedLines(): void
@@ -146,8 +189,7 @@ END;
     }
 
     /**
-     * @param string $diff
-     * @param Diff[] $expected
+     * @psalm-param list<Diff> $expected
      *
      * @dataProvider diffProvider
      */
@@ -163,7 +205,7 @@ END;
         return [
             [
                 "--- old.txt	2014-11-04 08:51:02.661868729 +0300\n+++ new.txt	2014-11-04 08:51:02.665868730 +0300\n@@ -1,3 +1,4 @@\n+2222111\n 1111111\n 1111111\n 1111111\n@@ -5,10 +6,8 @@\n 1111111\n 1111111\n 1111111\n +1121211\n 1111111\n -1111111\n -1111111\n -2222222\n 2222222\n 2222222\n 2222222\n@@ -17,5 +16,6 @@\n 2222222\n 2222222\n 2222222\n +2122212\n 2222222\n 2222222\n",
-                \unserialize(FileUtils::getFileContent(__DIR__ . '/fixtures/serialized_diff.bin')),
+                unserialize(FileUtils::getFileContent(__DIR__ . '/fixtures/serialized_diff.bin')),
             ],
         ];
     }

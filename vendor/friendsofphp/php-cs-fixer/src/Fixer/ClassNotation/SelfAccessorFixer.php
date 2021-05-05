@@ -150,7 +150,7 @@ class Sample
                 }
                 $prevToken = $tokens[$tokens->getPrevMeaningfulToken($classStartIndex)];
             }
-            if ($prevToken->isGivenKind([T_OBJECT_OPERATOR, T_STRING])) {
+            if ($prevToken->isGivenKind(T_STRING) || $prevToken->isObjectOperator()) {
                 continue;
             }
 
@@ -178,13 +178,11 @@ class Sample
         foreach (array_reverse(Preg::split('/(\\\\)/', $namespace, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)) as $piece) {
             $index = $tokens->getPrevMeaningfulToken($index);
             if ('\\' === $piece) {
-                if (!$tokens[$index]->isGivenKind([T_NS_SEPARATOR])) {
+                if (!$tokens[$index]->isGivenKind(T_NS_SEPARATOR)) {
                     return null;
                 }
-            } else {
-                if (!$tokens[$index]->equals([T_STRING, $piece], false)) {
-                    return null;
-                }
+            } elseif (!$tokens[$index]->equals([T_STRING, $piece], false)) {
+                return null;
             }
         }
 

@@ -1,51 +1,53 @@
-<?php
+<?php declare(strict_types=1);
 /*
- * This file is part of the php-code-coverage package.
+ * This file is part of phpunit/php-code-coverage.
  *
  * (c) Sebastian Bergmann <sebastian@phpunit.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage\Report\Xml;
 
+use const DIRECTORY_SEPARATOR;
+use function file_get_contents;
+use function iterator_count;
+use function unlink;
+use FilesystemIterator;
 use SebastianBergmann\CodeCoverage\TestCase;
 
-class XmlTest extends TestCase
+final class XmlTest extends TestCase
 {
     private static $TEST_REPORT_PATH_SOURCE;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
 
         self::$TEST_REPORT_PATH_SOURCE = TEST_FILES_PATH . 'Report' . DIRECTORY_SEPARATOR . 'XML';
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
-        $tmpFilesIterator = new \FilesystemIterator(self::$TEST_TMP_PATH);
-
-        foreach ($tmpFilesIterator as $path => $fileInfo) {
+        foreach (new FilesystemIterator(self::$TEST_TMP_PATH) as $path => $fileInfo) {
             /* @var \SplFileInfo $fileInfo */
             unlink($fileInfo->getPathname());
         }
     }
 
-    public function testForBankAccountTest()
+    public function testForBankAccountTest(): void
     {
         $expectedFilesPath = self::$TEST_REPORT_PATH_SOURCE . DIRECTORY_SEPARATOR . 'CoverageForBankAccount';
 
         $xml = new Facade('1.0.0');
-        $xml->process($this->getCoverageForBankAccount(), self::$TEST_TMP_PATH);
+        $xml->process($this->getLineCoverageForBankAccount(), self::$TEST_TMP_PATH);
 
         $this->assertFilesEquals($expectedFilesPath, self::$TEST_TMP_PATH);
     }
 
-    public function testForFileWithIgnoredLines()
+    public function testForFileWithIgnoredLines(): void
     {
         $expectedFilesPath = self::$TEST_REPORT_PATH_SOURCE . DIRECTORY_SEPARATOR . 'CoverageForFileWithIgnoredLines';
 
@@ -55,7 +57,7 @@ class XmlTest extends TestCase
         $this->assertFilesEquals($expectedFilesPath, self::$TEST_TMP_PATH);
     }
 
-    public function testForClassWithAnonymousFunction()
+    public function testForClassWithAnonymousFunction(): void
     {
         $expectedFilesPath = self::$TEST_REPORT_PATH_SOURCE . DIRECTORY_SEPARATOR . 'CoverageForClassWithAnonymousFunction';
 
@@ -69,10 +71,10 @@ class XmlTest extends TestCase
      * @param string $expectedFilesPath
      * @param string $actualFilesPath
      */
-    private function assertFilesEquals($expectedFilesPath, $actualFilesPath)
+    private function assertFilesEquals($expectedFilesPath, $actualFilesPath): void
     {
-        $expectedFilesIterator = new \FilesystemIterator($expectedFilesPath);
-        $actualFilesIterator   = new \FilesystemIterator($actualFilesPath);
+        $expectedFilesIterator = new FilesystemIterator($expectedFilesPath);
+        $actualFilesIterator   = new FilesystemIterator($actualFilesPath);
 
         $this->assertEquals(
             iterator_count($expectedFilesIterator),
@@ -91,7 +93,7 @@ class XmlTest extends TestCase
             $this->assertStringMatchesFormatFile(
                 $fileInfo->getPathname(),
                 file_get_contents($actualFile),
-                "${filename} not match"
+                "{$filename} not match"
             );
         }
     }

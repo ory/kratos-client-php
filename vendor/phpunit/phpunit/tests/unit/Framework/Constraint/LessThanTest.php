@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -12,7 +12,10 @@ namespace PHPUnit\Framework\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestFailure;
 
-class LessThanTest extends ConstraintTestCase
+/**
+ * @small
+ */
+final class LessThanTest extends ConstraintTestCase
 {
     public function testConstraintLessThan(): void
     {
@@ -27,7 +30,7 @@ class LessThanTest extends ConstraintTestCase
             $constraint->evaluate(1);
         } catch (ExpectationFailedException $e) {
             $this->assertEquals(
-                <<<EOF
+                <<<'EOF'
 Failed asserting that 1 is less than 1.
 
 EOF
@@ -49,7 +52,7 @@ EOF
             $constraint->evaluate(1, 'custom message');
         } catch (ExpectationFailedException $e) {
             $this->assertEquals(
-                <<<EOF
+                <<<'EOF'
 custom message
 Failed asserting that 1 is less than 1.
 

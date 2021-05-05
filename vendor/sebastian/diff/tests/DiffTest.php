@@ -7,15 +7,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Diff;
 
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers SebastianBergmann\Diff\Diff
+ * @covers \SebastianBergmann\Diff\Diff
  *
- * @uses SebastianBergmann\Diff\Chunk
+ * @uses \SebastianBergmann\Diff\Chunk
  */
 final class DiffTest extends TestCase
 {

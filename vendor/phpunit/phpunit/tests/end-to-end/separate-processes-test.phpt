@@ -2,8 +2,9 @@
 phpunit --no-configuration ../../_files/SeparateProcessesTest.php
 --FILE--
 <?php declare(strict_types=1);
-$_SERVER['argv'][1] = '--no-configuration';
-$_SERVER['argv'][2] = __DIR__ . '/../_files/SeparateProcessesTest.php';
+$_SERVER['argv'][] = '--do-not-cache-result';
+$_SERVER['argv'][] = '--no-configuration';
+$_SERVER['argv'][] = __DIR__ . '/../_files/SeparateProcessesTest.php';
 
 require __DIR__ . '/../bootstrap.php';
 PHPUnit\TextUI\Command::main();
@@ -16,10 +17,10 @@ Time: %s, Memory: %s
 
 There were 2 failures:
 
-1) SeparateProcessesTest::testFoo
+1) PHPUnit\TestFixture\SeparateProcessesTest::testFoo
 Test was run in child process and ended unexpectedly
 
-2) SeparateProcessesTest::testBar
+2) PHPUnit\TestFixture\SeparateProcessesTest::testBar
 Test was run in child process and ended unexpectedly
 
 FAILURES!

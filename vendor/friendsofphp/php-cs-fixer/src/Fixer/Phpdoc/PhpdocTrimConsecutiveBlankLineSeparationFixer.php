@@ -61,6 +61,17 @@ function fnc($foo) {}
 
     /**
      * {@inheritdoc}
+     *
+     * Must run before PhpdocAlignFixer.
+     * Must run after AlignMultilineCommentFixer, AlignMultilineCommentFixer, CommentToPhpdocFixer, PhpdocIndentFixer, PhpdocScalarFixer, PhpdocToCommentFixer, PhpdocTypesFixer.
+     */
+    public function getPriority()
+    {
+        return -41;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function isCandidate(Tokens $tokens)
     {
@@ -169,6 +180,8 @@ function fnc($foo) {}
                 return $index;
             }
         }
+
+        return null;
     }
 
     /**

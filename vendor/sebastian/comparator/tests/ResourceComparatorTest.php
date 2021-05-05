@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of sebastian/comparator.
  *
@@ -9,6 +9,7 @@
  */
 namespace SebastianBergmann\Comparator;
 
+use function tmpfile;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -32,46 +33,46 @@ final class ResourceComparatorTest extends TestCase
 
     public function acceptsSucceedsProvider()
     {
-        $tmpfile1 = \tmpfile();
-        $tmpfile2 = \tmpfile();
+        $tmpfile1 = tmpfile();
+        $tmpfile2 = tmpfile();
 
         return [
             [$tmpfile1, $tmpfile1],
             [$tmpfile2, $tmpfile2],
-            [$tmpfile1, $tmpfile2]
+            [$tmpfile1, $tmpfile2],
         ];
     }
 
     public function acceptsFailsProvider()
     {
-        $tmpfile1 = \tmpfile();
+        $tmpfile1 = tmpfile();
 
         return [
             [$tmpfile1, null],
             [null, $tmpfile1],
-            [null, null]
+            [null, null],
         ];
     }
 
     public function assertEqualsSucceedsProvider()
     {
-        $tmpfile1 = \tmpfile();
-        $tmpfile2 = \tmpfile();
+        $tmpfile1 = tmpfile();
+        $tmpfile2 = tmpfile();
 
         return [
             [$tmpfile1, $tmpfile1],
-            [$tmpfile2, $tmpfile2]
+            [$tmpfile2, $tmpfile2],
         ];
     }
 
     public function assertEqualsFailsProvider()
     {
-        $tmpfile1 = \tmpfile();
-        $tmpfile2 = \tmpfile();
+        $tmpfile1 = tmpfile();
+        $tmpfile2 = tmpfile();
 
         return [
             [$tmpfile1, $tmpfile2],
-            [$tmpfile2, $tmpfile1]
+            [$tmpfile2, $tmpfile1],
         ];
     }
 
@@ -81,7 +82,7 @@ final class ResourceComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -91,7 +92,7 @@ final class ResourceComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 

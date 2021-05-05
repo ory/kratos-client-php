@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of the Recursion Context package.
  *
@@ -7,10 +7,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\RecursionContext;
 
+use const PHP_INT_MAX;
+use function fopen;
+use function spl_object_hash;
 use PHPUnit\Framework\TestCase;
+use SplObjectStorage;
+use stdClass;
 
 /**
  * @covers SebastianBergmann\RecursionContext\Context
@@ -22,32 +26,32 @@ class ContextTest extends TestCase
      */
     private $context;
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->context = new Context();
+        $this->context = new Context;
     }
 
-    public function failsProvider()
+    public function failsProvider(): array
     {
-        return array(
-            array(true),
-            array(false),
-            array(null),
-            array('string'),
-            array(1),
-            array(1.5),
-            array(fopen('php://memory', 'r'))
-        );
+        return [
+            [true],
+            [false],
+            [null],
+            ['string'],
+            [1],
+            [1.5],
+            [fopen('php://memory', 'r')],
+        ];
     }
 
-    public function valuesProvider()
+    public function valuesProvider(): array
     {
-        $obj2      = new \stdClass();
+        $obj2      = new stdClass;
         $obj2->foo = 'bar';
 
-        $obj3 = (object) array(1,2,"Test\r\n",4,5,6,7,8);
+        $obj3 = (object) [1, 2, "Test\r\n", 4, 5, 6, 7, 8];
 
-        $obj = new \stdClass();
+        $obj = new stdClass;
         //@codingStandardsIgnoreStart
         $obj->null = null;
         //@codingStandardsIgnoreEnd
@@ -58,32 +62,30 @@ class ContextTest extends TestCase
         $obj->text        = "this\nis\na\nvery\nvery\nvery\nvery\nvery\nvery\rlong\n\rtext";
         $obj->object      = $obj2;
         $obj->objectagain = $obj2;
-        $obj->array       = array('foo' => 'bar');
-        $obj->array2      = array(1,2,3,4,5,6);
-        $obj->array3      = array($obj, $obj2, $obj3);
+        $obj->array       = ['foo' => 'bar'];
+        $obj->array2      = [1, 2, 3, 4, 5, 6];
+        $obj->array3      = [$obj, $obj2, $obj3];
         $obj->self        = $obj;
 
-        $storage = new \SplObjectStorage();
+        $storage = new SplObjectStorage;
         $storage->attach($obj2);
         $storage->foo = $obj2;
 
-        return array(
-            array($obj, spl_object_hash($obj)),
-            array($obj2, spl_object_hash($obj2)),
-            array($obj3, spl_object_hash($obj3)),
-            array($storage, spl_object_hash($storage)),
-            array($obj->array, 0),
-            array($obj->array2, 0),
-            array($obj->array3, 0)
-        );
+        return [
+            [$obj, spl_object_hash($obj)],
+            [$obj2, spl_object_hash($obj2)],
+            [$obj3, spl_object_hash($obj3)],
+            [$storage, spl_object_hash($storage)],
+            [$obj->array, 0],
+            [$obj->array2, 0],
+            [$obj->array3, 0],
+        ];
     }
 
     /**
-     * @covers       SebastianBergmann\RecursionContext\Context::add
-     * @uses         SebastianBergmann\RecursionContext\InvalidArgumentException
      * @dataProvider failsProvider
      */
-    public function testAddFails($value)
+    public function testAddFails($value): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Only arrays and objects are supported');
@@ -92,11 +94,9 @@ class ContextTest extends TestCase
     }
 
     /**
-     * @covers       SebastianBergmann\RecursionContext\Context::contains
-     * @uses         SebastianBergmann\RecursionContext\InvalidArgumentException
      * @dataProvider failsProvider
      */
-    public function testContainsFails($value)
+    public function testContainsFails($value): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Only arrays and objects are supported');
@@ -105,10 +105,9 @@ class ContextTest extends TestCase
     }
 
     /**
-     * @covers       SebastianBergmann\RecursionContext\Context::add
      * @dataProvider valuesProvider
      */
-    public function testAdd($value, $key)
+    public function testAdd($value, $key): void
     {
         $this->assertEquals($key, $this->context->add($value));
 
@@ -116,13 +115,20 @@ class ContextTest extends TestCase
         $this->assertEquals($key, $this->context->add($value));
     }
 
+    public function testAdd2(): void
+    {
+        $a = [PHP_INT_MAX => 'foo'];
+
+        $this->context->add($a);
+
+        $this->assertIsInt($this->context->contains($a));
+    }
+
     /**
-     * @covers       SebastianBergmann\RecursionContext\Context::contains
-     * @uses         SebastianBergmann\RecursionContext\Context::add
      * @depends      testAdd
      * @dataProvider valuesProvider
      */
-    public function testContainsFound($value, $key)
+    public function testContainsFound($value, $key): void
     {
         $this->context->add($value);
         $this->assertEquals($key, $this->context->contains($value));
@@ -132,10 +138,9 @@ class ContextTest extends TestCase
     }
 
     /**
-     * @covers       SebastianBergmann\RecursionContext\Context::contains
      * @dataProvider valuesProvider
      */
-    public function testContainsNotFound($value)
+    public function testContainsNotFound($value): void
     {
         $this->assertFalse($this->context->contains($value));
     }

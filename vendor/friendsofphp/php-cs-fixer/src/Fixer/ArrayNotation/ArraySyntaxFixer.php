@@ -68,10 +68,11 @@ final class ArraySyntaxFixer extends AbstractFixer implements ConfigurationDefin
 
     /**
      * {@inheritdoc}
+     *
+     * Must run before BinaryOperatorSpacesFixer, TernaryOperatorSpacesFixer.
      */
     public function getPriority()
     {
-        // should be run before the BinaryOperatorSpacesFixer and TernaryOperatorSpacesFixer.
         return 1;
     }
 
@@ -104,7 +105,7 @@ final class ArraySyntaxFixer extends AbstractFixer implements ConfigurationDefin
         return new FixerConfigurationResolver([
             (new FixerOptionBuilder('syntax', 'Whether to use the `long` or `short` array syntax.'))
                 ->setAllowedValues(['long', 'short'])
-                ->setDefault('long')
+                ->setDefault('long') // TODO @3.0 change to short
                 ->getOption(),
         ]);
     }

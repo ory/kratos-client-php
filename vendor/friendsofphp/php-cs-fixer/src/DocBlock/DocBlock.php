@@ -13,6 +13,8 @@
 namespace PhpCsFixer\DocBlock;
 
 use PhpCsFixer\Preg;
+use PhpCsFixer\Tokenizer\Analyzer\Analysis\NamespaceAnalysis;
+use PhpCsFixer\Tokenizer\Analyzer\Analysis\NamespaceUseAnalysis;
 
 /**
  * This class represents a docblock.
@@ -20,6 +22,8 @@ use PhpCsFixer\Preg;
  * It internally splits it up into "lines" that we can manipulate.
  *
  * @author Graham Campbell <graham@alt-three.com>
+ *
+ * @final
  */
 class DocBlock
 {
@@ -38,15 +42,30 @@ class DocBlock
     private $annotations;
 
     /**
+     * @var null|NamespaceAnalysis
+     */
+    private $namespace;
+
+    /**
+     * @var NamespaceUseAnalysis[]
+     */
+    private $namespaceUses;
+
+    /**
      * Create a new docblock instance.
      *
-     * @param string $content
+     * @param string                 $content
+     * @param null|NamespaceAnalysis $namespace
+     * @param NamespaceUseAnalysis[] $namespaceUses
      */
-    public function __construct($content)
+    public function __construct($content, $namespace = null, array $namespaceUses = [])
     {
         foreach (Preg::split('/([^\n\r]+\R*)/', $content, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE) as $line) {
             $this->lines[] = new Line($line);
         }
+
+        $this->namespace = $namespace;
+        $this->namespaceUses = $namespaceUses;
     }
 
     /**
@@ -78,9 +97,7 @@ class DocBlock
      */
     public function getLine($pos)
     {
-        if (isset($this->lines[$pos])) {
-            return $this->lines[$pos];
-        }
+        return isset($this->lines[$pos]) ? $this->lines[$pos] : null;
     }
 
     /**
@@ -101,7 +118,7 @@ class DocBlock
             if ($this->lines[$index]->containsATag()) {
                 // get all the lines that make up the annotation
                 $lines = \array_slice($this->lines, $index, $this->findAnnotationLength($index), true);
-                $annotation = new Annotation($lines);
+                $annotation = new Annotation($lines, $this->namespace, $this->namespaceUses);
                 // move the index to the end of the annotation to avoid
                 // checking it again because we know the lines inside the
                 // current annotation cannot be part of another annotation
@@ -133,7 +150,7 @@ class DocBlock
 
         $lineContent = $this->getSingleLineDocBlockEntry($this->lines[0]);
 
-        if ('*' === $lineContent) {
+        if ('' === $lineContent) {
             $this->lines = [
                 new Line('/**'.$lineEnd),
                 new Line($indent.' *'.$lineEnd),
@@ -184,9 +201,7 @@ class DocBlock
     {
         $annotations = $this->getAnnotations();
 
-        if (isset($annotations[$pos])) {
-            return $annotations[$pos];
-        }
+        return isset($annotations[$pos]) ? $annotations[$pos] : null;
     }
 
     /**
@@ -261,19 +276,13 @@ class DocBlock
 
         $lineString = str_replace('*/', '', $lineString);
         $lineString = trim($lineString);
-        $lineArray = str_split($lineString);
-        $i = \count($lineArray);
 
-        do {
-            --$i;
-        } while ('*' !== $lineString[$i] && '*' !== $lineString[$i - 1] && '/' !== $lineString[$i - 2]);
-
-        if (' ' === $lineString[$i]) {
-            ++$i;
+        if ('/**' === substr($lineString, 0, 3)) {
+            $lineString = substr($lineString, 3);
+        } elseif ('*' === substr($lineString, 0, 1)) {
+            $lineString = substr($lineString, 1);
         }
 
-        $lineArray = \array_slice($lineArray, $i);
-
-        return implode('', $lineArray);
+        return trim($lineString);
     }
 }

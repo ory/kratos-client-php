@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -9,6 +9,7 @@
  */
 namespace Foo\DataProviderIssue2922;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -26,6 +27,6 @@ class FirstTest extends TestCase
 
     public function provide(): void
     {
-        throw new \Exception;
+        throw new Exception;
     }
 }

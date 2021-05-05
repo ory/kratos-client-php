@@ -1,159 +1,97 @@
-<?php
+<?php declare(strict_types=1);
 /*
- * This file is part of the php-code-coverage package.
+ * This file is part of phpunit/php-code-coverage.
  *
  * (c) Sebastian Bergmann <sebastian@phpunit.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage;
 
+use function realpath;
 use PHPUnit\Framework\TestCase;
-use SebastianBergmann\FileIterator\Facade as FileIteratorFacade;
 
-class FilterTest extends TestCase
+/**
+ * @covers \SebastianBergmann\CodeCoverage\Filter
+ */
+final class FilterTest extends TestCase
 {
     /**
      * @var Filter
      */
     private $filter;
 
-    /**
-     * @var array
-     */
-    private $files = [];
-
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->filter = unserialize('O:37:"SebastianBergmann\CodeCoverage\Filter":0:{}');
+        $this->filter = new Filter;
+    }
 
-        $this->files = [
-            TEST_FILES_PATH . 'BankAccount.php',
-            TEST_FILES_PATH . 'BankAccountTest.php',
-            TEST_FILES_PATH . 'CoverageClassExtendedTest.php',
-            TEST_FILES_PATH . 'CoverageClassTest.php',
-            TEST_FILES_PATH . 'CoverageFunctionParenthesesTest.php',
-            TEST_FILES_PATH . 'CoverageFunctionParenthesesWhitespaceTest.php',
-            TEST_FILES_PATH . 'CoverageFunctionTest.php',
-            TEST_FILES_PATH . 'CoverageMethodOneLineAnnotationTest.php',
-            TEST_FILES_PATH . 'CoverageMethodParenthesesTest.php',
-            TEST_FILES_PATH . 'CoverageMethodParenthesesWhitespaceTest.php',
-            TEST_FILES_PATH . 'CoverageMethodTest.php',
-            TEST_FILES_PATH . 'CoverageNoneTest.php',
-            TEST_FILES_PATH . 'CoverageNotPrivateTest.php',
-            TEST_FILES_PATH . 'CoverageNotProtectedTest.php',
-            TEST_FILES_PATH . 'CoverageNotPublicTest.php',
-            TEST_FILES_PATH . 'CoverageNothingTest.php',
-            TEST_FILES_PATH . 'CoveragePrivateTest.php',
-            TEST_FILES_PATH . 'CoverageProtectedTest.php',
-            TEST_FILES_PATH . 'CoveragePublicTest.php',
-            TEST_FILES_PATH . 'CoverageTwoDefaultClassAnnotations.php',
-            TEST_FILES_PATH . 'CoveredClass.php',
-            TEST_FILES_PATH . 'CoveredFunction.php',
-            TEST_FILES_PATH . 'Crash.php',
-            TEST_FILES_PATH . 'NamespaceCoverageClassExtendedTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageClassTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageCoversClassPublicTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageCoversClassTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageMethodTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageNotPrivateTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageNotProtectedTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageNotPublicTest.php',
-            TEST_FILES_PATH . 'NamespaceCoveragePrivateTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageProtectedTest.php',
-            TEST_FILES_PATH . 'NamespaceCoveragePublicTest.php',
-            TEST_FILES_PATH . 'NamespaceCoveredClass.php',
-            TEST_FILES_PATH . 'NotExistingCoveredElementTest.php',
-            TEST_FILES_PATH . 'source_with_class_and_anonymous_function.php',
-            TEST_FILES_PATH . 'source_with_ignore.php',
-            TEST_FILES_PATH . 'source_with_namespace.php',
-            TEST_FILES_PATH . 'source_with_oneline_annotations.php',
-            TEST_FILES_PATH . 'source_without_ignore.php',
-            TEST_FILES_PATH . 'source_without_namespace.php'
+    public function testIsInitiallyEmpty(): void
+    {
+        $this->assertTrue($this->filter->isEmpty());
+    }
+
+    public function testSingleFileCanBeAdded(): void
+    {
+        $file = realpath(__DIR__ . '/../_files/filter/a.php');
+
+        $this->filter->includeFile($file);
+
+        $this->assertFalse($this->filter->isEmpty());
+
+        $this->assertSame(
+            [
+                $file,
+            ],
+            $this->filter->files()
+        );
+    }
+
+    public function testMultipleFilesCanBeAdded(): void
+    {
+        $files = [
+            realpath(__DIR__ . '/../_files/filter/a.php'),
+            realpath(__DIR__ . '/../_files/filter/b.php'),
         ];
+
+        $this->filter->includeFiles($files);
+
+        $this->assertSame($files, $this->filter->files());
     }
 
-    /**
-     * @covers SebastianBergmann\CodeCoverage\Filter::addFileToWhitelist
-     * @covers SebastianBergmann\CodeCoverage\Filter::getWhitelist
-     */
-    public function testAddingAFileToTheWhitelistWorks()
+    public function testDirectoryCanBeAdded(): void
     {
-        $this->filter->addFileToWhitelist($this->files[0]);
+        $this->filter->includeDirectory(__DIR__ . '/../_files/filter');
 
-        $this->assertEquals(
-            [$this->files[0]],
-            $this->filter->getWhitelist()
+        $this->assertSame(
+            [
+                realpath(__DIR__ . '/../_files/filter/a.php'),
+                realpath(__DIR__ . '/../_files/filter/b.php'),
+            ],
+            $this->filter->files()
         );
     }
 
-    /**
-     * @covers SebastianBergmann\CodeCoverage\Filter::removeFileFromWhitelist
-     * @covers SebastianBergmann\CodeCoverage\Filter::getWhitelist
-     */
-    public function testRemovingAFileFromTheWhitelistWorks()
+    public function testSingleFileCanBeRemoved(): void
     {
-        $this->filter->addFileToWhitelist($this->files[0]);
-        $this->filter->removeFileFromWhitelist($this->files[0]);
+        $this->filter->includeFile(realpath(__DIR__ . '/../_files/filter/a.php'));
+        $this->filter->excludeFile(realpath(__DIR__ . '/../_files/filter/a.php'));
 
-        $this->assertEquals([], $this->filter->getWhitelist());
+        $this->assertTrue($this->filter->isEmpty());
+        $this->assertSame([], $this->filter->files());
     }
 
-    /**
-     * @covers  SebastianBergmann\CodeCoverage\Filter::addDirectoryToWhitelist
-     * @covers  SebastianBergmann\CodeCoverage\Filter::getWhitelist
-     * @depends testAddingAFileToTheWhitelistWorks
-     */
-    public function testAddingADirectoryToTheWhitelistWorks()
+    public function testDirectoryCanBeRemoved(): void
     {
-        $this->filter->addDirectoryToWhitelist(TEST_FILES_PATH);
+        $this->filter->includeDirectory(__DIR__ . '/../_files/filter');
+        $this->filter->excludeDirectory(__DIR__ . '/../_files/filter');
 
-        $whitelist = $this->filter->getWhitelist();
-        sort($whitelist);
-
-        $this->assertEquals($this->files, $whitelist);
+        $this->assertTrue($this->filter->isEmpty());
+        $this->assertSame([], $this->filter->files());
     }
 
-    /**
-     * @covers SebastianBergmann\CodeCoverage\Filter::addFilesToWhitelist
-     * @covers SebastianBergmann\CodeCoverage\Filter::getWhitelist
-     */
-    public function testAddingFilesToTheWhitelistWorks()
-    {
-        $facade = new FileIteratorFacade;
-
-        $files = $facade->getFilesAsArray(
-            TEST_FILES_PATH,
-            $suffixes = '.php'
-        );
-
-        $this->filter->addFilesToWhitelist($files);
-
-        $whitelist = $this->filter->getWhitelist();
-        sort($whitelist);
-
-        $this->assertEquals($this->files, $whitelist);
-    }
-
-    /**
-     * @covers  SebastianBergmann\CodeCoverage\Filter::removeDirectoryFromWhitelist
-     * @covers  SebastianBergmann\CodeCoverage\Filter::getWhitelist
-     * @depends testAddingADirectoryToTheWhitelistWorks
-     */
-    public function testRemovingADirectoryFromTheWhitelistWorks()
-    {
-        $this->filter->addDirectoryToWhitelist(TEST_FILES_PATH);
-        $this->filter->removeDirectoryFromWhitelist(TEST_FILES_PATH);
-
-        $this->assertEquals([], $this->filter->getWhitelist());
-    }
-
-    /**
-     * @covers SebastianBergmann\CodeCoverage\Filter::isFile
-     */
-    public function testIsFile()
+    public function testDeterminesWhetherStringContainsNameOfRealFileThatExists(): void
     {
         $this->assertFalse($this->filter->isFile('vfs://root/a/path'));
         $this->assertFalse($this->filter->isFile('xdebug://debug-eval'));
@@ -161,38 +99,41 @@ class FilterTest extends TestCase
         $this->assertFalse($this->filter->isFile('runtime-created function'));
         $this->assertFalse($this->filter->isFile('assert code'));
         $this->assertFalse($this->filter->isFile('regexp code'));
-        $this->assertTrue($this->filter->isFile(__FILE__));
+        $this->assertTrue($this->filter->isFile(__DIR__ . '/../_files/filter/a.php'));
+    }
+
+    public function testIncludedFileIsNotFiltered(): void
+    {
+        $this->filter->includeFile(realpath(__DIR__ . '/../_files/filter/a.php'));
+
+        $this->assertFalse($this->filter->isExcluded(realpath(__DIR__ . '/../_files/filter/a.php')));
+    }
+
+    public function testNotIncludedFileIsFiltered(): void
+    {
+        $this->filter->includeFile(realpath(__DIR__ . '/../_files/filter/a.php'));
+
+        $this->assertTrue($this->filter->isExcluded(realpath(__DIR__ . '/../_files/filter/b.php')));
+    }
+
+    public function testNonFilesAreFiltered(): void
+    {
+        $this->assertTrue($this->filter->isExcluded('vfs://root/a/path'));
+        $this->assertTrue($this->filter->isExcluded('xdebug://debug-eval'));
+        $this->assertTrue($this->filter->isExcluded('eval()\'d code'));
+        $this->assertTrue($this->filter->isExcluded('runtime-created function'));
+        $this->assertTrue($this->filter->isExcluded('assert code'));
+        $this->assertTrue($this->filter->isExcluded('regexp code'));
     }
 
     /**
-     * @covers SebastianBergmann\CodeCoverage\Filter::isFiltered
+     * @ticket https://github.com/sebastianbergmann/php-code-coverage/issues/664
      */
-    public function testWhitelistedFileIsNotFiltered()
+    public function testTryingToAddFileThatDoesNotExistDoesNotChangeFilter(): void
     {
-        $this->filter->addFileToWhitelist($this->files[0]);
-        $this->assertFalse($this->filter->isFiltered($this->files[0]));
-    }
+        $this->filter->includeFile('does_not_exist');
 
-    /**
-     * @covers SebastianBergmann\CodeCoverage\Filter::isFiltered
-     */
-    public function testNotWhitelistedFileIsFiltered()
-    {
-        $this->filter->addFileToWhitelist($this->files[0]);
-        $this->assertTrue($this->filter->isFiltered($this->files[1]));
-    }
-
-    /**
-     * @covers SebastianBergmann\CodeCoverage\Filter::isFiltered
-     * @covers SebastianBergmann\CodeCoverage\Filter::isFile
-     */
-    public function testNonFilesAreFiltered()
-    {
-        $this->assertTrue($this->filter->isFiltered('vfs://root/a/path'));
-        $this->assertTrue($this->filter->isFiltered('xdebug://debug-eval'));
-        $this->assertTrue($this->filter->isFiltered('eval()\'d code'));
-        $this->assertTrue($this->filter->isFiltered('runtime-created function'));
-        $this->assertTrue($this->filter->isFiltered('assert code'));
-        $this->assertTrue($this->filter->isFiltered('regexp code'));
+        $this->assertTrue($this->filter->isEmpty());
+        $this->assertSame([], $this->filter->files());
     }
 }

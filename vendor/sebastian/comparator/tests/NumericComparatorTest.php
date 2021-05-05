@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of sebastian/comparator.
  *
@@ -9,6 +9,7 @@
  */
 namespace SebastianBergmann\Comparator;
 
+use const INF;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -37,7 +38,7 @@ final class NumericComparatorTest extends TestCase
             [8, '0'],
             ['10', 0],
             [0x74c3b00c, 42],
-            [0755, 0777]
+            [0755, 0777],
         ];
     }
 
@@ -48,7 +49,7 @@ final class NumericComparatorTest extends TestCase
             [8, 5.0],
             [5.0, 8],
             [10, null],
-            [false, 12]
+            [false, 12],
         ];
     }
 
@@ -61,6 +62,7 @@ final class NumericComparatorTest extends TestCase
             [02471, 1337],
             [1337, 1338, 1],
             ['1337', 1340, 5],
+            [INF, INF],
         ];
     }
 
@@ -81,7 +83,7 @@ final class NumericComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -91,7 +93,7 @@ final class NumericComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 

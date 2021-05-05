@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 /*
- * This file is part of php-file-iterator.
+ * This file is part of phpunit/php-file-iterator.
  *
  * (c) Sebastian Bergmann <sebastian@phpunit.de>
  *
@@ -9,12 +9,16 @@
  */
 namespace SebastianBergmann\FileIterator;
 
+use function count;
+use function iterator_to_array;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \SebastianBergmann\FileIterator\Factory
+ *
+ * @uses \SebastianBergmann\FileIterator\Iterator
  */
-class FactoryTest extends TestCase
+final class FactoryTest extends TestCase
 {
     /**
      * @var string
@@ -35,16 +39,16 @@ class FactoryTest extends TestCase
     public function testFindFilesInTestDirectory(): void
     {
         $iterator = $this->factory->getFileIterator($this->root, 'Test.php');
-        $files    = \iterator_to_array($iterator);
+        $files    = iterator_to_array($iterator, false);
 
-        $this->assertGreaterThanOrEqual(1, \count($files));
+        $this->assertGreaterThanOrEqual(1, count($files));
     }
 
     public function testFindFilesWithExcludedNonExistingSubdirectory(): void
     {
         $iterator = $this->factory->getFileIterator($this->root, 'Test.php', '', [$this->root . '/nonExistingDir']);
-        $files    = \iterator_to_array($iterator);
+        $files    = iterator_to_array($iterator, false);
 
-        $this->assertGreaterThanOrEqual(1, \count($files));
+        $this->assertGreaterThanOrEqual(1, count($files));
     }
 }

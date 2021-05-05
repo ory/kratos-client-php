@@ -1,10 +1,10 @@
 --TEST--
-phpunit NothingTest ../_files/DoesNotPerformAssertionsButPerformingAssertionsTest.php
+phpunit ../_files/DoesNotPerformAssertionsButPerformingAssertionsTest.php
 --FILE--
-<?php
-$_SERVER['argv'][1] = '--no-configuration';
-$_SERVER['argv'][2] = 'DoesNotPerformAssertionsButPerformingAssertionsTest';
-$_SERVER['argv'][3] = __DIR__ . '/../_files/DoesNotPerformAssertionsButPerformingAssertionsTest.php';
+<?php declare(strict_types=1);
+$_SERVER['argv'][] = '--do-not-cache-result';
+$_SERVER['argv'][] = '--no-configuration';
+$_SERVER['argv'][] = __DIR__ . '/../_files/DoesNotPerformAssertionsButPerformingAssertionsTest.php';
 
 require __DIR__ . '/../bootstrap.php';
 PHPUnit\TextUI\Command::main();
@@ -17,7 +17,7 @@ Time: %s, Memory: %s
 
 There was 1 risky test:
 
-1) DoesNotPerformAssertionsButPerformingAssertionsTest::testFalseAndTrueAreStillFine
+1) PHPUnit\TestFixture\DoesNotPerformAssertionsButPerformingAssertionsTest::testFalseAndTrueAreStillFine
 This test is annotated with "@doesNotPerformAssertions" but performed 2 assertions
 
 OK, but incomplete, skipped, or risky tests!

@@ -54,6 +54,9 @@ function fnc($foo, $bar) {}
 
     /**
      * {@inheritdoc}
+     *
+     * Must run before PhpdocAlignFixer.
+     * Must run after AlignMultilineCommentFixer, CommentToPhpdocFixer, GeneralPhpdocAnnotationRemoveFixer, PhpdocIndentFixer, PhpdocNoAccessFixer, PhpdocNoEmptyReturnFixer, PhpdocNoPackageFixer, PhpdocOrderFixer, PhpdocScalarFixer, PhpdocToCommentFixer, PhpdocTypesFixer.
      */
     public function getPriority()
     {
@@ -99,7 +102,7 @@ function fnc($foo, $bar) {}
             if ($line->containsUsefulContent()) {
                 $next = $doc->getLine($index + 1);
 
-                if ($next->containsATag()) {
+                if (null !== $next && $next->containsATag()) {
                     $line->addBlank();
 
                     break;

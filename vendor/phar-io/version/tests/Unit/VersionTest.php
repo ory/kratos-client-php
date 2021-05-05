@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 /*
  * This file is part of PharIo\Version.
  *
@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PharIo\Version;
 
 use PHPUnit\Framework\TestCase;
@@ -24,7 +23,7 @@ class VersionTest extends TestCase {
      * @param string $expectedMinor
      * @param string $expectedPatch
      * @param string $expectedPreReleaseValue
-     * @param int $expectedReleaseCount
+     * @param int    $expectedReleaseCount
      */
     public function testParsesVersionNumbers(
         $versionString,
@@ -33,46 +32,63 @@ class VersionTest extends TestCase {
         $expectedPatch,
         $expectedPreReleaseValue = '',
         $expectedReleaseCount = 0
-    ) {
+    ): void {
         $version = new Version($versionString);
 
         $this->assertSame($expectedMajor, $version->getMajor()->getValue());
         $this->assertSame($expectedMinor, $version->getMinor()->getValue());
         $this->assertSame($expectedPatch, $version->getPatch()->getValue());
+
         if ($expectedPreReleaseValue !== '') {
             $this->assertSame($expectedPreReleaseValue, $version->getPreReleaseSuffix()->getValue());
         }
+
         if ($expectedReleaseCount !== 0) {
             $this->assertSame($expectedReleaseCount, $version->getPreReleaseSuffix()->getNumber());
         }
-
-        $this->assertSame($versionString, $version->getVersionString());
     }
 
     public function versionProvider() {
         return [
-            ['0.0.1', '0', '0', '1'],
-            ['0.1.2', '0', '1', '2'],
-            ['1.0.0-alpha', '1', '0', '0', 'alpha'],
-            ['3.4.12-dev3', '3', '4', '12', 'dev', 3],
+            ['0.0.1', 0, 0, 1],
+            ['0.1.2', 0, 1, 2],
+            ['1.0.0-alpha', 1, 0, 0, 'alpha'],
+            ['3.4.12-dev3', 3, 4, 12, 'dev', 3],
+            ['1.2.3-beta.2', 1, 2, 3, 'beta', 2],
+            ['v1.2.3-rc', 1, 2, 3, 'rc']
         ];
+    }
+
+    /**
+     * @dataProvider versionStringProvider
+     */
+    public function testOrigionalStringReturnsExceptedVersionString(string $input): void {
+        $this->assertEquals(
+            (new Version($input))->getOriginalString(),
+            $input
+        );
+    }
+
+    /**
+     * @dataProvider versionStringProvider
+     */
+    public function testAsStringReturnsExceptedVersionString(string $input, string $excepted): void {
+        $this->assertEquals(
+            (new Version($input))->getVersionString(),
+            $excepted
+        );
     }
 
     /**
      * @dataProvider versionGreaterThanProvider
      *
-     * @param Version $versionA
-     * @param Version $versionB
      * @param bool $expectedResult
      */
-    public function testIsGreaterThan(Version $versionA, Version $versionB, $expectedResult) {
+    public function testIsGreaterThan(Version $versionA, Version $versionB, $expectedResult): void {
         $this->assertSame($expectedResult, $versionA->isGreaterThan($versionB));
     }
 
-    /**
-     * @return array
-     */
-    public function versionGreaterThanProvider() {
+    public function versionGreaterThanProvider(): array {
         return [
             [new Version('1.0.0'), new Version('1.0.1'), false],
             [new Version('1.0.1'), new Version('1.0.0'), true],
@@ -94,15 +110,12 @@ class VersionTest extends TestCase {
      *
      * @param string $versionString
      */
-    public function testThrowsExceptionIfVersionStringDoesNotFollowSemVer($versionString) {
+    public function testThrowsExceptionIfVersionStringDoesNotFollowSemVer($versionString): void {
         $this->expectException(InvalidVersionException::class);
         new Version($versionString);
     }
 
-    /**
-     * @return array
-     */
-    public function invalidVersionStringProvider() {
+    public function invalidVersionStringProvider(): array {
         return [
             ['foo'],
             ['0.0.1-dev+ABC', '0', '0', '1', 'dev', 'ABC'],
@@ -110,4 +123,36 @@ class VersionTest extends TestCase {
         ];
     }
 
+    public function versionStringProvider() {
+        return [
+            ['0.0.1', '0.0.1'],
+            ['0.1.0', '0.1.0'],
+            ['1.0.0-alpha', '1.0.0-alpha'],
+            ['3.4.12-dev3', '3.4.12-dev3'],
+            ['1.2.3-beta.2', '1.2.3-beta.2'],
+
+            ['v0.0.1', '0.0.1'],
+            ['v0.1.0', '0.1.0'],
+            ['v1.0.0-alpha', '1.0.0-alpha'],
+            ['v3.4.12-dev3', '3.4.12-dev3'],
+            ['v1.2.3-beta.2', '1.2.3-beta.2'],
+
+            ['0.1', '0.1.0'],
+            ['v0.1', '0.1.0']
+        ];
+    }
+
+    public function testIdenticalVersionsAreConsideredEqual(): void {
+        $a = new Version('1.0.0-rc1');
+        $b = new Version('1.0.0-rc1');
+
+        $this->assertTrue($a->equals($b));
+    }
+
+    public function testNonIdenticalVersionsAreNotConsideredEqual(): void {
+        $a = new Version('1.0.0-rc1');
+        $b = new Version('1.0.0-rc2');
+
+        $this->assertFalse($a->equals($b));
+    }
 }

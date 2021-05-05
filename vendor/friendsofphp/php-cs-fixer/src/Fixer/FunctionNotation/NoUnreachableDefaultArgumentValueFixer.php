@@ -46,6 +46,16 @@ function example($foo = "two words", $bar) {}
 
     /**
      * {@inheritdoc}
+     *
+     * Must run after NullableTypeDeclarationForDefaultNullValueFixer.
+     */
+    public function getPriority()
+    {
+        return 0;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function isCandidate(Tokens $tokens)
     {
@@ -136,6 +146,8 @@ function example($foo = "two words", $bar) {}
                 return $i;
             }
         }
+
+        return null;
     }
 
     /**

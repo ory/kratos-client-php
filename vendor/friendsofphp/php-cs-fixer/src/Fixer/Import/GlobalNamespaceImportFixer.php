@@ -89,11 +89,12 @@ if (count($x)) {
 
     /**
      * {@inheritdoc}
+     *
+     * Must run before NoUnusedImportsFixer, OrderedImportsFixer.
+     * Must run after NativeConstantInvocationFixer, NativeFunctionInvocationFixer.
      */
     public function getPriority()
     {
-        // must be run after NativeConstantInvocationFixer, NativeFunctionInvocationFixer
-        // must be run before NoUnusedImportsFixer, OrderedImportsFixer
         return 0;
     }
 
@@ -102,8 +103,9 @@ if (count($x)) {
      */
     public function isCandidate(Tokens $tokens)
     {
-        return $tokens->isAnyTokenKindsFound([T_USE, T_NS_SEPARATOR])
-            && (Tokens::isLegacyMode() || $tokens->countTokenKind(T_NAMESPACE) < 2)
+        return $tokens->isAnyTokenKindsFound([T_DOC_COMMENT, T_NS_SEPARATOR, T_USE])
+            && $tokens->isTokenKindFound(T_NAMESPACE)
+            && (Tokens::isLegacyMode() || 1 === $tokens->countTokenKind(T_NAMESPACE))
             && $tokens->isMonolithicPhp();
     }
 
@@ -112,7 +114,9 @@ if (count($x)) {
      */
     protected function applyFix(\SplFileInfo $file, Tokens $tokens)
     {
-        if (Tokens::isLegacyMode() && $tokens->isTokenKindFound(T_NAMESPACE) && \count((new NamespacesAnalyzer())->getDeclarations($tokens)) > 1) {
+        $namespaceAnalyses = (new NamespacesAnalyzer())->getDeclarations($tokens);
+
+        if (1 !== \count($namespaceAnalyses) || '' === $namespaceAnalyses[0]->getFullName()) {
             return;
         }
 
@@ -312,9 +316,15 @@ if (count($x)) {
             if ($token->isGivenKind(T_DOC_COMMENT)) {
                 $docBlocks[$index] = new DocBlock($token->getContent());
 
-                $this->traverseDocBlockTypes($docBlocks[$index], static function ($type) use (&$other) {
-                    if (false === strpos($type, '\\')) {
-                        $other[strtolower($type)] = true;
+                $this->traverseDocBlockTypes($docBlocks[$index], static function ($type) use ($global, &$other) {
+                    if (false !== strpos($type, '\\')) {
+                        return;
+                    }
+
+                    $name = strtolower($type);
+
+                    if (!isset($global[$name])) {
+                        $other[$name] = true;
                     }
                 });
             }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -10,9 +10,13 @@
 namespace PHPUnit\Framework;
 
 use PHPUnit\Framework\Error\Error;
+use PHPUnit\TestFixture\NotSelfDescribingTest;
 use SebastianBergmann\Comparator\ComparisonFailure;
 
-class TestFailureTest extends TestCase
+/**
+ * @small
+ */
+final class TestFailureTest extends TestCase
 {
     public function testToString(): void
     {
@@ -34,11 +38,11 @@ class TestFailureTest extends TestCase
 
     public function testToStringForNonSelfDescribing(): void
     {
-        $test      = new \NotSelfDescribingTest();
+        $test      = new NotSelfDescribingTest();
         $exception = new Exception('message');
         $failure   = new TestFailure($test, $exception);
 
-        $this->assertEquals('NotSelfDescribingTest: message', $failure->toString());
+        $this->assertEquals('PHPUnit\TestFixture\NotSelfDescribingTest: message', $failure->toString());
     }
 
     public function testgetExceptionAsString(): void

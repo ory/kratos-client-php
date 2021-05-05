@@ -24,6 +24,8 @@ use PhpCsFixer\Tokenizer\Token;
  */
 final class Utils
 {
+    private static $deprecations = [];
+
     /**
      * Calculate a bitmask for given constant names.
      *
@@ -45,7 +47,7 @@ final class Utils
     }
 
     /**
-     * Converts a camel cased string to an snake cased string.
+     * Converts a camel cased string to a snake cased string.
      *
      * @param string $string
      *
@@ -53,13 +55,7 @@ final class Utils
      */
     public static function camelCaseToUnderscore($string)
     {
-        return Preg::replaceCallback(
-            '/(^|[a-z0-9])([A-Z])/',
-            static function (array $matches) {
-                return strtolower('' !== $matches[1] ? $matches[1].'_'.$matches[2] : $matches[2]);
-            },
-            $string
-        );
+        return strtolower(Preg::replace('/(?<!^)((?=[A-Z][^A-Z])|(?<![A-Z])(?=[A-Z]))/', '_', $string));
     }
 
     /**
@@ -173,7 +169,7 @@ final class Utils
     public static function naturalLanguageJoinWithBackticks(array $names)
     {
         if (empty($names)) {
-            throw new \InvalidArgumentException('Array of names cannot be empty');
+            throw new \InvalidArgumentException('Array of names cannot be empty.');
         }
 
         $names = array_map(static function ($name) {
@@ -187,5 +183,26 @@ final class Utils
         }
 
         return $last;
+    }
+
+    /**
+     * Handle triggering deprecation error.
+     *
+     * @param string $message
+     * @param string $exceptionClass
+     */
+    public static function triggerDeprecation($message, $exceptionClass = \RuntimeException::class)
+    {
+        if (getenv('PHP_CS_FIXER_FUTURE_MODE')) {
+            throw new $exceptionClass("{$message} This check was performed as `PHP_CS_FIXER_FUTURE_MODE` env var is set.");
+        }
+
+        self::$deprecations[] = $message;
+        @trigger_error($message, E_USER_DEPRECATED);
+    }
+
+    public static function getTriggeredDeprecations()
+    {
+        return self::$deprecations;
     }
 }

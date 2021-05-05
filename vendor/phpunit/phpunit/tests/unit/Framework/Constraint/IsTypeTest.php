@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -9,11 +9,19 @@
  */
 namespace PHPUnit\Framework\Constraint;
 
+use function fclose;
+use function fopen;
+use function is_resource;
+use function preg_replace;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestFailure;
+use stdClass;
 
-class IsTypeTest extends ConstraintTestCase
+/**
+ * @small
+ */
+final class IsTypeTest extends ConstraintTestCase
 {
     public function testConstraintIsType(): void
     {
@@ -25,10 +33,10 @@ class IsTypeTest extends ConstraintTestCase
         $this->assertCount(1, $constraint);
 
         try {
-            $constraint->evaluate(new \stdClass);
+            $constraint->evaluate(new stdClass);
         } catch (ExpectationFailedException $e) {
             $this->assertStringMatchesFormat(
-                <<<EOF
+                <<<'EOF'
 Failed asserting that stdClass Object &%x () is of type "string".
 
 EOF
@@ -47,10 +55,10 @@ EOF
         $constraint = Assert::isType('string');
 
         try {
-            $constraint->evaluate(new \stdClass, 'custom message');
+            $constraint->evaluate(new stdClass, 'custom message');
         } catch (ExpectationFailedException $e) {
             $this->assertStringMatchesFormat(
-                <<<EOF
+                <<<'EOF'
 custom message
 Failed asserting that stdClass Object &%x () is of type "string".
 
@@ -74,17 +82,19 @@ EOF
 
         $this->assertTrue($constraint->evaluate($resource, '', true));
 
-        @\fclose($resource);
+        if (is_resource($resource)) {
+            @fclose($resource);
+        }
     }
 
     public function resources()
     {
-        $fh = \fopen(__FILE__, 'r');
-        \fclose($fh);
+        $fh = fopen(__FILE__, 'r');
+        fclose($fh);
 
         return [
-            'open resource'     => [\fopen(__FILE__, 'r')],
-            'closed resource'   => [$fh],
+            'open resource'   => [fopen(__FILE__, 'r')],
+            'closed resource' => [$fh],
         ];
     }
 
@@ -97,8 +107,32 @@ EOF
         $this->assertEquals('is of type "iterable"', $constraint->toString());
     }
 
+    public function testTypeCanBeNull(): void
+    {
+        $constraint = Assert::isType('null');
+
+        $this->assertNull($constraint->evaluate(null));
+        $this->assertEquals('is of type "null"', $constraint->toString());
+    }
+
+    public function testTypeCanNotBeAnUndefinedOne(): void
+    {
+        try {
+            Assert::isType('diverse');
+        } catch (\PHPUnit\Framework\Exception $e) {
+            $this->assertEquals(
+                <<<EOF
+PHPUnit\Framework\Exception: Type specified for PHPUnit\Framework\Constraint\IsType <diverse> is not a valid type.
+
+EOF
+                ,
+                TestFailure::exceptionToString($e)
+            );
+        }
+    }
+
     /**
-     * Removes spaces in front of newlines
+     * Removes spaces in front of newlines.
      *
      * @param string $string
      *
@@ -106,6 +140,6 @@ EOF
      */
     private function trimnl($string)
     {
-        return \preg_replace('/[ ]*\n/', "\n", $string);
+        return preg_replace('/[ ]*\n/', "\n", $string);
     }
 }

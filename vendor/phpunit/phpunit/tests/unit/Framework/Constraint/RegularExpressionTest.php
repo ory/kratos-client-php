@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -12,7 +12,10 @@ namespace PHPUnit\Framework\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestFailure;
 
-class RegularExpressionTest extends ConstraintTestCase
+/**
+ * @small
+ */
+final class RegularExpressionTest extends ConstraintTestCase
 {
     public function testConstraintRegularExpression(): void
     {
@@ -27,7 +30,7 @@ class RegularExpressionTest extends ConstraintTestCase
             $constraint->evaluate('barbazbar');
         } catch (ExpectationFailedException $e) {
             $this->assertEquals(
-                <<<EOF
+                <<<'EOF'
 Failed asserting that 'barbazbar' matches PCRE pattern "/foo/".
 
 EOF
@@ -49,7 +52,7 @@ EOF
             $constraint->evaluate('barbazbar', 'custom message');
         } catch (ExpectationFailedException $e) {
             $this->assertEquals(
-                <<<EOF
+                <<<'EOF'
 custom message
 Failed asserting that 'barbazbar' matches PCRE pattern "/foo/".
 

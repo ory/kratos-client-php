@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of sebastian/comparator.
  *
@@ -9,6 +9,7 @@
  */
 namespace SebastianBergmann\Comparator;
 
+use function acos;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -37,9 +38,9 @@ final class DoubleComparatorTest extends TestCase
             [5.0, 0],
             ['5', 4.5],
             [1.2e3, 7E-10],
-            [3, \acos(8)],
-            [\acos(8), 3],
-            [\acos(8), \acos(8)]
+            [3, acos(8)],
+            [acos(8), 3],
+            [acos(8), acos(8)],
         ];
     }
 
@@ -50,7 +51,7 @@ final class DoubleComparatorTest extends TestCase
             ['4.5', 5],
             [0x539, 02471],
             [5.0, false],
-            [null, 5.0]
+            [null, 5.0],
         ];
     }
 
@@ -67,7 +68,7 @@ final class DoubleComparatorTest extends TestCase
             [3, 3.05, 0.05],
             [1.2e3, 1201, 1],
             [(string) (1 / 3), 1 - 2 / 3],
-            [1 / 3, (string) (1 - 2 / 3)]
+            [1 / 3, (string) (1 - 2 / 3)],
         ];
     }
 
@@ -81,9 +82,9 @@ final class DoubleComparatorTest extends TestCase
             [1.2e3, 1201],
             [2.3, 2.5, 0.2],
             [3, 3.05, 0.04],
-            [3, \acos(8)],
-            [\acos(8), 3],
-            [\acos(8), \acos(8)]
+            [3, acos(8)],
+            [acos(8), 3],
+            [acos(8), acos(8)],
         ];
     }
 
@@ -93,7 +94,7 @@ final class DoubleComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -103,7 +104,7 @@ final class DoubleComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 

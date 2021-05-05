@@ -86,6 +86,17 @@ final class PhpdocTypesOrderFixer extends AbstractFixer implements Configuration
 
     /**
      * {@inheritdoc}
+     *
+     * Must run before PhpdocAlignFixer.
+     * Must run after AlignMultilineCommentFixer, CommentToPhpdocFixer, PhpdocAnnotationWithoutDotFixer, PhpdocIndentFixer, PhpdocScalarFixer, PhpdocToCommentFixer, PhpdocTypesFixer.
+     */
+    public function getPriority()
+    {
+        return 0;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function isCandidate(Tokens $tokens)
     {
@@ -152,7 +163,7 @@ final class PhpdocTypesOrderFixer extends AbstractFixer implements Configuration
     private function sortTypes(array $types)
     {
         foreach ($types as $index => $type) {
-            $types[$index] = Preg::replaceCallback('/^([^<]+)<(?:([\w\|]+?)(,\s*))?(.*)>$/', function (array $matches) {
+            $types[$index] = Preg::replaceCallback('/^([^<]+)<(?:([\w\|]+?|<?.*>)(,\s*))?(.*)>$/', function (array $matches) {
                 return $matches[1].'<'.$this->sortJoinedTypes($matches[2]).$matches[3].$this->sortJoinedTypes($matches[4]).'>';
             }, $type);
         }

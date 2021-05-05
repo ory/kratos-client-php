@@ -1,14 +1,18 @@
 --TEST--
 #578: Double printing of trace line for exceptions from notices and warnings
+--SKIPIF--
+<?php declare(strict_types=1);
+if (\PHP_MAJOR_VERSION >= 8) {
+    print 'skip: PHP < 8 is required.';
+}
 --FILE--
-<?php
-$_SERVER['argv'][1] = '--no-configuration';
-$_SERVER['argv'][2] = 'Issue578Test';
-$_SERVER['argv'][3] = __DIR__ . '/578/Issue578Test.php';
+<?php declare(strict_types=1);
+$_SERVER['argv'][] = '--do-not-cache-result';
+$_SERVER['argv'][] = '--no-configuration';
+$_SERVER['argv'][] = __DIR__ . '/578/Issue578Test.php';
 
 require __DIR__ . '/../../../bootstrap.php';
 PHPUnit\TextUI\Command::main();
-?>
 --EXPECTF--
 PHPUnit %s by Sebastian Bergmann and contributors.
 

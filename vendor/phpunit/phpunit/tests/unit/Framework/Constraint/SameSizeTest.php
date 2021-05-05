@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -9,10 +9,15 @@
  */
 namespace PHPUnit\Framework\Constraint;
 
+use ArrayObject;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestFailure;
+use PHPUnit\TestFixture\TestIterator;
 
-class SameSizeTest extends ConstraintTestCase
+/**
+ * @small
+ */
+final class SameSizeTest extends ConstraintTestCase
 {
     public function testConstraintSameSizeWithAnArray(): void
     {
@@ -24,18 +29,18 @@ class SameSizeTest extends ConstraintTestCase
 
     public function testConstraintSameSizeWithAnIteratorWhichDoesNotImplementCountable(): void
     {
-        $constraint = new SameSize(new \TestIterator([1, 2, 3, 4, 5]));
+        $constraint = new SameSize(new TestIterator([1, 2, 3, 4, 5]));
 
-        $this->assertTrue($constraint->evaluate(new \TestIterator([6, 7, 8, 9, 10]), '', true));
-        $this->assertFalse($constraint->evaluate(new \TestIterator([1, 2, 3, 4]), '', true));
+        $this->assertTrue($constraint->evaluate(new TestIterator([6, 7, 8, 9, 10]), '', true));
+        $this->assertFalse($constraint->evaluate(new TestIterator([1, 2, 3, 4]), '', true));
     }
 
     public function testConstraintSameSizeWithAnObjectImplementingCountable(): void
     {
-        $constraint = new SameSize(new \ArrayObject([1, 2, 3, 4, 5]));
+        $constraint = new SameSize(new ArrayObject([1, 2, 3, 4, 5]));
 
-        $this->assertTrue($constraint->evaluate(new \ArrayObject([6, 7, 8, 9, 10]), '', true));
-        $this->assertFalse($constraint->evaluate(new \ArrayObject([1, 2, 3, 4]), '', true));
+        $this->assertTrue($constraint->evaluate(new ArrayObject([6, 7, 8, 9, 10]), '', true));
+        $this->assertFalse($constraint->evaluate(new ArrayObject([1, 2, 3, 4]), '', true));
     }
 
     public function testConstraintSameSizeFailing(): void
@@ -46,7 +51,7 @@ class SameSizeTest extends ConstraintTestCase
             $constraint->evaluate([1, 2]);
         } catch (ExpectationFailedException $e) {
             $this->assertEquals(
-                <<<EOF
+                <<<'EOF'
 Failed asserting that actual size 2 matches expected size 5.
 
 EOF

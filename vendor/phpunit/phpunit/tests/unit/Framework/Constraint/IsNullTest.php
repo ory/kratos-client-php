@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -12,7 +12,10 @@ namespace PHPUnit\Framework\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestFailure;
 
-class IsNullTest extends ConstraintTestCase
+/**
+ * @small
+ */
+final class IsNullTest extends ConstraintTestCase
 {
     public function testConstraintIsNull(): void
     {
@@ -27,7 +30,7 @@ class IsNullTest extends ConstraintTestCase
             $constraint->evaluate(0);
         } catch (ExpectationFailedException $e) {
             $this->assertEquals(
-                <<<EOF
+                <<<'EOF'
 Failed asserting that 0 is null.
 
 EOF
@@ -49,7 +52,7 @@ EOF
             $constraint->evaluate(0, 'custom message');
         } catch (ExpectationFailedException $e) {
             $this->assertEquals(
-                <<<EOF
+                <<<'EOF'
 custom message
 Failed asserting that 0 is null.
 

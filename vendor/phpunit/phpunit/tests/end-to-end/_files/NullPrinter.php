@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -9,11 +9,19 @@
  */
 namespace PHPUnit\Test;
 
-use PHPUnit\Framework\TestListener;
 use PHPUnit\Framework\TestListenerDefaultImplementation;
-use PHPUnit\Util\Printer;
+use PHPUnit\Framework\TestResult;
+use PHPUnit\TextUI\ResultPrinter;
 
-final class NullPrinter extends Printer implements TestListener
+final class NullPrinter implements ResultPrinter
 {
     use TestListenerDefaultImplementation;
+
+    public function printResult(TestResult $result): void
+    {
+    }
+
+    public function write(string $buffer): void
+    {
+    }
 }

@@ -1,10 +1,10 @@
 --TEST--
-phpunit ConcreteTest ../../_files/ConcreteTest.php
+phpunit ../../_files/ConcreteTest.php
 --FILE--
-<?php
-$_SERVER['argv'][1] = '--no-configuration';
-$_SERVER['argv'][2] = 'ConcreteTest';
-$_SERVER['argv'][3] = __DIR__ . '/../_files/ConcreteTest.php';
+<?php declare(strict_types=1);
+$_SERVER['argv'][] = '--do-not-cache-result';
+$_SERVER['argv'][] = '--no-configuration';
+$_SERVER['argv'][] = __DIR__ . '/../_files/ConcreteTest.php';
 
 require __DIR__ . '/../bootstrap.php';
 PHPUnit\TextUI\Command::main();

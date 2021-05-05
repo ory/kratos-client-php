@@ -1,7 +1,7 @@
 parameters:
-  ignoreErrors:
-    -
-      message: '#Parameter \#1 \$types of class phpDocumentor\\Reflection\\Types\\Compound constructor expects array<phpDocumentor\\Reflection\\Type>, array<int, string> given\.#'
-      path: %currentWorkingDirectory%/tests/unit/Types/CompoundTest.php
-    - message: '#Parameter \#2 \$fileContents of method phpDocumentor\\Reflection\\Types\\ContextFactory::createForNamespace\(\) expects string, string|false given\.#'
-      path: %currentWorkingDirectory%/tests/unit/Types/ContextFactoryTest.php
+    level: max
+
+    ignoreErrors:
+        # Bug in PHPStan? The error is "expects A, A given"
+        - '#Parameter \#1 \$tokens of method phpDocumentor\\Reflection\\Types\\ContextFactory::parse#'
+        # ArrayIterator::current can return null if iterated even if ArrayIterator::valid isn't checked before

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -9,9 +9,13 @@
  */
 namespace PHPUnit\Util;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 
-class RegularExpressionTest extends TestCase
+/**
+ * @small
+ */
+final class RegularExpressionTest extends TestCase
 {
     public function validRegexpProvider(): array
     {
@@ -33,10 +37,11 @@ class RegularExpressionTest extends TestCase
     }
 
     /**
+     * @testdox Valid regex $pattern on $subject returns $return
      * @dataProvider validRegexpProvider
      *
-     * @throws \Exception
      * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws Exception
      */
     public function testValidRegex($pattern, $subject, $return): void
     {
@@ -44,10 +49,11 @@ class RegularExpressionTest extends TestCase
     }
 
     /**
+     * @testdox Invalid regex $pattern on $subject
      * @dataProvider invalidRegexpProvider
      *
-     * @throws \Exception
      * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws Exception
      */
     public function testInvalidRegex($pattern, $subject): void
     {

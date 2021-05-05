@@ -1,13 +1,13 @@
 --TEST--
-phpunit --process-isolation --filter BankAccountTest BankAccountTest ../../_files/BankAccountTest.php
+phpunit --process-isolation --filter BankAccountTest ../../_files/BankAccountTest.php
 --FILE--
-<?php
-$_SERVER['argv'][1] = '--no-configuration';
-$_SERVER['argv'][2] = '--process-isolation';
-$_SERVER['argv'][3] = '--filter';
-$_SERVER['argv'][4] = 'BankAccountTest';
-$_SERVER['argv'][5] = 'BankAccountTest';
-$_SERVER['argv'][6] = __DIR__ . '/../_files/BankAccountTest.php';
+<?php declare(strict_types=1);
+$_SERVER['argv'][] = '--do-not-cache-result';
+$_SERVER['argv'][] = '--no-configuration';
+$_SERVER['argv'][] = '--process-isolation';
+$_SERVER['argv'][] = '--filter';
+$_SERVER['argv'][] = 'BankAccountTest';
+$_SERVER['argv'][] = __DIR__ . '/../_files/BankAccountTest.php';
 
 require __DIR__ . '/../bootstrap.php';
 PHPUnit\TextUI\Command::main();

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -12,9 +12,9 @@ class Issue2137Test extends PHPUnit\Framework\TestCase
     /**
      * @dataProvider provideBrandService
      *
-     * @throws Exception
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws Exception
      */
     public function testBrandService($provided, $expected): void
     {
@@ -32,9 +32,9 @@ class Issue2137Test extends PHPUnit\Framework\TestCase
     /**
      * @dataProvider provideBrandService
      *
-     * @throws Exception
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws Exception
      */
     public function testSomethingElseInvalid($provided, $expected): void
     {

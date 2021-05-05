@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of sebastian/comparator.
  *
@@ -37,7 +37,7 @@ final class SplObjectStorageComparatorTest extends TestCase
         return [
             [new SplObjectStorage, new stdClass],
             [new stdClass, new SplObjectStorage],
-            [new stdClass, new stdClass]
+            [new stdClass, new stdClass],
         ];
     }
 
@@ -61,7 +61,7 @@ final class SplObjectStorageComparatorTest extends TestCase
             [$storage1, $storage1],
             [$storage1, $storage2],
             [$storage3, $storage3],
-            [$storage3, $storage4]
+            [$storage3, $storage4],
         ];
     }
 
@@ -89,10 +89,10 @@ final class SplObjectStorageComparatorTest extends TestCase
     public function testAcceptsSucceeds(): void
     {
         $this->assertTrue(
-          $this->comparator->accepts(
-            new SplObjectStorage,
-            new SplObjectStorage
-          )
+            $this->comparator->accepts(
+                new SplObjectStorage,
+                new SplObjectStorage
+            )
         );
     }
 
@@ -102,7 +102,7 @@ final class SplObjectStorageComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -138,8 +138,8 @@ final class SplObjectStorageComparatorTest extends TestCase
         $this->expectExceptionMessage('Failed asserting that two objects are equal.');
 
         $t = new SplObjectStorage();
-        $t->attach(new \stdClass());
+        $t->attach(new stdClass());
 
-        $this->comparator->assertEquals($t, new \SplObjectStorage());
+        $this->comparator->assertEquals($t, new SplObjectStorage());
     }
 }

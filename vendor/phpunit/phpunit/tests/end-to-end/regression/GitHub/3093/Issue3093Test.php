@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -16,15 +16,15 @@ class Issue3093Test extends \PHPUnit\Framework\TestCase
 
     public function testFirstWithoutDependencies(): void
     {
-        self::assertTrue(true);
+        $this->assertTrue(true);
     }
 
     /**
      * @depends testFirstWithoutDependencies
      * @dataProvider someDataProvider
      */
-    public function testSecondThatDependsOnFirstAndDataprovider($value)
+    public function testSecondThatDependsOnFirstAndDataprovider($value): void
     {
-        self::assertTrue(true);
+        $this->assertTrue(true);
     }
 }

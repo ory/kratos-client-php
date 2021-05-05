@@ -1,16 +1,25 @@
 --TEST--
 phpunit --test-suffix .test.php,.my.php ../../_files/
 --FILE--
-<?php
-$_SERVER['argv'][1] = '--no-configuration';
-$_SERVER['argv'][2] = '--test-suffix';
-$_SERVER['argv'][3] = '.test.php,.my.php';
-$_SERVER['argv'][4] = __DIR__ . '/../_files/';
+<?php declare(strict_types=1);
+$_SERVER['argv'][] = '--do-not-cache-result';
+$_SERVER['argv'][] = '--no-configuration';
+$_SERVER['argv'][] = '--test-suffix';
+$_SERVER['argv'][] = '.test.php,.my.php';
+$_SERVER['argv'][] = __DIR__ . '/../_files/';
 
 require __DIR__ . '/../bootstrap.php';
 PHPUnit\TextUI\Command::main();
 --EXPECTF--
 PHPUnit %s by Sebastian Bergmann and contributors.
+
+
+Warning:       Test case class not matching filename is deprecated
+               in %sBankAccountTest.test.php
+               Class name was 'BankAccountWithCustomExtensionTest', expected 'BankAccountTest'
+Warning:       Test case class not matching filename is deprecated
+               in %sConcreteTest.my.php
+               Class name was 'ConcreteWithMyCustomExtensionTest', expected 'ConcreteTest'
 
 .....                                                               5 / 5 (100%)
 

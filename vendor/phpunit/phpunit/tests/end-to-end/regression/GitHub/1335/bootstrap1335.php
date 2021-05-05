@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -16,6 +16,6 @@ $globalBoolFalse                       = false;
 $globalNull                            = null;
 $globalArray                           = ['foo'];
 $globalNestedArray                     = [['foo']];
-$globalObject                          = (object) ['foo'=> 'bar'];
-$globalObjectWithBackSlashString       = (object) ['foo'=> 'back\\slash'];
-$globalObjectWithDoubleBackSlashString = (object) ['foo'=> 'back\\\\slash'];
+$globalObject                          = (object) ['foo' => 'bar'];
+$globalObjectWithBackSlashString       = (object) ['foo' => 'back\\slash'];
+$globalObjectWithDoubleBackSlashString = (object) ['foo' => 'back\\\\slash'];

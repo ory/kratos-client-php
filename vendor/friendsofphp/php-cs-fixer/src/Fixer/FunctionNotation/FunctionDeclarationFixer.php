@@ -101,6 +101,17 @@ $f = fn () => null;
 
     /**
      * {@inheritdoc}
+     *
+     * Must run before MethodArgumentSpaceFixer.
+     * Must run after SingleSpaceAfterConstructFixer.
+     */
+    public function getPriority()
+    {
+        return 31;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     protected function applyFix(\SplFileInfo $file, Tokens $tokens)
     {
@@ -129,10 +140,10 @@ $f = fn () => null;
             // eg: `function foo()   {}` => `function foo() {}`
             // eg: `fn()   =>` => `fn() =>`
             if (
-                $tokens[$startBraceIndex]->equalsAny(['{', [T_DOUBLE_ARROW]]) &&
-                (
-                    !$tokens[$startBraceIndex - 1]->isWhitespace() ||
-                    $tokens[$startBraceIndex - 1]->isWhitespace($this->singleLineWhitespaceOptions)
+                $tokens[$startBraceIndex]->equalsAny(['{', [T_DOUBLE_ARROW]])
+                && (
+                    !$tokens[$startBraceIndex - 1]->isWhitespace()
+                    || $tokens[$startBraceIndex - 1]->isWhitespace($this->singleLineWhitespaceOptions)
                 )
             ) {
                 $tokens->ensureWhitespaceAtIndex($startBraceIndex - 1, 1, ' ');

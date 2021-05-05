@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -9,7 +9,23 @@
  */
 namespace PHPUnit\Framework\Constraint;
 
-class CountTest extends ConstraintTestCase
+use DatePeriod;
+use EmptyIterator;
+use Iterator;
+use IteratorAggregate;
+use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\TestFailure;
+use PHPUnit\TestFixture\TestGeneratorMaker;
+use PHPUnit\TestFixture\TestIterator;
+use PHPUnit\TestFixture\TestIterator2;
+use PHPUnit\TestFixture\TestIteratorAggregate;
+use PHPUnit\TestFixture\TestIteratorAggregate2;
+use Traversable;
+
+/**
+ * @small
+ */
+final class CountTest extends ConstraintTestCase
 {
     public function testCount(): void
     {
@@ -20,9 +36,9 @@ class CountTest extends ConstraintTestCase
         $this->assertTrue($countConstraint->evaluate([], '', true));
 
         $countConstraint = new Count(2);
-        $it              = new \TestIterator([1, 2]);
-        $ia              = new \TestIteratorAggregate($it);
-        $ia2             = new \TestIteratorAggregate2($ia);
+        $it              = new TestIterator([1, 2]);
+        $ia              = new TestIteratorAggregate($it);
+        $ia2             = new TestIteratorAggregate2($ia);
 
         $this->assertTrue($countConstraint->evaluate($it, '', true));
         $this->assertTrue($countConstraint->evaluate($ia, '', true));
@@ -34,7 +50,7 @@ class CountTest extends ConstraintTestCase
         $countConstraint = new Count(2);
 
         // test with 1st implementation of Iterator
-        $it = new \TestIterator([1, 2]);
+        $it = new TestIterator([1, 2]);
 
         $countConstraint->evaluate($it, '', true);
         $this->assertEquals(1, $it->current());
@@ -48,7 +64,7 @@ class CountTest extends ConstraintTestCase
         $this->assertFalse($it->valid());
 
         // test with 2nd implementation of Iterator
-        $it = new \TestIterator2([1, 2]);
+        $it = new TestIterator2([1, 2]);
 
         $countConstraint = new Count(2);
         $countConstraint->evaluate($it, '', true);
@@ -63,8 +79,8 @@ class CountTest extends ConstraintTestCase
         $this->assertFalse($it->valid());
 
         // test with IteratorAggregate
-        $it = new \TestIterator([1, 2]);
-        $ia = new \TestIteratorAggregate($it);
+        $it = new TestIterator([1, 2]);
+        $ia = new TestIteratorAggregate($it);
 
         $countConstraint = new Count(2);
         $countConstraint->evaluate($ia, '', true);
@@ -79,9 +95,9 @@ class CountTest extends ConstraintTestCase
         $this->assertFalse($it->valid());
 
         // test with nested IteratorAggregate
-        $it  = new \TestIterator([1, 2]);
-        $ia  = new \TestIteratorAggregate($it);
-        $ia2 = new \TestIteratorAggregate2($ia);
+        $it  = new TestIterator([1, 2]);
+        $ia  = new TestIteratorAggregate($it);
+        $ia2 = new TestIteratorAggregate2($ia);
 
         $countConstraint = new Count(2);
         $countConstraint->evaluate($ia2, '', true);
@@ -98,7 +114,7 @@ class CountTest extends ConstraintTestCase
 
     public function testCountGeneratorsDoNotRewind(): void
     {
-        $generatorMaker = new \TestGeneratorMaker;
+        $generatorMaker = new TestGeneratorMaker;
 
         $countConstraint = new Count(3);
 
@@ -128,6 +144,11 @@ class CountTest extends ConstraintTestCase
         $this->assertEquals(null, $generator->current());
     }
 
+    /**
+     * Since PHP8, Traversable cannot be implemented directly.
+     *
+     * @requires PHP < 8.0
+     */
     public function testCountTraversable(): void
     {
         $countConstraint = new Count(5);
@@ -135,12 +156,37 @@ class CountTest extends ConstraintTestCase
         // DatePeriod is used as an object that is Traversable but does not
         // implement Iterator or IteratorAggregate. The following ISO 8601
         // recurring time interval will yield five total DateTime objects.
-        $datePeriod = new \DatePeriod('R4/2017-05-01T00:00:00Z/P1D');
+        $datePeriod = new DatePeriod('R4/2017-05-01T00:00:00Z/P1D');
 
-        $this->assertInstanceOf(\Traversable::class, $datePeriod);
-        $this->assertNotInstanceOf(\Iterator::class, $datePeriod);
-        $this->assertNotInstanceOf(\IteratorAggregate::class, $datePeriod);
+        $this->assertInstanceOf(Traversable::class, $datePeriod);
+        $this->assertNotInstanceOf(Iterator::class, $datePeriod);
+        $this->assertNotInstanceOf(IteratorAggregate::class, $datePeriod);
         $this->assertTrue($countConstraint->evaluate($datePeriod, '', true));
+    }
+
+    public function testCountCanBeExportedToString(): void
+    {
+        $countConstraint = new Count(1);
+
+        $this->assertEquals('count matches 1', $countConstraint->toString());
+    }
+
+    public function testCountEvaluateReturnsNullWithNonCountableAndNonTraversableOther(): void
+    {
+        $countConstraint = new Count(1);
+
+        try {
+            $this->assertNull($countConstraint->evaluate(1));
+        } catch (ExpectationFailedException  $e) {
+            $this->assertEquals(
+                <<<'EOF'
+Failed asserting that actual size 0 matches expected size 1.
+
+EOF
+                ,
+                TestFailure::exceptionToString($e)
+            );
+        }
     }
 
     /**
@@ -150,6 +196,6 @@ class CountTest extends ConstraintTestCase
     {
         $constraint = new Count(0);
 
-        $this->assertTrue($constraint->evaluate(new \EmptyIterator, '', true));
+        $this->assertTrue($constraint->evaluate(new EmptyIterator, '', true));
     }
 }

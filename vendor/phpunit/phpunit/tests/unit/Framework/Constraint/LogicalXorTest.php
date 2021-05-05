@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -7,38 +7,32 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Framework\Constraint;
+namespace PHPUnit\Framework\Constraint;
 
-use PHPUnit\Framework\Constraint\Constraint;
-use PHPUnit\Framework\Constraint\LogicalXor;
-use PHPUnit\Framework\TestCase;
+use function array_reduce;
+use function array_shift;
 
-final class LogicalXorTest extends TestCase
+/**
+ * @small
+ */
+final class LogicalXorTest extends BinaryOperatorTestCase
 {
-    public function testFromConstraintsReturnsConstraint(): void
+    public static function getOperatorName(): string
     {
-        $other = 'Foo';
-        $count = 5;
+        return 'xor';
+    }
 
-        $constraints = \array_map(function () use ($other) {
-            static $count = 0;
+    public static function getOperatorPrecedence(): int
+    {
+        return 23;
+    }
 
-            $constraint = $this->getMockBuilder(Constraint::class)->getMock();
+    public function evaluateExpectedResult(array $input): bool
+    {
+        $initial = (bool) array_shift($input);
 
-            $constraint
-                ->expects($this->once())
-                ->method('evaluate')
-                ->with($this->identicalTo($other))
-                ->willReturn($count % 2 === 1);
-
-            ++$count;
-
-            return $constraint;
-        }, \array_fill(0, $count, null));
-
-        $constraint = LogicalXor::fromConstraints(...$constraints);
-
-        $this->assertInstanceOf(LogicalXor::class, $constraint);
-        $this->assertTrue($constraint->evaluate($other, '', true));
+        return array_reduce($input, static function ($carry, bool $item): bool {
+            return $carry xor $item;
+        }, $initial);
     }
 }

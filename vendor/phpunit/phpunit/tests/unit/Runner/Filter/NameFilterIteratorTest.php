@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -11,8 +11,12 @@ namespace PHPUnit\Runner\Filter;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
+use PHPUnit\TestFixture\BankAccountTest;
 
-class NameFilterIteratorTest extends TestCase
+/**
+ * @small
+ */
+final class NameFilterIteratorTest extends TestCase
 {
     public function testCaseSensitiveMatch(): void
     {
@@ -27,7 +31,7 @@ class NameFilterIteratorTest extends TestCase
     private function createFilter(string $filter): NameFilterIterator
     {
         $suite = new TestSuite;
-        $suite->addTest(new \BankAccountTest('testBalanceIsInitiallyZero'));
+        $suite->addTest(new BankAccountTest('testBalanceIsInitiallyZero'));
 
         $iterator = new NameFilterIterator($suite->getIterator(), $filter);
 

@@ -1,11 +1,11 @@
 --TEST--
-phpunit --list-tests DataProviderTest ../../_files/DataProviderTest.php
+phpunit --list-tests ../../_files/DataProviderTest.php
 --FILE--
-<?php
-$_SERVER['argv'][1] = '--no-configuration';
-$_SERVER['argv'][2] = '--list-tests';
-$_SERVER['argv'][3] = 'DataProviderTest';
-$_SERVER['argv'][4] = __DIR__ . '/../_files/DataProviderTest.php';
+<?php declare(strict_types=1);
+$_SERVER['argv'][] = '--do-not-cache-result';
+$_SERVER['argv'][] = '--no-configuration';
+$_SERVER['argv'][] = '--list-tests';
+$_SERVER['argv'][] = __DIR__ . '/../_files/DataProviderTest.php';
 
 require __DIR__ . '/../bootstrap.php';
 PHPUnit\TextUI\Command::main();
@@ -13,7 +13,7 @@ PHPUnit\TextUI\Command::main();
 PHPUnit %s by Sebastian Bergmann and contributors.
 
 Available test(s):
- - DataProviderTest::testAdd#0
- - DataProviderTest::testAdd#1
- - DataProviderTest::testAdd#2
- - DataProviderTest::testAdd#3
+ - PHPUnit\TestFixture\DataProviderTest::testAdd#0
+ - PHPUnit\TestFixture\DataProviderTest::testAdd#1
+ - PHPUnit\TestFixture\DataProviderTest::testAdd#2
+ - PHPUnit\TestFixture\DataProviderTest::testAdd#3
