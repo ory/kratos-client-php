@@ -1,6 +1,6 @@
 <?php
 /**
- * ContainerWaitOKBody
+ * JsonError
  *
  * PHP version 7.2
  *
@@ -33,10 +33,10 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * ContainerWaitOKBody Class Doc Comment
+ * JsonError Class Doc Comment
  *
  * @category Class
- * @description ContainerWaitOKBody OK response to ContainerWait operation
+ * @description The standard Ory JSON API error format.
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -44,7 +44,7 @@ use \Ory\Kratos\Client\ObjectSerializer;
  * @template TKey int|null
  * @template TValue mixed|null
  */
-class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializable
+class JsonError implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -53,7 +53,7 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
       *
       * @var string
       */
-    protected static $openAPIModelName = 'ContainerWaitOKBody';
+    protected static $openAPIModelName = 'jsonError';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -61,8 +61,7 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
       * @var string[]
       */
     protected static $openAPITypes = [
-        'error' => '\Ory\Kratos\Client\Model\ContainerWaitOKBodyError',
-        'statusCode' => 'int'
+        'error' => '\Ory\Kratos\Client\Model\GenericError'
     ];
 
     /**
@@ -73,8 +72,7 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'error' => null,
-        'statusCode' => 'int64'
+        'error' => null
     ];
 
     /**
@@ -104,8 +102,7 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var string[]
      */
     protected static $attributeMap = [
-        'error' => 'Error',
-        'statusCode' => 'StatusCode'
+        'error' => 'error'
     ];
 
     /**
@@ -114,8 +111,7 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var string[]
      */
     protected static $setters = [
-        'error' => 'setError',
-        'statusCode' => 'setStatusCode'
+        'error' => 'setError'
     ];
 
     /**
@@ -124,8 +120,7 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var string[]
      */
     protected static $getters = [
-        'error' => 'getError',
-        'statusCode' => 'getStatusCode'
+        'error' => 'getError'
     ];
 
     /**
@@ -186,7 +181,6 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
     public function __construct(array $data = null)
     {
         $this->container['error'] = $data['error'] ?? null;
-        $this->container['statusCode'] = $data['statusCode'] ?? null;
     }
 
     /**
@@ -200,9 +194,6 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
 
         if ($this->container['error'] === null) {
             $invalidProperties[] = "'error' can't be null";
-        }
-        if ($this->container['statusCode'] === null) {
-            $invalidProperties[] = "'statusCode' can't be null";
         }
         return $invalidProperties;
     }
@@ -222,7 +213,7 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Gets error
      *
-     * @return \Ory\Kratos\Client\Model\ContainerWaitOKBodyError
+     * @return \Ory\Kratos\Client\Model\GenericError
      */
     public function getError()
     {
@@ -232,37 +223,13 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Sets error
      *
-     * @param \Ory\Kratos\Client\Model\ContainerWaitOKBodyError $error error
+     * @param \Ory\Kratos\Client\Model\GenericError $error error
      *
      * @return self
      */
     public function setError($error)
     {
         $this->container['error'] = $error;
-
-        return $this;
-    }
-
-    /**
-     * Gets statusCode
-     *
-     * @return int
-     */
-    public function getStatusCode()
-    {
-        return $this->container['statusCode'];
-    }
-
-    /**
-     * Sets statusCode
-     *
-     * @param int $statusCode Exit code of the container
-     *
-     * @return self
-     */
-    public function setStatusCode($statusCode)
-    {
-        $this->container['statusCode'] = $statusCode;
 
         return $this;
     }

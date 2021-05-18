@@ -1,6 +1,6 @@
 <?php
 /**
- * ContainerWaitOKBody
+ * VerifiableIdentityAddress
  *
  * PHP version 7.2
  *
@@ -33,10 +33,10 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * ContainerWaitOKBody Class Doc Comment
+ * VerifiableIdentityAddress Class Doc Comment
  *
  * @category Class
- * @description ContainerWaitOKBody OK response to ContainerWait operation
+ * @description VerifiableAddress is an identity&#39;s verifiable address
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -44,7 +44,7 @@ use \Ory\Kratos\Client\ObjectSerializer;
  * @template TKey int|null
  * @template TValue mixed|null
  */
-class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializable
+class VerifiableIdentityAddress implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -53,7 +53,7 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
       *
       * @var string
       */
-    protected static $openAPIModelName = 'ContainerWaitOKBody';
+    protected static $openAPIModelName = 'verifiableIdentityAddress';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -61,8 +61,14 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
       * @var string[]
       */
     protected static $openAPITypes = [
-        'error' => '\Ory\Kratos\Client\Model\ContainerWaitOKBodyError',
-        'statusCode' => 'int'
+        'createdAt' => '\DateTime',
+        'id' => 'string',
+        'status' => 'string',
+        'updatedAt' => '\DateTime',
+        'value' => 'string',
+        'verified' => 'bool',
+        'verifiedAt' => '\DateTime',
+        'via' => 'string'
     ];
 
     /**
@@ -73,8 +79,14 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'error' => null,
-        'statusCode' => 'int64'
+        'createdAt' => 'date-time',
+        'id' => 'uuid4',
+        'status' => null,
+        'updatedAt' => 'date-time',
+        'value' => null,
+        'verified' => null,
+        'verifiedAt' => 'date-time',
+        'via' => null
     ];
 
     /**
@@ -104,8 +116,14 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var string[]
      */
     protected static $attributeMap = [
-        'error' => 'Error',
-        'statusCode' => 'StatusCode'
+        'createdAt' => 'created_at',
+        'id' => 'id',
+        'status' => 'status',
+        'updatedAt' => 'updated_at',
+        'value' => 'value',
+        'verified' => 'verified',
+        'verifiedAt' => 'verified_at',
+        'via' => 'via'
     ];
 
     /**
@@ -114,8 +132,14 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var string[]
      */
     protected static $setters = [
-        'error' => 'setError',
-        'statusCode' => 'setStatusCode'
+        'createdAt' => 'setCreatedAt',
+        'id' => 'setId',
+        'status' => 'setStatus',
+        'updatedAt' => 'setUpdatedAt',
+        'value' => 'setValue',
+        'verified' => 'setVerified',
+        'verifiedAt' => 'setVerifiedAt',
+        'via' => 'setVia'
     ];
 
     /**
@@ -124,8 +148,14 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var string[]
      */
     protected static $getters = [
-        'error' => 'getError',
-        'statusCode' => 'getStatusCode'
+        'createdAt' => 'getCreatedAt',
+        'id' => 'getId',
+        'status' => 'getStatus',
+        'updatedAt' => 'getUpdatedAt',
+        'value' => 'getValue',
+        'verified' => 'getVerified',
+        'verifiedAt' => 'getVerifiedAt',
+        'via' => 'getVia'
     ];
 
     /**
@@ -185,8 +215,14 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
      */
     public function __construct(array $data = null)
     {
-        $this->container['error'] = $data['error'] ?? null;
-        $this->container['statusCode'] = $data['statusCode'] ?? null;
+        $this->container['createdAt'] = $data['createdAt'] ?? null;
+        $this->container['id'] = $data['id'] ?? null;
+        $this->container['status'] = $data['status'] ?? null;
+        $this->container['updatedAt'] = $data['updatedAt'] ?? null;
+        $this->container['value'] = $data['value'] ?? null;
+        $this->container['verified'] = $data['verified'] ?? null;
+        $this->container['verifiedAt'] = $data['verifiedAt'] ?? null;
+        $this->container['via'] = $data['via'] ?? null;
     }
 
     /**
@@ -198,11 +234,20 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
     {
         $invalidProperties = [];
 
-        if ($this->container['error'] === null) {
-            $invalidProperties[] = "'error' can't be null";
+        if ($this->container['id'] === null) {
+            $invalidProperties[] = "'id' can't be null";
         }
-        if ($this->container['statusCode'] === null) {
-            $invalidProperties[] = "'statusCode' can't be null";
+        if ($this->container['status'] === null) {
+            $invalidProperties[] = "'status' can't be null";
+        }
+        if ($this->container['value'] === null) {
+            $invalidProperties[] = "'value' can't be null";
+        }
+        if ($this->container['verified'] === null) {
+            $invalidProperties[] = "'verified' can't be null";
+        }
+        if ($this->container['via'] === null) {
+            $invalidProperties[] = "'via' can't be null";
         }
         return $invalidProperties;
     }
@@ -220,49 +265,193 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
 
 
     /**
-     * Gets error
+     * Gets createdAt
      *
-     * @return \Ory\Kratos\Client\Model\ContainerWaitOKBodyError
+     * @return \DateTime|null
      */
-    public function getError()
+    public function getCreatedAt()
     {
-        return $this->container['error'];
+        return $this->container['createdAt'];
     }
 
     /**
-     * Sets error
+     * Sets createdAt
      *
-     * @param \Ory\Kratos\Client\Model\ContainerWaitOKBodyError $error error
+     * @param \DateTime|null $createdAt When this entry was created
      *
      * @return self
      */
-    public function setError($error)
+    public function setCreatedAt($createdAt)
     {
-        $this->container['error'] = $error;
+        $this->container['createdAt'] = $createdAt;
 
         return $this;
     }
 
     /**
-     * Gets statusCode
+     * Gets id
      *
-     * @return int
+     * @return string
      */
-    public function getStatusCode()
+    public function getId()
     {
-        return $this->container['statusCode'];
+        return $this->container['id'];
     }
 
     /**
-     * Sets statusCode
+     * Sets id
      *
-     * @param int $statusCode Exit code of the container
+     * @param string $id id
      *
      * @return self
      */
-    public function setStatusCode($statusCode)
+    public function setId($id)
     {
-        $this->container['statusCode'] = $statusCode;
+        $this->container['id'] = $id;
+
+        return $this;
+    }
+
+    /**
+     * Gets status
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->container['status'];
+    }
+
+    /**
+     * Sets status
+     *
+     * @param string $status VerifiableAddressStatus must not exceed 16 characters as that is the limitation in the SQL Schema
+     *
+     * @return self
+     */
+    public function setStatus($status)
+    {
+        $this->container['status'] = $status;
+
+        return $this;
+    }
+
+    /**
+     * Gets updatedAt
+     *
+     * @return \DateTime|null
+     */
+    public function getUpdatedAt()
+    {
+        return $this->container['updatedAt'];
+    }
+
+    /**
+     * Sets updatedAt
+     *
+     * @param \DateTime|null $updatedAt When this entry was last updated
+     *
+     * @return self
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->container['updatedAt'] = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Gets value
+     *
+     * @return string
+     */
+    public function getValue()
+    {
+        return $this->container['value'];
+    }
+
+    /**
+     * Sets value
+     *
+     * @param string $value The address value  example foo@user.com
+     *
+     * @return self
+     */
+    public function setValue($value)
+    {
+        $this->container['value'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Gets verified
+     *
+     * @return bool
+     */
+    public function getVerified()
+    {
+        return $this->container['verified'];
+    }
+
+    /**
+     * Sets verified
+     *
+     * @param bool $verified Indicates if the address has already been verified
+     *
+     * @return self
+     */
+    public function setVerified($verified)
+    {
+        $this->container['verified'] = $verified;
+
+        return $this;
+    }
+
+    /**
+     * Gets verifiedAt
+     *
+     * @return \DateTime|null
+     */
+    public function getVerifiedAt()
+    {
+        return $this->container['verifiedAt'];
+    }
+
+    /**
+     * Sets verifiedAt
+     *
+     * @param \DateTime|null $verifiedAt verifiedAt
+     *
+     * @return self
+     */
+    public function setVerifiedAt($verifiedAt)
+    {
+        $this->container['verifiedAt'] = $verifiedAt;
+
+        return $this;
+    }
+
+    /**
+     * Gets via
+     *
+     * @return string
+     */
+    public function getVia()
+    {
+        return $this->container['via'];
+    }
+
+    /**
+     * Sets via
+     *
+     * @param string $via VerifiableAddressType must not exceed 16 characters as that is the limitation in the SQL Schema
+     *
+     * @return self
+     */
+    public function setVia($via)
+    {
+        $this->container['via'] = $via;
 
         return $this;
     }

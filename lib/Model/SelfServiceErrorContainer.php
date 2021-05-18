@@ -1,6 +1,6 @@
 <?php
 /**
- * ContainerWaitOKBody
+ * SelfServiceErrorContainer
  *
  * PHP version 7.2
  *
@@ -33,10 +33,9 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * ContainerWaitOKBody Class Doc Comment
+ * SelfServiceErrorContainer Class Doc Comment
  *
  * @category Class
- * @description ContainerWaitOKBody OK response to ContainerWait operation
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -44,7 +43,7 @@ use \Ory\Kratos\Client\ObjectSerializer;
  * @template TKey int|null
  * @template TValue mixed|null
  */
-class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializable
+class SelfServiceErrorContainer implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -53,7 +52,7 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
       *
       * @var string
       */
-    protected static $openAPIModelName = 'ContainerWaitOKBody';
+    protected static $openAPIModelName = 'selfServiceErrorContainer';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -61,8 +60,10 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
       * @var string[]
       */
     protected static $openAPITypes = [
-        'error' => '\Ory\Kratos\Client\Model\ContainerWaitOKBodyError',
-        'statusCode' => 'int'
+        'createdAt' => '\DateTime',
+        'errors' => 'object[]',
+        'id' => 'string',
+        'updatedAt' => '\DateTime'
     ];
 
     /**
@@ -73,8 +74,10 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'error' => null,
-        'statusCode' => 'int64'
+        'createdAt' => 'date-time',
+        'errors' => null,
+        'id' => 'uuid4',
+        'updatedAt' => 'date-time'
     ];
 
     /**
@@ -104,8 +107,10 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var string[]
      */
     protected static $attributeMap = [
-        'error' => 'Error',
-        'statusCode' => 'StatusCode'
+        'createdAt' => 'created_at',
+        'errors' => 'errors',
+        'id' => 'id',
+        'updatedAt' => 'updated_at'
     ];
 
     /**
@@ -114,8 +119,10 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var string[]
      */
     protected static $setters = [
-        'error' => 'setError',
-        'statusCode' => 'setStatusCode'
+        'createdAt' => 'setCreatedAt',
+        'errors' => 'setErrors',
+        'id' => 'setId',
+        'updatedAt' => 'setUpdatedAt'
     ];
 
     /**
@@ -124,8 +131,10 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var string[]
      */
     protected static $getters = [
-        'error' => 'getError',
-        'statusCode' => 'getStatusCode'
+        'createdAt' => 'getCreatedAt',
+        'errors' => 'getErrors',
+        'id' => 'getId',
+        'updatedAt' => 'getUpdatedAt'
     ];
 
     /**
@@ -185,8 +194,10 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
      */
     public function __construct(array $data = null)
     {
-        $this->container['error'] = $data['error'] ?? null;
-        $this->container['statusCode'] = $data['statusCode'] ?? null;
+        $this->container['createdAt'] = $data['createdAt'] ?? null;
+        $this->container['errors'] = $data['errors'] ?? null;
+        $this->container['id'] = $data['id'] ?? null;
+        $this->container['updatedAt'] = $data['updatedAt'] ?? null;
     }
 
     /**
@@ -198,11 +209,11 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
     {
         $invalidProperties = [];
 
-        if ($this->container['error'] === null) {
-            $invalidProperties[] = "'error' can't be null";
+        if ($this->container['errors'] === null) {
+            $invalidProperties[] = "'errors' can't be null";
         }
-        if ($this->container['statusCode'] === null) {
-            $invalidProperties[] = "'statusCode' can't be null";
+        if ($this->container['id'] === null) {
+            $invalidProperties[] = "'id' can't be null";
         }
         return $invalidProperties;
     }
@@ -220,49 +231,97 @@ class ContainerWaitOKBody implements ModelInterface, ArrayAccess, \JsonSerializa
 
 
     /**
-     * Gets error
+     * Gets createdAt
      *
-     * @return \Ory\Kratos\Client\Model\ContainerWaitOKBodyError
+     * @return \DateTime|null
      */
-    public function getError()
+    public function getCreatedAt()
     {
-        return $this->container['error'];
+        return $this->container['createdAt'];
     }
 
     /**
-     * Sets error
+     * Sets createdAt
      *
-     * @param \Ory\Kratos\Client\Model\ContainerWaitOKBodyError $error error
+     * @param \DateTime|null $createdAt CreatedAt is a helper struct field for gobuffalo.pop.
      *
      * @return self
      */
-    public function setError($error)
+    public function setCreatedAt($createdAt)
     {
-        $this->container['error'] = $error;
+        $this->container['createdAt'] = $createdAt;
 
         return $this;
     }
 
     /**
-     * Gets statusCode
+     * Gets errors
      *
-     * @return int
+     * @return object[]
      */
-    public function getStatusCode()
+    public function getErrors()
     {
-        return $this->container['statusCode'];
+        return $this->container['errors'];
     }
 
     /**
-     * Sets statusCode
+     * Sets errors
      *
-     * @param int $statusCode Exit code of the container
+     * @param object[] $errors Errors in the container
      *
      * @return self
      */
-    public function setStatusCode($statusCode)
+    public function setErrors($errors)
     {
-        $this->container['statusCode'] = $statusCode;
+        $this->container['errors'] = $errors;
+
+        return $this;
+    }
+
+    /**
+     * Gets id
+     *
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->container['id'];
+    }
+
+    /**
+     * Sets id
+     *
+     * @param string $id id
+     *
+     * @return self
+     */
+    public function setId($id)
+    {
+        $this->container['id'] = $id;
+
+        return $this;
+    }
+
+    /**
+     * Gets updatedAt
+     *
+     * @return \DateTime|null
+     */
+    public function getUpdatedAt()
+    {
+        return $this->container['updatedAt'];
+    }
+
+    /**
+     * Sets updatedAt
+     *
+     * @param \DateTime|null $updatedAt UpdatedAt is a helper struct field for gobuffalo.pop.
+     *
+     * @return self
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->container['updatedAt'] = $updatedAt;
 
         return $this;
     }
