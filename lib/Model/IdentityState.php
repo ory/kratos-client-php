@@ -1,6 +1,6 @@
 <?php
 /**
- * SelfServiceSettingsFlowState
+ * IdentityState
  *
  * PHP version 7.2
  *
@@ -31,21 +31,21 @@ namespace Ory\Kratos\Client\Model;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * SelfServiceSettingsFlowState Class Doc Comment
+ * IdentityState Class Doc Comment
  *
  * @category Class
- * @description show_form: No user data has been collected, or it is invalid, and thus the form should be shown. success: Indicates that the settings flow has been updated successfully with the provided data. Done will stay true when repeatedly checking. If set to true, done will revert back to false only when a flow with invalid (e.g. \&quot;please use a valid phone number\&quot;) data was sent.
+ * @description The state can either be &#x60;active&#x60; or &#x60;inactive&#x60;.
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class SelfServiceSettingsFlowState
+class IdentityState
 {
     /**
      * Possible values of this enum
      */
-    const SHOW_FORM = 'show_form';
-    const SUCCESS = 'success';
+    const ACTIVE = 'active';
+    const INACTIVE = 'inactive';
     
     /**
      * Gets allowable values of the enum
@@ -54,8 +54,8 @@ class SelfServiceSettingsFlowState
     public static function getAllowableEnumValues()
     {
         return [
-            self::SHOW_FORM,
-            self::SUCCESS,
+            self::ACTIVE,
+            self::INACTIVE,
         ];
     }
 }
