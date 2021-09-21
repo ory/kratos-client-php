@@ -1279,7 +1279,7 @@
                 "dev-master": "2.0-dev"
             }
         },
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "classmap": [
                 "src/"
