@@ -1,41 +1,44 @@
-# Ory\Kratos\Client\V0alpha1Api
+# Ory\Kratos\Client\V0alpha2Api
 
 All URIs are relative to http://localhost.
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**adminCreateIdentity()**](V0alpha1Api.md#adminCreateIdentity) | **POST** /identities | Create an Identity
-[**adminCreateSelfServiceRecoveryLink()**](V0alpha1Api.md#adminCreateSelfServiceRecoveryLink) | **POST** /recovery/link | Create a Recovery Link
-[**adminDeleteIdentity()**](V0alpha1Api.md#adminDeleteIdentity) | **DELETE** /identities/{id} | Delete an Identity
-[**adminGetIdentity()**](V0alpha1Api.md#adminGetIdentity) | **GET** /identities/{id} | Get an Identity
-[**adminListIdentities()**](V0alpha1Api.md#adminListIdentities) | **GET** /identities | List Identities
-[**adminUpdateIdentity()**](V0alpha1Api.md#adminUpdateIdentity) | **PUT** /identities/{id} | Update an Identity
-[**createSelfServiceLogoutFlowUrlForBrowsers()**](V0alpha1Api.md#createSelfServiceLogoutFlowUrlForBrowsers) | **GET** /self-service/logout/browser | Create a Logout URL for Browsers
-[**getJsonSchema()**](V0alpha1Api.md#getJsonSchema) | **GET** /schemas/{id} | 
-[**getSelfServiceError()**](V0alpha1Api.md#getSelfServiceError) | **GET** /self-service/errors | Get Self-Service Errors
-[**getSelfServiceLoginFlow()**](V0alpha1Api.md#getSelfServiceLoginFlow) | **GET** /self-service/login/flows | Get Login Flow
-[**getSelfServiceRecoveryFlow()**](V0alpha1Api.md#getSelfServiceRecoveryFlow) | **GET** /self-service/recovery/flows | Get Recovery Flow
-[**getSelfServiceRegistrationFlow()**](V0alpha1Api.md#getSelfServiceRegistrationFlow) | **GET** /self-service/registration/flows | Get Registration Flow
-[**getSelfServiceSettingsFlow()**](V0alpha1Api.md#getSelfServiceSettingsFlow) | **GET** /self-service/settings/flows | Get Settings Flow
-[**getSelfServiceVerificationFlow()**](V0alpha1Api.md#getSelfServiceVerificationFlow) | **GET** /self-service/verification/flows | Get Verification Flow
-[**initializeSelfServiceLoginFlowForBrowsers()**](V0alpha1Api.md#initializeSelfServiceLoginFlowForBrowsers) | **GET** /self-service/login/browser | Initialize Login Flow for Browsers
-[**initializeSelfServiceLoginFlowWithoutBrowser()**](V0alpha1Api.md#initializeSelfServiceLoginFlowWithoutBrowser) | **GET** /self-service/login/api | Initialize Login Flow for APIs, Services, Apps, ...
-[**initializeSelfServiceRecoveryFlowForBrowsers()**](V0alpha1Api.md#initializeSelfServiceRecoveryFlowForBrowsers) | **GET** /self-service/recovery/browser | Initialize Recovery Flow for Browsers
-[**initializeSelfServiceRecoveryFlowWithoutBrowser()**](V0alpha1Api.md#initializeSelfServiceRecoveryFlowWithoutBrowser) | **GET** /self-service/recovery/api | Initialize Recovery Flow for APIs, Services, Apps, ...
-[**initializeSelfServiceRegistrationFlowForBrowsers()**](V0alpha1Api.md#initializeSelfServiceRegistrationFlowForBrowsers) | **GET** /self-service/registration/browser | Initialize Registration Flow for Browsers
-[**initializeSelfServiceRegistrationFlowWithoutBrowser()**](V0alpha1Api.md#initializeSelfServiceRegistrationFlowWithoutBrowser) | **GET** /self-service/registration/api | Initialize Registration Flow for APIs, Services, Apps, ...
-[**initializeSelfServiceSettingsFlowForBrowsers()**](V0alpha1Api.md#initializeSelfServiceSettingsFlowForBrowsers) | **GET** /self-service/settings/browser | Initialize Settings Flow for Browsers
-[**initializeSelfServiceSettingsFlowWithoutBrowser()**](V0alpha1Api.md#initializeSelfServiceSettingsFlowWithoutBrowser) | **GET** /self-service/settings/api | Initialize Settings Flow for APIs, Services, Apps, ...
-[**initializeSelfServiceVerificationFlowForBrowsers()**](V0alpha1Api.md#initializeSelfServiceVerificationFlowForBrowsers) | **GET** /self-service/verification/browser | Initialize Verification Flow for Browser Clients
-[**initializeSelfServiceVerificationFlowWithoutBrowser()**](V0alpha1Api.md#initializeSelfServiceVerificationFlowWithoutBrowser) | **GET** /self-service/verification/api | Initialize Verification Flow for APIs, Services, Apps, ...
-[**submitSelfServiceLoginFlow()**](V0alpha1Api.md#submitSelfServiceLoginFlow) | **POST** /self-service/login | Submit a Login Flow
-[**submitSelfServiceLogoutFlow()**](V0alpha1Api.md#submitSelfServiceLogoutFlow) | **GET** /self-service/logout | Complete Self-Service Logout
-[**submitSelfServiceLogoutFlowWithoutBrowser()**](V0alpha1Api.md#submitSelfServiceLogoutFlowWithoutBrowser) | **DELETE** /self-service/logout/api | Perform Logout for APIs, Services, Apps, ...
-[**submitSelfServiceRecoveryFlow()**](V0alpha1Api.md#submitSelfServiceRecoveryFlow) | **POST** /self-service/recovery | Complete Recovery Flow
-[**submitSelfServiceRegistrationFlow()**](V0alpha1Api.md#submitSelfServiceRegistrationFlow) | **POST** /self-service/registration | Submit a Registration Flow
-[**submitSelfServiceSettingsFlow()**](V0alpha1Api.md#submitSelfServiceSettingsFlow) | **POST** /self-service/settings | Complete Settings Flow
-[**submitSelfServiceVerificationFlow()**](V0alpha1Api.md#submitSelfServiceVerificationFlow) | **POST** /self-service/verification | Complete Verification Flow
-[**toSession()**](V0alpha1Api.md#toSession) | **GET** /sessions/whoami | Check Who the Current HTTP Session Belongs To
+[**adminCreateIdentity()**](V0alpha2Api.md#adminCreateIdentity) | **POST** /identities | Create an Identity
+[**adminCreateSelfServiceRecoveryLink()**](V0alpha2Api.md#adminCreateSelfServiceRecoveryLink) | **POST** /recovery/link | Create a Recovery Link
+[**adminDeleteIdentity()**](V0alpha2Api.md#adminDeleteIdentity) | **DELETE** /identities/{id} | Delete an Identity
+[**adminDeleteIdentitySessions()**](V0alpha2Api.md#adminDeleteIdentitySessions) | **DELETE** /identities/{id}/sessions | Calling this endpoint irrecoverably and permanently deletes and invalidates all sessions that belong to the given Identity.
+[**adminGetIdentity()**](V0alpha2Api.md#adminGetIdentity) | **GET** /identities/{id} | Get an Identity
+[**adminListIdentities()**](V0alpha2Api.md#adminListIdentities) | **GET** /identities | List Identities
+[**adminUpdateIdentity()**](V0alpha2Api.md#adminUpdateIdentity) | **PUT** /identities/{id} | Update an Identity
+[**createSelfServiceLogoutFlowUrlForBrowsers()**](V0alpha2Api.md#createSelfServiceLogoutFlowUrlForBrowsers) | **GET** /self-service/logout/browser | Create a Logout URL for Browsers
+[**getJsonSchema()**](V0alpha2Api.md#getJsonSchema) | **GET** /schemas/{id} | 
+[**getSelfServiceError()**](V0alpha2Api.md#getSelfServiceError) | **GET** /self-service/errors | Get Self-Service Errors
+[**getSelfServiceLoginFlow()**](V0alpha2Api.md#getSelfServiceLoginFlow) | **GET** /self-service/login/flows | Get Login Flow
+[**getSelfServiceRecoveryFlow()**](V0alpha2Api.md#getSelfServiceRecoveryFlow) | **GET** /self-service/recovery/flows | Get Recovery Flow
+[**getSelfServiceRegistrationFlow()**](V0alpha2Api.md#getSelfServiceRegistrationFlow) | **GET** /self-service/registration/flows | Get Registration Flow
+[**getSelfServiceSettingsFlow()**](V0alpha2Api.md#getSelfServiceSettingsFlow) | **GET** /self-service/settings/flows | Get Settings Flow
+[**getSelfServiceVerificationFlow()**](V0alpha2Api.md#getSelfServiceVerificationFlow) | **GET** /self-service/verification/flows | Get Verification Flow
+[**getWebAuthnJavaScript()**](V0alpha2Api.md#getWebAuthnJavaScript) | **GET** /.well-known/ory/webauthn.js | Get WebAuthn JavaScript
+[**initializeSelfServiceLoginFlowForBrowsers()**](V0alpha2Api.md#initializeSelfServiceLoginFlowForBrowsers) | **GET** /self-service/login/browser | Initialize Login Flow for Browsers
+[**initializeSelfServiceLoginFlowWithoutBrowser()**](V0alpha2Api.md#initializeSelfServiceLoginFlowWithoutBrowser) | **GET** /self-service/login/api | Initialize Login Flow for APIs, Services, Apps, ...
+[**initializeSelfServiceRecoveryFlowForBrowsers()**](V0alpha2Api.md#initializeSelfServiceRecoveryFlowForBrowsers) | **GET** /self-service/recovery/browser | Initialize Recovery Flow for Browsers
+[**initializeSelfServiceRecoveryFlowWithoutBrowser()**](V0alpha2Api.md#initializeSelfServiceRecoveryFlowWithoutBrowser) | **GET** /self-service/recovery/api | Initialize Recovery Flow for APIs, Services, Apps, ...
+[**initializeSelfServiceRegistrationFlowForBrowsers()**](V0alpha2Api.md#initializeSelfServiceRegistrationFlowForBrowsers) | **GET** /self-service/registration/browser | Initialize Registration Flow for Browsers
+[**initializeSelfServiceRegistrationFlowWithoutBrowser()**](V0alpha2Api.md#initializeSelfServiceRegistrationFlowWithoutBrowser) | **GET** /self-service/registration/api | Initialize Registration Flow for APIs, Services, Apps, ...
+[**initializeSelfServiceSettingsFlowForBrowsers()**](V0alpha2Api.md#initializeSelfServiceSettingsFlowForBrowsers) | **GET** /self-service/settings/browser | Initialize Settings Flow for Browsers
+[**initializeSelfServiceSettingsFlowWithoutBrowser()**](V0alpha2Api.md#initializeSelfServiceSettingsFlowWithoutBrowser) | **GET** /self-service/settings/api | Initialize Settings Flow for APIs, Services, Apps, ...
+[**initializeSelfServiceVerificationFlowForBrowsers()**](V0alpha2Api.md#initializeSelfServiceVerificationFlowForBrowsers) | **GET** /self-service/verification/browser | Initialize Verification Flow for Browser Clients
+[**initializeSelfServiceVerificationFlowWithoutBrowser()**](V0alpha2Api.md#initializeSelfServiceVerificationFlowWithoutBrowser) | **GET** /self-service/verification/api | Initialize Verification Flow for APIs, Services, Apps, ...
+[**listIdentitySchemas()**](V0alpha2Api.md#listIdentitySchemas) | **GET** /schemas | 
+[**submitSelfServiceLoginFlow()**](V0alpha2Api.md#submitSelfServiceLoginFlow) | **POST** /self-service/login | Submit a Login Flow
+[**submitSelfServiceLogoutFlow()**](V0alpha2Api.md#submitSelfServiceLogoutFlow) | **GET** /self-service/logout | Complete Self-Service Logout
+[**submitSelfServiceLogoutFlowWithoutBrowser()**](V0alpha2Api.md#submitSelfServiceLogoutFlowWithoutBrowser) | **DELETE** /self-service/logout/api | Perform Logout for APIs, Services, Apps, ...
+[**submitSelfServiceRecoveryFlow()**](V0alpha2Api.md#submitSelfServiceRecoveryFlow) | **POST** /self-service/recovery | Complete Recovery Flow
+[**submitSelfServiceRegistrationFlow()**](V0alpha2Api.md#submitSelfServiceRegistrationFlow) | **POST** /self-service/registration | Submit a Registration Flow
+[**submitSelfServiceSettingsFlow()**](V0alpha2Api.md#submitSelfServiceSettingsFlow) | **POST** /self-service/settings | Complete Settings Flow
+[**submitSelfServiceVerificationFlow()**](V0alpha2Api.md#submitSelfServiceVerificationFlow) | **POST** /self-service/verification | Complete Verification Flow
+[**toSession()**](V0alpha2Api.md#toSession) | **GET** /sessions/whoami | Check Who the Current HTTP Session Belongs To
 
 
 ## `adminCreateIdentity()`
@@ -61,7 +64,7 @@ $config = Ory\Kratos\Client\Configuration::getDefaultConfiguration()->setApiKey(
 // $config = Ory\Kratos\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client(),
@@ -73,7 +76,7 @@ try {
     $result = $apiInstance->adminCreateIdentity($adminCreateIdentityBody);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->adminCreateIdentity: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->adminCreateIdentity: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -118,7 +121,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -129,7 +132,7 @@ try {
     $result = $apiInstance->adminCreateSelfServiceRecoveryLink($adminCreateSelfServiceRecoveryLinkBody);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->adminCreateSelfServiceRecoveryLink: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->adminCreateSelfServiceRecoveryLink: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -179,7 +182,7 @@ $config = Ory\Kratos\Client\Configuration::getDefaultConfiguration()->setApiKey(
 // $config = Ory\Kratos\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client(),
@@ -190,7 +193,68 @@ $id = 'id_example'; // string | ID is the identity's ID.
 try {
     $apiInstance->adminDeleteIdentity($id);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->adminDeleteIdentity: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->adminDeleteIdentity: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **string**| ID is the identity&#39;s ID. |
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[oryAccessToken](../../README.md#oryAccessToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
+## `adminDeleteIdentitySessions()`
+
+```php
+adminDeleteIdentitySessions($id)
+```
+
+Calling this endpoint irrecoverably and permanently deletes and invalidates all sessions that belong to the given Identity.
+
+This endpoint is useful for:  To forcefully logout Identity from all devices and sessions
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+// Configure API key authorization: oryAccessToken
+$config = Ory\Kratos\Client\Configuration::getDefaultConfiguration()->setApiKey('Authorization', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// $config = Ory\Kratos\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
+
+
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client(),
+    $config
+);
+$id = 'id_example'; // string | ID is the identity's ID.
+
+try {
+    $apiInstance->adminDeleteIdentitySessions($id);
+} catch (Exception $e) {
+    echo 'Exception when calling V0alpha2Api->adminDeleteIdentitySessions: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -220,7 +284,7 @@ void (empty response body)
 ## `adminGetIdentity()`
 
 ```php
-adminGetIdentity($id): \Ory\Kratos\Client\Model\Identity
+adminGetIdentity($id, $includeCredential): \Ory\Kratos\Client\Model\Identity
 ```
 
 Get an Identity
@@ -240,19 +304,20 @@ $config = Ory\Kratos\Client\Configuration::getDefaultConfiguration()->setApiKey(
 // $config = Ory\Kratos\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client(),
     $config
 );
 $id = 'id_example'; // string | ID must be set to the ID of identity you want to get
+$includeCredential = array('includeCredential_example'); // string[] | DeclassifyCredentials will declassify one or more identity's credentials  Currently, only `oidc` is supported. This will return the initial OAuth 2.0 Access, Refresh and (optionally) OpenID Connect ID Token.
 
 try {
-    $result = $apiInstance->adminGetIdentity($id);
+    $result = $apiInstance->adminGetIdentity($id, $includeCredential);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->adminGetIdentity: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->adminGetIdentity: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -261,6 +326,7 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **string**| ID must be set to the ID of identity you want to get |
+ **includeCredential** | [**string[]**](../Model/string.md)| DeclassifyCredentials will declassify one or more identity&#39;s credentials  Currently, only &#x60;oidc&#x60; is supported. This will return the initial OAuth 2.0 Access, Refresh and (optionally) OpenID Connect ID Token. | [optional]
 
 ### Return type
 
@@ -302,7 +368,7 @@ $config = Ory\Kratos\Client\Configuration::getDefaultConfiguration()->setApiKey(
 // $config = Ory\Kratos\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client(),
@@ -315,7 +381,7 @@ try {
     $result = $apiInstance->adminListIdentities($perPage, $page);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->adminListIdentities: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->adminListIdentities: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -366,7 +432,7 @@ $config = Ory\Kratos\Client\Configuration::getDefaultConfiguration()->setApiKey(
 // $config = Ory\Kratos\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client(),
@@ -379,7 +445,7 @@ try {
     $result = $apiInstance->adminUpdateIdentity($id, $adminUpdateIdentityBody);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->adminUpdateIdentity: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->adminUpdateIdentity: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -425,7 +491,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -436,7 +502,7 @@ try {
     $result = $apiInstance->createSelfServiceLogoutFlowUrlForBrowsers($cookie);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->createSelfServiceLogoutFlowUrlForBrowsers: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->createSelfServiceLogoutFlowUrlForBrowsers: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -481,7 +547,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -492,7 +558,7 @@ try {
     $result = $apiInstance->getJsonSchema($id);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->getJsonSchema: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->getJsonSchema: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -537,7 +603,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -548,7 +614,7 @@ try {
     $result = $apiInstance->getSelfServiceError($id);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->getSelfServiceError: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->getSelfServiceError: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -583,7 +649,7 @@ getSelfServiceLoginFlow($id, $cookie): \Ory\Kratos\Client\Model\SelfServiceLogin
 
 Get Login Flow
 
-This endpoint returns a login flow's context with, for example, error details and other information.  Browser flows expect the anti-CSRF cookie to be included in the request's HTTP Cookie Header. For AJAX requests you must ensure that cookies are included in the request or requests will fail.  If you use the browser-flow for server-side apps, the services need to run on a common top-level-domain and you need to forward the incoming HTTP Cookie header to this endpoint:  ```js pseudo-code example router.get('/login', async function (req, res) { const flow = await client.getSelfServiceLoginFlow(req.header('cookie'), req.query['flow'])  res.render('login', flow) }) ```  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
+This endpoint returns a login flow's context with, for example, error details and other information.  Browser flows expect the anti-CSRF cookie to be included in the request's HTTP Cookie Header. For AJAX requests you must ensure that cookies are included in the request or requests will fail.  If you use the browser-flow for server-side apps, the services need to run on a common top-level-domain and you need to forward the incoming HTTP Cookie header to this endpoint:  ```js pseudo-code example router.get('/login', async function (req, res) { const flow = await client.getSelfServiceLoginFlow(req.header('cookie'), req.query['flow'])  res.render('login', flow) }) ```  This request may fail due to several reasons. The `error.id` can be one of:  `session_already_available`: The user is already signed in. `self_service_flow_expired`: The flow is expired and you should request a new one.  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
 
 ### Example
 
@@ -593,7 +659,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -605,7 +671,7 @@ try {
     $result = $apiInstance->getSelfServiceLoginFlow($id, $cookie);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->getSelfServiceLoginFlow: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->getSelfServiceLoginFlow: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -651,7 +717,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -663,7 +729,7 @@ try {
     $result = $apiInstance->getSelfServiceRecoveryFlow($id, $cookie);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->getSelfServiceRecoveryFlow: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->getSelfServiceRecoveryFlow: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -699,7 +765,7 @@ getSelfServiceRegistrationFlow($id, $cookie): \Ory\Kratos\Client\Model\SelfServi
 
 Get Registration Flow
 
-This endpoint returns a registration flow's context with, for example, error details and other information.  Browser flows expect the anti-CSRF cookie to be included in the request's HTTP Cookie Header. For AJAX requests you must ensure that cookies are included in the request or requests will fail.  If you use the browser-flow for server-side apps, the services need to run on a common top-level-domain and you need to forward the incoming HTTP Cookie header to this endpoint:  ```js pseudo-code example router.get('/registration', async function (req, res) { const flow = await client.getSelfServiceRegistrationFlow(req.header('cookie'), req.query['flow'])  res.render('registration', flow) }) ```  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
+This endpoint returns a registration flow's context with, for example, error details and other information.  Browser flows expect the anti-CSRF cookie to be included in the request's HTTP Cookie Header. For AJAX requests you must ensure that cookies are included in the request or requests will fail.  If you use the browser-flow for server-side apps, the services need to run on a common top-level-domain and you need to forward the incoming HTTP Cookie header to this endpoint:  ```js pseudo-code example router.get('/registration', async function (req, res) { const flow = await client.getSelfServiceRegistrationFlow(req.header('cookie'), req.query['flow'])  res.render('registration', flow) }) ```  This request may fail due to several reasons. The `error.id` can be one of:  `session_already_available`: The user is already signed in. `self_service_flow_expired`: The flow is expired and you should request a new one.  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
 
 ### Example
 
@@ -709,7 +775,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -721,7 +787,7 @@ try {
     $result = $apiInstance->getSelfServiceRegistrationFlow($id, $cookie);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->getSelfServiceRegistrationFlow: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->getSelfServiceRegistrationFlow: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -757,7 +823,7 @@ getSelfServiceSettingsFlow($id, $xSessionToken, $cookie): \Ory\Kratos\Client\Mod
 
 Get Settings Flow
 
-When accessing this endpoint through Ory Kratos' Public API you must ensure that either the Ory Kratos Session Cookie or the Ory Kratos Session Token are set. The public endpoint does not return 404 status codes but instead 403 or 500 to improve data privacy.  You can access this endpoint without credentials when using Ory Kratos' Admin API.  More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
+When accessing this endpoint through Ory Kratos' Public API you must ensure that either the Ory Kratos Session Cookie or the Ory Kratos Session Token are set.  Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor or change the configuration.  You can access this endpoint without credentials when using Ory Kratos' Admin API.  If this endpoint is called via an AJAX request, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `session_inactive`: No Ory Session was found - sign in a user first. `security_identity_mismatch`: The flow was interrupted with `session_refresh_required` but apparently some other identity logged in instead.  More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
 
 ### Example
 
@@ -767,7 +833,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -780,7 +846,7 @@ try {
     $result = $apiInstance->getSelfServiceSettingsFlow($id, $xSessionToken, $cookie);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->getSelfServiceSettingsFlow: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->getSelfServiceSettingsFlow: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -827,7 +893,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -839,7 +905,7 @@ try {
     $result = $apiInstance->getSelfServiceVerificationFlow($id, $cookie);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->getSelfServiceVerificationFlow: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->getSelfServiceVerificationFlow: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -867,15 +933,15 @@ No authorization required
 [[Back to Model list]](../../README.md#models)
 [[Back to README]](../../README.md)
 
-## `initializeSelfServiceLoginFlowForBrowsers()`
+## `getWebAuthnJavaScript()`
 
 ```php
-initializeSelfServiceLoginFlowForBrowsers($refresh): \Ory\Kratos\Client\Model\SelfServiceLoginFlow
+getWebAuthnJavaScript(): string
 ```
 
-Initialize Login Flow for Browsers
+Get WebAuthn JavaScript
 
-This endpoint initializes a browser-based user login flow. This endpoint will set the appropriate cookies and anti-CSRF measures required for browser-based flows.  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.login.ui_url` with the flow ID set as the query parameter `?flow=`. If a valid user session exists already, the browser will be redirected to `urls.default_redirect_url` unless the query parameter `?refresh=true` was set.  If this endpoint is called via an AJAX request, the response contains the login flow without a redirect.  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
+This endpoint provides JavaScript which is needed in order to perform WebAuthn login and registration.  If you are building a JavaScript Browser App (e.g. in ReactJS or AngularJS) you will need to load this file:  ```html <script src=\"https://public-kratos.example.org/.well-known/ory/webauthn.js\" type=\"script\" async /> ```  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
 
 ### Example
 
@@ -885,18 +951,73 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client()
+);
+
+try {
+    $result = $apiInstance->getWebAuthnJavaScript();
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling V0alpha2Api->getWebAuthnJavaScript: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
+## `initializeSelfServiceLoginFlowForBrowsers()`
+
+```php
+initializeSelfServiceLoginFlowForBrowsers($refresh, $aal, $returnTo): \Ory\Kratos\Client\Model\SelfServiceLoginFlow
+```
+
+Initialize Login Flow for Browsers
+
+This endpoint initializes a browser-based user login flow. This endpoint will set the appropriate cookies and anti-CSRF measures required for browser-based flows.  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.login.ui_url` with the flow ID set as the query parameter `?flow=`. If a valid user session exists already, the browser will be redirected to `urls.default_redirect_url` unless the query parameter `?refresh=true` was set.  If this endpoint is called via an AJAX request, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `session_aal1_required`: Multi-factor auth (e.g. 2fa) was requested but the user has no session yet. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration!  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
 );
 $refresh = True; // bool | Refresh a login session  If set to true, this will refresh an existing login session by asking the user to sign in again. This will reset the authenticated_at time of the session.
+$aal = 'aal_example'; // string | Request a Specific AuthenticationMethod Assurance Level  Use this parameter to upgrade an existing session's authenticator assurance level (AAL). This allows you to ask for multi-factor authentication. When an identity sign in using e.g. username+password, the AAL is 1. If you wish to \"upgrade\" the session's security by asking the user to perform TOTP / WebAuth/ ... you would set this to \"aal2\".
+$returnTo = 'returnTo_example'; // string | The URL to return the browser to after the flow was completed.
 
 try {
-    $result = $apiInstance->initializeSelfServiceLoginFlowForBrowsers($refresh);
+    $result = $apiInstance->initializeSelfServiceLoginFlowForBrowsers($refresh, $aal, $returnTo);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->initializeSelfServiceLoginFlowForBrowsers: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->initializeSelfServiceLoginFlowForBrowsers: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -905,6 +1026,8 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **refresh** | **bool**| Refresh a login session  If set to true, this will refresh an existing login session by asking the user to sign in again. This will reset the authenticated_at time of the session. | [optional]
+ **aal** | **string**| Request a Specific AuthenticationMethod Assurance Level  Use this parameter to upgrade an existing session&#39;s authenticator assurance level (AAL). This allows you to ask for multi-factor authentication. When an identity sign in using e.g. username+password, the AAL is 1. If you wish to \&quot;upgrade\&quot; the session&#39;s security by asking the user to perform TOTP / WebAuth/ ... you would set this to \&quot;aal2\&quot;. | [optional]
+ **returnTo** | **string**| The URL to return the browser to after the flow was completed. | [optional]
 
 ### Return type
 
@@ -926,12 +1049,12 @@ No authorization required
 ## `initializeSelfServiceLoginFlowWithoutBrowser()`
 
 ```php
-initializeSelfServiceLoginFlowWithoutBrowser($refresh): \Ory\Kratos\Client\Model\SelfServiceLoginFlow
+initializeSelfServiceLoginFlowWithoutBrowser($refresh, $aal, $xSessionToken): \Ory\Kratos\Client\Model\SelfServiceLoginFlow
 ```
 
 Initialize Login Flow for APIs, Services, Apps, ...
 
-This endpoint initiates a login flow for API clients that do not use a browser, such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error will be returned unless the URL query parameter `?refresh=true` is set.  To fetch an existing login flow call `/self-service/login/flows?flow=<flow_id>`.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks, including CSRF login attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
+This endpoint initiates a login flow for API clients that do not use a browser, such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error will be returned unless the URL query parameter `?refresh=true` is set.  To fetch an existing login flow call `/self-service/login/flows?flow=<flow_id>`.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks, including CSRF login attacks.  In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `session_aal1_required`: Multi-factor auth (e.g. 2fa) was requested but the user has no session yet. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
 
 ### Example
 
@@ -941,18 +1064,20 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
 );
 $refresh = True; // bool | Refresh a login session  If set to true, this will refresh an existing login session by asking the user to sign in again. This will reset the authenticated_at time of the session.
+$aal = 'aal_example'; // string | Request a Specific AuthenticationMethod Assurance Level  Use this parameter to upgrade an existing session's authenticator assurance level (AAL). This allows you to ask for multi-factor authentication. When an identity sign in using e.g. username+password, the AAL is 1. If you wish to \"upgrade\" the session's security by asking the user to perform TOTP / WebAuth/ ... you would set this to \"aal2\".
+$xSessionToken = 'xSessionToken_example'; // string | The Session Token of the Identity performing the settings flow.
 
 try {
-    $result = $apiInstance->initializeSelfServiceLoginFlowWithoutBrowser($refresh);
+    $result = $apiInstance->initializeSelfServiceLoginFlowWithoutBrowser($refresh, $aal, $xSessionToken);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->initializeSelfServiceLoginFlowWithoutBrowser: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->initializeSelfServiceLoginFlowWithoutBrowser: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -961,6 +1086,8 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **refresh** | **bool**| Refresh a login session  If set to true, this will refresh an existing login session by asking the user to sign in again. This will reset the authenticated_at time of the session. | [optional]
+ **aal** | **string**| Request a Specific AuthenticationMethod Assurance Level  Use this parameter to upgrade an existing session&#39;s authenticator assurance level (AAL). This allows you to ask for multi-factor authentication. When an identity sign in using e.g. username+password, the AAL is 1. If you wish to \&quot;upgrade\&quot; the session&#39;s security by asking the user to perform TOTP / WebAuth/ ... you would set this to \&quot;aal2\&quot;. | [optional]
+ **xSessionToken** | **string**| The Session Token of the Identity performing the settings flow. | [optional]
 
 ### Return type
 
@@ -982,7 +1109,7 @@ No authorization required
 ## `initializeSelfServiceRecoveryFlowForBrowsers()`
 
 ```php
-initializeSelfServiceRecoveryFlowForBrowsers(): \Ory\Kratos\Client\Model\SelfServiceRecoveryFlow
+initializeSelfServiceRecoveryFlowForBrowsers($returnTo): \Ory\Kratos\Client\Model\SelfServiceRecoveryFlow
 ```
 
 Initialize Recovery Flow for Browsers
@@ -997,23 +1124,26 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
 );
+$returnTo = 'returnTo_example'; // string | The URL to return the browser to after the flow was completed.
 
 try {
-    $result = $apiInstance->initializeSelfServiceRecoveryFlowForBrowsers();
+    $result = $apiInstance->initializeSelfServiceRecoveryFlowForBrowsers($returnTo);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->initializeSelfServiceRecoveryFlowForBrowsers: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->initializeSelfServiceRecoveryFlowForBrowsers: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
 ### Parameters
 
-This endpoint does not need any parameter.
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **returnTo** | **string**| The URL to return the browser to after the flow was completed. | [optional]
 
 ### Return type
 
@@ -1050,7 +1180,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -1060,7 +1190,7 @@ try {
     $result = $apiInstance->initializeSelfServiceRecoveryFlowWithoutBrowser();
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->initializeSelfServiceRecoveryFlowWithoutBrowser: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->initializeSelfServiceRecoveryFlowWithoutBrowser: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -1088,12 +1218,12 @@ No authorization required
 ## `initializeSelfServiceRegistrationFlowForBrowsers()`
 
 ```php
-initializeSelfServiceRegistrationFlowForBrowsers(): \Ory\Kratos\Client\Model\SelfServiceRegistrationFlow
+initializeSelfServiceRegistrationFlowForBrowsers($returnTo): \Ory\Kratos\Client\Model\SelfServiceRegistrationFlow
 ```
 
 Initialize Registration Flow for Browsers
 
-This endpoint initializes a browser-based user registration flow. This endpoint will set the appropriate cookies and anti-CSRF measures required for browser-based flows.  :::info  This endpoint is EXPERIMENTAL and subject to potential breaking changes in the future.  :::  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.registration.ui_url` with the flow ID set as the query parameter `?flow=`. If a valid user session exists already, the browser will be redirected to `urls.default_redirect_url`.  If this endpoint is called via an AJAX request, the response contains the registration flow without a redirect.  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
+This endpoint initializes a browser-based user registration flow. This endpoint will set the appropriate cookies and anti-CSRF measures required for browser-based flows.  :::info  This endpoint is EXPERIMENTAL and subject to potential breaking changes in the future.  :::  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.registration.ui_url` with the flow ID set as the query parameter `?flow=`. If a valid user session exists already, the browser will be redirected to `urls.default_redirect_url`.  If this endpoint is called via an AJAX request, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration!  If this endpoint is called via an AJAX request, the response contains the registration flow without a redirect.  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
 
 ### Example
 
@@ -1103,23 +1233,26 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
 );
+$returnTo = 'returnTo_example'; // string | The URL to return the browser to after the flow was completed.
 
 try {
-    $result = $apiInstance->initializeSelfServiceRegistrationFlowForBrowsers();
+    $result = $apiInstance->initializeSelfServiceRegistrationFlowForBrowsers($returnTo);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->initializeSelfServiceRegistrationFlowForBrowsers: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->initializeSelfServiceRegistrationFlowForBrowsers: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
 ### Parameters
 
-This endpoint does not need any parameter.
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **returnTo** | **string**| The URL to return the browser to after the flow was completed. | [optional]
 
 ### Return type
 
@@ -1146,7 +1279,7 @@ initializeSelfServiceRegistrationFlowWithoutBrowser(): \Ory\Kratos\Client\Model\
 
 Initialize Registration Flow for APIs, Services, Apps, ...
 
-This endpoint initiates a registration flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error will be returned unless the URL query parameter `?refresh=true` is set.  To fetch an existing registration flow call `/self-service/registration/flows?flow=<flow_id>`.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
+This endpoint initiates a registration flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error will be returned unless the URL query parameter `?refresh=true` is set.  To fetch an existing registration flow call `/self-service/registration/flows?flow=<flow_id>`.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
 
 ### Example
 
@@ -1156,7 +1289,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -1166,7 +1299,7 @@ try {
     $result = $apiInstance->initializeSelfServiceRegistrationFlowWithoutBrowser();
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->initializeSelfServiceRegistrationFlowWithoutBrowser: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->initializeSelfServiceRegistrationFlowWithoutBrowser: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -1194,12 +1327,12 @@ No authorization required
 ## `initializeSelfServiceSettingsFlowForBrowsers()`
 
 ```php
-initializeSelfServiceSettingsFlowForBrowsers($cookie): \Ory\Kratos\Client\Model\SelfServiceSettingsFlow
+initializeSelfServiceSettingsFlowForBrowsers($returnTo): \Ory\Kratos\Client\Model\SelfServiceSettingsFlow
 ```
 
 Initialize Settings Flow for Browsers
 
-This endpoint initializes a browser-based user settings flow. Once initialized, the browser will be redirected to `selfservice.flows.settings.ui_url` with the flow ID set as the query parameter `?flow=`. If no valid Ory Kratos Session Cookie is included in the request, a login flow will be initialized.  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.settings.ui_url` with the flow ID set as the query parameter `?flow=`. If no valid user session was set, the browser will be redirected to the login endpoint.  If this endpoint is called via an AJAX request, the response contains the settings flow without any redirects or a 403 forbidden error if no valid session was set.  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
+This endpoint initializes a browser-based user settings flow. Once initialized, the browser will be redirected to `selfservice.flows.settings.ui_url` with the flow ID set as the query parameter `?flow=`. If no valid Ory Kratos Session Cookie is included in the request, a login flow will be initialized.  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.settings.ui_url` with the flow ID set as the query parameter `?flow=`. If no valid user session was set, the browser will be redirected to the login endpoint.  If this endpoint is called via an AJAX request, the response contains the settings flow without any redirects or a 401 forbidden error if no valid session was set.  Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor (happens automatically for server-side browser flows) or change the configuration.  If this endpoint is called via an AJAX request, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `session_inactive`: No Ory Session was found - sign in a user first. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration!  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
 
 ### Example
 
@@ -1209,18 +1342,18 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
 );
-$cookie = 'cookie_example'; // string | The Session Cookie of the Identity performing the settings flow.
+$returnTo = 'returnTo_example'; // string | The URL to return the browser to after the flow was completed.
 
 try {
-    $result = $apiInstance->initializeSelfServiceSettingsFlowForBrowsers($cookie);
+    $result = $apiInstance->initializeSelfServiceSettingsFlowForBrowsers($returnTo);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->initializeSelfServiceSettingsFlowForBrowsers: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->initializeSelfServiceSettingsFlowForBrowsers: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -1228,7 +1361,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **cookie** | **string**| The Session Cookie of the Identity performing the settings flow. | [optional]
+ **returnTo** | **string**| The URL to return the browser to after the flow was completed. | [optional]
 
 ### Return type
 
@@ -1255,7 +1388,7 @@ initializeSelfServiceSettingsFlowWithoutBrowser($xSessionToken): \Ory\Kratos\Cli
 
 Initialize Settings Flow for APIs, Services, Apps, ...
 
-This endpoint initiates a settings flow for API clients such as mobile devices, smart TVs, and so on. You must provide a valid Ory Kratos Session Token for this endpoint to respond with HTTP 200 OK.  To fetch an existing settings flow call `/self-service/settings/flows?flow=<flow_id>`.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
+This endpoint initiates a settings flow for API clients such as mobile devices, smart TVs, and so on. You must provide a valid Ory Kratos Session Token for this endpoint to respond with HTTP 200 OK.  To fetch an existing settings flow call `/self-service/settings/flows?flow=<flow_id>`.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor or change the configuration.  In the case of an error, the `error.id` of the JSON response body can be one of:  `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `session_inactive`: No Ory Session was found - sign in a user first.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
 
 ### Example
 
@@ -1265,7 +1398,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -1276,7 +1409,7 @@ try {
     $result = $apiInstance->initializeSelfServiceSettingsFlowWithoutBrowser($xSessionToken);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->initializeSelfServiceSettingsFlowWithoutBrowser: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->initializeSelfServiceSettingsFlowWithoutBrowser: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -1306,7 +1439,7 @@ No authorization required
 ## `initializeSelfServiceVerificationFlowForBrowsers()`
 
 ```php
-initializeSelfServiceVerificationFlowForBrowsers(): \Ory\Kratos\Client\Model\SelfServiceVerificationFlow
+initializeSelfServiceVerificationFlowForBrowsers($returnTo): \Ory\Kratos\Client\Model\SelfServiceVerificationFlow
 ```
 
 Initialize Verification Flow for Browser Clients
@@ -1321,23 +1454,26 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
 );
+$returnTo = 'returnTo_example'; // string | The URL to return the browser to after the flow was completed.
 
 try {
-    $result = $apiInstance->initializeSelfServiceVerificationFlowForBrowsers();
+    $result = $apiInstance->initializeSelfServiceVerificationFlowForBrowsers($returnTo);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->initializeSelfServiceVerificationFlowForBrowsers: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->initializeSelfServiceVerificationFlowForBrowsers: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
 ### Parameters
 
-This endpoint does not need any parameter.
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **returnTo** | **string**| The URL to return the browser to after the flow was completed. | [optional]
 
 ### Return type
 
@@ -1374,7 +1510,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -1384,7 +1520,7 @@ try {
     $result = $apiInstance->initializeSelfServiceVerificationFlowWithoutBrowser();
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->initializeSelfServiceVerificationFlowWithoutBrowser: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->initializeSelfServiceVerificationFlowWithoutBrowser: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -1409,15 +1545,15 @@ No authorization required
 [[Back to Model list]](../../README.md#models)
 [[Back to README]](../../README.md)
 
-## `submitSelfServiceLoginFlow()`
+## `listIdentitySchemas()`
 
 ```php
-submitSelfServiceLoginFlow($flow, $submitSelfServiceLoginFlowBody): \Ory\Kratos\Client\Model\SuccessfulSelfServiceLoginWithoutBrowser
+listIdentitySchemas($perPage, $page): \Ory\Kratos\Client\Model\IdentitySchema[]
 ```
 
-Submit a Login Flow
 
-:::info  This endpoint is EXPERIMENTAL and subject to potential breaking changes in the future.  :::  Use this endpoint to complete a login flow. This endpoint behaves differently for API and browser flows.  API flows expect `application/json` to be sent in the body and responds with HTTP 200 and a application/json body with the session token on success; HTTP 302 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  Browser flows expect a Content-Type of `application/x-www-form-urlencoded` or `application/json` to be sent in the body and respond with a HTTP 302 redirect to the post/after login URL or the `return_to` value if it was set and if the login succeeded; a HTTP 302 redirect to the login UI URL with the flow ID containing the validation errors otherwise.  Browser flows with an accept header of `application/json` will not redirect but instead respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 302 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
+
+Get all Identity Schemas
 
 ### Example
 
@@ -1427,19 +1563,78 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client()
+);
+$perPage = 100; // int | Items per Page  This is the number of items per page.
+$page = 0; // int | Pagination Page
+
+try {
+    $result = $apiInstance->listIdentitySchemas($perPage, $page);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling V0alpha2Api->listIdentitySchemas: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **perPage** | **int**| Items per Page  This is the number of items per page. | [optional] [default to 100]
+ **page** | **int**| Pagination Page | [optional] [default to 0]
+
+### Return type
+
+[**\Ory\Kratos\Client\Model\IdentitySchema[]**](../Model/IdentitySchema.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
+## `submitSelfServiceLoginFlow()`
+
+```php
+submitSelfServiceLoginFlow($flow, $xSessionToken, $submitSelfServiceLoginFlowBody): \Ory\Kratos\Client\Model\SuccessfulSelfServiceLoginWithoutBrowser
+```
+
+Submit a Login Flow
+
+:::info  This endpoint is EXPERIMENTAL and subject to potential breaking changes in the future.  :::  Use this endpoint to complete a login flow. This endpoint behaves differently for API and browser flows.  API flows expect `application/json` to be sent in the body and responds with HTTP 200 and a application/json body with the session token on success; HTTP 302 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  Browser flows expect a Content-Type of `application/x-www-form-urlencoded` or `application/json` to be sent in the body and respond with a HTTP 302 redirect to the post/after login URL or the `return_to` value if it was set and if the login succeeded; a HTTP 302 redirect to the login UI URL with the flow ID containing the validation errors otherwise.  Browser flows with an accept header of `application/json` will not redirect but instead respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 302 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  If this endpoint is called with `Accept: application/json` in the header, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration! `browser_location_change_required`: Usually sent when an AJAX request indicates that the browser needs to open a specific URL. Most likely used in Social Sign In flows.  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
 );
 $flow = 'flow_example'; // string | The Login Flow ID  The value for this parameter comes from `flow` URL Query parameter sent to your application (e.g. `/login?flow=abcde`).
+$xSessionToken = 'xSessionToken_example'; // string | The Session Token of the Identity performing the settings flow.
 $submitSelfServiceLoginFlowBody = new \Ory\Kratos\Client\Model\SubmitSelfServiceLoginFlowBody(); // \Ory\Kratos\Client\Model\SubmitSelfServiceLoginFlowBody
 
 try {
-    $result = $apiInstance->submitSelfServiceLoginFlow($flow, $submitSelfServiceLoginFlowBody);
+    $result = $apiInstance->submitSelfServiceLoginFlow($flow, $xSessionToken, $submitSelfServiceLoginFlowBody);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->submitSelfServiceLoginFlow: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->submitSelfServiceLoginFlow: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -1448,6 +1643,7 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **flow** | **string**| The Login Flow ID  The value for this parameter comes from &#x60;flow&#x60; URL Query parameter sent to your application (e.g. &#x60;/login?flow&#x3D;abcde&#x60;). |
+ **xSessionToken** | **string**| The Session Token of the Identity performing the settings flow. | [optional]
  **submitSelfServiceLoginFlowBody** | [**\Ory\Kratos\Client\Model\SubmitSelfServiceLoginFlowBody**](../Model/SubmitSelfServiceLoginFlowBody.md)|  | [optional]
 
 ### Return type
@@ -1470,7 +1666,7 @@ No authorization required
 ## `submitSelfServiceLogoutFlow()`
 
 ```php
-submitSelfServiceLogoutFlow($token)
+submitSelfServiceLogoutFlow($token, $returnTo)
 ```
 
 Complete Self-Service Logout
@@ -1485,17 +1681,18 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
 );
 $token = 'token_example'; // string | A Valid Logout Token  If you do not have a logout token because you only have a session cookie, call `/self-service/logout/urls` to generate a URL for this endpoint.
+$returnTo = 'returnTo_example'; // string | The URL to return to after the logout was completed.
 
 try {
-    $apiInstance->submitSelfServiceLogoutFlow($token);
+    $apiInstance->submitSelfServiceLogoutFlow($token, $returnTo);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->submitSelfServiceLogoutFlow: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->submitSelfServiceLogoutFlow: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -1504,6 +1701,7 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **token** | **string**| A Valid Logout Token  If you do not have a logout token because you only have a session cookie, call &#x60;/self-service/logout/urls&#x60; to generate a URL for this endpoint. | [optional]
+ **returnTo** | **string**| The URL to return to after the logout was completed. | [optional]
 
 ### Return type
 
@@ -1540,7 +1738,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -1550,7 +1748,7 @@ $submitSelfServiceLogoutFlowWithoutBrowserBody = new \Ory\Kratos\Client\Model\Su
 try {
     $apiInstance->submitSelfServiceLogoutFlowWithoutBrowser($submitSelfServiceLogoutFlowWithoutBrowserBody);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->submitSelfServiceLogoutFlowWithoutBrowser: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->submitSelfServiceLogoutFlowWithoutBrowser: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -1595,7 +1793,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -1608,7 +1806,7 @@ try {
     $result = $apiInstance->submitSelfServiceRecoveryFlow($flow, $token, $submitSelfServiceRecoveryFlowBody);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->submitSelfServiceRecoveryFlow: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->submitSelfServiceRecoveryFlow: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -1645,7 +1843,7 @@ submitSelfServiceRegistrationFlow($flow, $submitSelfServiceRegistrationFlowBody)
 
 Submit a Registration Flow
 
-Use this endpoint to complete a registration flow by sending an identity's traits and password. This endpoint behaves differently for API and browser flows.  API flows expect `application/json` to be sent in the body and respond with HTTP 200 and a application/json body with the created identity success - if the session hook is configured the `session` and `session_token` will also be included; HTTP 302 redirect to a fresh registration flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  Browser flows expect a Content-Type of `application/x-www-form-urlencoded` or `application/json` to be sent in the body and respond with a HTTP 302 redirect to the post/after registration URL or the `return_to` value if it was set and if the registration succeeded; a HTTP 302 redirect to the registration UI URL with the flow ID containing the validation errors otherwise.  Browser flows with an accept header of `application/json` will not redirect but instead respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 302 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
+Use this endpoint to complete a registration flow by sending an identity's traits and password. This endpoint behaves differently for API and browser flows.  API flows expect `application/json` to be sent in the body and respond with HTTP 200 and a application/json body with the created identity success - if the session hook is configured the `session` and `session_token` will also be included; HTTP 302 redirect to a fresh registration flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  Browser flows expect a Content-Type of `application/x-www-form-urlencoded` or `application/json` to be sent in the body and respond with a HTTP 302 redirect to the post/after registration URL or the `return_to` value if it was set and if the registration succeeded; a HTTP 302 redirect to the registration UI URL with the flow ID containing the validation errors otherwise.  Browser flows with an accept header of `application/json` will not redirect but instead respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 302 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  If this endpoint is called with `Accept: application/json` in the header, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration! `browser_location_change_required`: Usually sent when an AJAX request indicates that the browser needs to open a specific URL. Most likely used in Social Sign In flows.  More information can be found at [Ory Kratos User Login and User Registration Documentation](https://www.ory.sh/docs/next/kratos/self-service/flows/user-login-user-registration).
 
 ### Example
 
@@ -1655,7 +1853,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -1667,7 +1865,7 @@ try {
     $result = $apiInstance->submitSelfServiceRegistrationFlow($flow, $submitSelfServiceRegistrationFlowBody);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->submitSelfServiceRegistrationFlow: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->submitSelfServiceRegistrationFlow: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -1698,12 +1896,12 @@ No authorization required
 ## `submitSelfServiceSettingsFlow()`
 
 ```php
-submitSelfServiceSettingsFlow($flow, $xSessionToken, $submitSelfServiceSettingsFlowBody): \Ory\Kratos\Client\Model\SuccessfulSelfServiceSettingsWithoutBrowser
+submitSelfServiceSettingsFlow($flow, $xSessionToken, $submitSelfServiceSettingsFlowBody): \Ory\Kratos\Client\Model\SelfServiceSettingsFlow
 ```
 
 Complete Settings Flow
 
-Use this endpoint to complete a settings flow by sending an identity's updated password. This endpoint behaves differently for API and browser flows.  API-initiated flows expect `application/json` to be sent in the body and respond with HTTP 200 and an application/json body with the session token on success; HTTP 302 redirect to a fresh settings flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors. HTTP 401 when the endpoint is called without a valid session token. HTTP 403 when `selfservice.flows.settings.privileged_session_max_age` was reached. Implies that the user needs to re-authenticate.  Browser flows without HTTP Header `Accept` or with `Accept: text/_*` respond with a HTTP 302 redirect to the post/after settings URL or the `return_to` value if it was set and if the flow succeeded; a HTTP 302 redirect to the Settings UI URL with the flow ID containing the validation errors otherwise. a HTTP 302 redirect to the login endpoint when `selfservice.flows.settings.privileged_session_max_age` was reached.  Browser flows with HTTP Header `Accept: application/json` respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 302 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 403 when the page is accessed without a session cookie. HTTP 400 on form validation errors.  More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
+Use this endpoint to complete a settings flow by sending an identity's updated password. This endpoint behaves differently for API and browser flows.  API-initiated flows expect `application/json` to be sent in the body and respond with HTTP 200 and an application/json body with the session token on success; HTTP 302 redirect to a fresh settings flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors. HTTP 401 when the endpoint is called without a valid session token. HTTP 403 when `selfservice.flows.settings.privileged_session_max_age` was reached or the session's AAL is too low. Implies that the user needs to re-authenticate.  Browser flows without HTTP Header `Accept` or with `Accept: text/_*` respond with a HTTP 302 redirect to the post/after settings URL or the `return_to` value if it was set and if the flow succeeded; a HTTP 302 redirect to the Settings UI URL with the flow ID containing the validation errors otherwise. a HTTP 302 redirect to the login endpoint when `selfservice.flows.settings.privileged_session_max_age` was reached or the session's AAL is too low.  Browser flows with HTTP Header `Accept: application/json` respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 302 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 401 when the endpoint is called without a valid session cookie. HTTP 403 when the page is accessed without a session cookie or the session's AAL is too low. HTTP 400 on form validation errors.  Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor (happens automatically for server-side browser flows) or change the configuration.  If this endpoint is called with a `Accept: application/json` HTTP header, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_refresh_required`: The identity requested to change something that needs a privileged session. Redirect the identity to the login init endpoint with query parameters `?refresh=true&return_to=<the-current-browser-url>`, or initiate a refresh login flow otherwise. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `session_inactive`: No Ory Session was found - sign in a user first. `security_identity_mismatch`: The flow was interrupted with `session_refresh_required` but apparently some other identity logged in instead. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration! `browser_location_change_required`: Usually sent when an AJAX request indicates that the browser needs to open a specific URL. Most likely used in Social Sign In flows.  More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
 
 ### Example
 
@@ -1713,7 +1911,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -1726,7 +1924,7 @@ try {
     $result = $apiInstance->submitSelfServiceSettingsFlow($flow, $xSessionToken, $submitSelfServiceSettingsFlowBody);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->submitSelfServiceSettingsFlow: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->submitSelfServiceSettingsFlow: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -1740,7 +1938,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**\Ory\Kratos\Client\Model\SuccessfulSelfServiceSettingsWithoutBrowser**](../Model/SuccessfulSelfServiceSettingsWithoutBrowser.md)
+[**\Ory\Kratos\Client\Model\SelfServiceSettingsFlow**](../Model/SelfServiceSettingsFlow.md)
 
 ### Authorization
 
@@ -1773,7 +1971,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -1786,7 +1984,7 @@ try {
     $result = $apiInstance->submitSelfServiceVerificationFlow($flow, $token, $submitSelfServiceVerificationFlowBody);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->submitSelfServiceVerificationFlow: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->submitSelfServiceVerificationFlow: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -1823,7 +2021,7 @@ toSession($xSessionToken, $cookie): \Ory\Kratos\Client\Model\Session
 
 Check Who the Current HTTP Session Belongs To
 
-Uses the HTTP Headers in the GET request to determine (e.g. by using checking the cookies) who is authenticated. Returns a session object in the body or 401 if the credentials are invalid or no credentials were sent. Additionally when the request it successful it adds the user ID to the 'X-Kratos-Authenticated-Identity-Id' header in the response.  If you call this endpoint from a server-side application, you must forward the HTTP Cookie Header to this endpoint:  ```js pseudo-code example router.get('/protected-endpoint', async function (req, res) { const session = await client.toSession(undefined, req.header('cookie'))  console.log(session) }) ```  When calling this endpoint from a non-browser application (e.g. mobile app) you must include the session token:  ```js pseudo-code example ... const session = await client.toSession(\"the-session-token\")  console.log(session) ```  This endpoint is useful for:  AJAX calls. Remember to send credentials and set up CORS correctly! Reverse proxies and API Gateways Server-side calls - use the `X-Session-Token` header!  This endpoint authenticates users by checking  if the `Cookie` HTTP header was set containing an Ory Kratos Session Cookie; if the `Authorization: bearer <ory-session-token>` HTTP header was set with a valid Ory Kratos Session Token; if the `X-Session-Token` HTTP header was set with a valid Ory Kratos Session Token.  If none of these headers are set or the cooke or token are invalid, the endpoint returns a HTTP 401 status code.
+Uses the HTTP Headers in the GET request to determine (e.g. by using checking the cookies) who is authenticated. Returns a session object in the body or 401 if the credentials are invalid or no credentials were sent. Additionally when the request it successful it adds the user ID to the 'X-Kratos-Authenticated-Identity-Id' header in the response.  If you call this endpoint from a server-side application, you must forward the HTTP Cookie Header to this endpoint:  ```js pseudo-code example router.get('/protected-endpoint', async function (req, res) { const session = await client.toSession(undefined, req.header('cookie'))  console.log(session) }) ```  When calling this endpoint from a non-browser application (e.g. mobile app) you must include the session token:  ```js pseudo-code example ... const session = await client.toSession(\"the-session-token\")  console.log(session) ```  Depending on your configuration this endpoint might return a 403 status code if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor or change the configuration.  This endpoint is useful for:  AJAX calls. Remember to send credentials and set up CORS correctly! Reverse proxies and API Gateways Server-side calls - use the `X-Session-Token` header!  This endpoint authenticates users by checking  if the `Cookie` HTTP header was set containing an Ory Kratos Session Cookie; if the `Authorization: bearer <ory-session-token>` HTTP header was set with a valid Ory Kratos Session Token; if the `X-Session-Token` HTTP header was set with a valid Ory Kratos Session Token.  If none of these headers are set or the cooke or token are invalid, the endpoint returns a HTTP 401 status code.  As explained above, this request may fail due to several reasons. The `error.id` can be one of:  `session_inactive`: No active session was found in the request (e.g. no Ory Session Cookie / Ory Session Token). `session_aal2_required`: An active session was found but it does not fulfil the Authenticator Assurance Level, implying that the session must (e.g.) authenticate the second factor.
 
 ### Example
 
@@ -1833,7 +2031,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new Ory\Kratos\Client\Api\V0alpha1Api(
+$apiInstance = new Ory\Kratos\Client\Api\V0alpha2Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -1845,7 +2043,7 @@ try {
     $result = $apiInstance->toSession($xSessionToken, $cookie);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling V0alpha1Api->toSession: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling V0alpha2Api->toSession: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
