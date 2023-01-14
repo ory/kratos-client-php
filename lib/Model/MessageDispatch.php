@@ -1,6 +1,6 @@
 <?php
 /**
- * UpdateVerificationFlowWithLinkMethod
+ * MessageDispatch
  *
  * PHP version 7.3
  *
@@ -33,10 +33,10 @@ use \ArrayAccess;
 use \Ory\Kratos\Client\ObjectSerializer;
 
 /**
- * UpdateVerificationFlowWithLinkMethod Class Doc Comment
+ * MessageDispatch Class Doc Comment
  *
  * @category Class
- * @description Update Verification Flow with Link Method
+ * @description MessageDispatch represents an attempt of sending a courier message It contains the status of the attempt (failed or successful) and the error if any occured
  * @package  Ory\Kratos\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -44,7 +44,7 @@ use \Ory\Kratos\Client\ObjectSerializer;
  * @template TKey int|null
  * @template TValue mixed|null
  */
-class UpdateVerificationFlowWithLinkMethod implements ModelInterface, ArrayAccess, \JsonSerializable
+class MessageDispatch implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -53,7 +53,7 @@ class UpdateVerificationFlowWithLinkMethod implements ModelInterface, ArrayAcces
       *
       * @var string
       */
-    protected static $openAPIModelName = 'updateVerificationFlowWithLinkMethod';
+    protected static $openAPIModelName = 'messageDispatch';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -61,9 +61,12 @@ class UpdateVerificationFlowWithLinkMethod implements ModelInterface, ArrayAcces
       * @var string[]
       */
     protected static $openAPITypes = [
-        'csrfToken' => 'string',
-        'email' => 'string',
-        'method' => 'string'
+        'createdAt' => '\DateTime',
+        'error' => 'object',
+        'id' => 'string',
+        'messageId' => 'string',
+        'status' => 'string',
+        'updatedAt' => '\DateTime'
     ];
 
     /**
@@ -74,9 +77,12 @@ class UpdateVerificationFlowWithLinkMethod implements ModelInterface, ArrayAcces
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'csrfToken' => null,
-        'email' => null,
-        'method' => null
+        'createdAt' => 'date-time',
+        'error' => null,
+        'id' => 'uuid',
+        'messageId' => 'uuid',
+        'status' => null,
+        'updatedAt' => 'date-time'
     ];
 
     /**
@@ -106,9 +112,12 @@ class UpdateVerificationFlowWithLinkMethod implements ModelInterface, ArrayAcces
      * @var string[]
      */
     protected static $attributeMap = [
-        'csrfToken' => 'csrf_token',
-        'email' => 'email',
-        'method' => 'method'
+        'createdAt' => 'created_at',
+        'error' => 'error',
+        'id' => 'id',
+        'messageId' => 'message_id',
+        'status' => 'status',
+        'updatedAt' => 'updated_at'
     ];
 
     /**
@@ -117,9 +126,12 @@ class UpdateVerificationFlowWithLinkMethod implements ModelInterface, ArrayAcces
      * @var string[]
      */
     protected static $setters = [
-        'csrfToken' => 'setCsrfToken',
-        'email' => 'setEmail',
-        'method' => 'setMethod'
+        'createdAt' => 'setCreatedAt',
+        'error' => 'setError',
+        'id' => 'setId',
+        'messageId' => 'setMessageId',
+        'status' => 'setStatus',
+        'updatedAt' => 'setUpdatedAt'
     ];
 
     /**
@@ -128,9 +140,12 @@ class UpdateVerificationFlowWithLinkMethod implements ModelInterface, ArrayAcces
      * @var string[]
      */
     protected static $getters = [
-        'csrfToken' => 'getCsrfToken',
-        'email' => 'getEmail',
-        'method' => 'getMethod'
+        'createdAt' => 'getCreatedAt',
+        'error' => 'getError',
+        'id' => 'getId',
+        'messageId' => 'getMessageId',
+        'status' => 'getStatus',
+        'updatedAt' => 'getUpdatedAt'
     ];
 
     /**
@@ -174,6 +189,21 @@ class UpdateVerificationFlowWithLinkMethod implements ModelInterface, ArrayAcces
         return self::$openAPIModelName;
     }
 
+    const STATUS_FAILED = 'failed';
+    const STATUS_SUCCESS = 'success';
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getStatusAllowableValues()
+    {
+        return [
+            self::STATUS_FAILED,
+            self::STATUS_SUCCESS,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -190,9 +220,12 @@ class UpdateVerificationFlowWithLinkMethod implements ModelInterface, ArrayAcces
      */
     public function __construct(array $data = null)
     {
-        $this->container['csrfToken'] = $data['csrfToken'] ?? null;
-        $this->container['email'] = $data['email'] ?? null;
-        $this->container['method'] = $data['method'] ?? null;
+        $this->container['createdAt'] = $data['createdAt'] ?? null;
+        $this->container['error'] = $data['error'] ?? null;
+        $this->container['id'] = $data['id'] ?? null;
+        $this->container['messageId'] = $data['messageId'] ?? null;
+        $this->container['status'] = $data['status'] ?? null;
+        $this->container['updatedAt'] = $data['updatedAt'] ?? null;
     }
 
     /**
@@ -204,11 +237,29 @@ class UpdateVerificationFlowWithLinkMethod implements ModelInterface, ArrayAcces
     {
         $invalidProperties = [];
 
-        if ($this->container['email'] === null) {
-            $invalidProperties[] = "'email' can't be null";
+        if ($this->container['createdAt'] === null) {
+            $invalidProperties[] = "'createdAt' can't be null";
         }
-        if ($this->container['method'] === null) {
-            $invalidProperties[] = "'method' can't be null";
+        if ($this->container['id'] === null) {
+            $invalidProperties[] = "'id' can't be null";
+        }
+        if ($this->container['messageId'] === null) {
+            $invalidProperties[] = "'messageId' can't be null";
+        }
+        if ($this->container['status'] === null) {
+            $invalidProperties[] = "'status' can't be null";
+        }
+        $allowedValues = $this->getStatusAllowableValues();
+        if (!is_null($this->container['status']) && !in_array($this->container['status'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'status', must be one of '%s'",
+                $this->container['status'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        if ($this->container['updatedAt'] === null) {
+            $invalidProperties[] = "'updatedAt' can't be null";
         }
         return $invalidProperties;
     }
@@ -226,73 +277,155 @@ class UpdateVerificationFlowWithLinkMethod implements ModelInterface, ArrayAcces
 
 
     /**
-     * Gets csrfToken
+     * Gets createdAt
      *
-     * @return string|null
+     * @return \DateTime
      */
-    public function getCsrfToken()
+    public function getCreatedAt()
     {
-        return $this->container['csrfToken'];
+        return $this->container['createdAt'];
     }
 
     /**
-     * Sets csrfToken
+     * Sets createdAt
      *
-     * @param string|null $csrfToken Sending the anti-csrf token is only required for browser login flows.
+     * @param \DateTime $createdAt CreatedAt is a helper struct field for gobuffalo.pop.
      *
      * @return self
      */
-    public function setCsrfToken($csrfToken)
+    public function setCreatedAt($createdAt)
     {
-        $this->container['csrfToken'] = $csrfToken;
+        $this->container['createdAt'] = $createdAt;
 
         return $this;
     }
 
     /**
-     * Gets email
+     * Gets error
      *
-     * @return string
+     * @return object|null
      */
-    public function getEmail()
+    public function getError()
     {
-        return $this->container['email'];
+        return $this->container['error'];
     }
 
     /**
-     * Sets email
+     * Sets error
      *
-     * @param string $email Email to Verify  Needs to be set when initiating the flow. If the email is a registered verification email, a verification link will be sent. If the email is not known, a email with details on what happened will be sent instead.  format: email
+     * @param object|null $error error
      *
      * @return self
      */
-    public function setEmail($email)
+    public function setError($error)
     {
-        $this->container['email'] = $email;
+        $this->container['error'] = $error;
 
         return $this;
     }
 
     /**
-     * Gets method
+     * Gets id
      *
      * @return string
      */
-    public function getMethod()
+    public function getId()
     {
-        return $this->container['method'];
+        return $this->container['id'];
     }
 
     /**
-     * Sets method
+     * Sets id
      *
-     * @param string $method Method supports `link` only right now.
+     * @param string $id The ID of this message dispatch
      *
      * @return self
      */
-    public function setMethod($method)
+    public function setId($id)
     {
-        $this->container['method'] = $method;
+        $this->container['id'] = $id;
+
+        return $this;
+    }
+
+    /**
+     * Gets messageId
+     *
+     * @return string
+     */
+    public function getMessageId()
+    {
+        return $this->container['messageId'];
+    }
+
+    /**
+     * Sets messageId
+     *
+     * @param string $messageId The ID of the message being dispatched
+     *
+     * @return self
+     */
+    public function setMessageId($messageId)
+    {
+        $this->container['messageId'] = $messageId;
+
+        return $this;
+    }
+
+    /**
+     * Gets status
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->container['status'];
+    }
+
+    /**
+     * Sets status
+     *
+     * @param string $status The status of this dispatch Either \"failed\" or \"success\" failed CourierMessageDispatchStatusFailed success CourierMessageDispatchStatusSuccess
+     *
+     * @return self
+     */
+    public function setStatus($status)
+    {
+        $allowedValues = $this->getStatusAllowableValues();
+        if (!in_array($status, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'status', must be one of '%s'",
+                    $status,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['status'] = $status;
+
+        return $this;
+    }
+
+    /**
+     * Gets updatedAt
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->container['updatedAt'];
+    }
+
+    /**
+     * Sets updatedAt
+     *
+     * @param \DateTime $updatedAt UpdatedAt is a helper struct field for gobuffalo.pop.
+     *
+     * @return self
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->container['updatedAt'] = $updatedAt;
 
         return $this;
     }

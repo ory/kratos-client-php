@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit84e7e98dc284d74567fd5cd42c328b1d
+class ComposerStaticInit7df12f76d32b0d7a747f3504e5531d2d
 {
     public static $files = array (
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
@@ -69,6 +69,7 @@ class ComposerStaticInit84e7e98dc284d74567fd5cd42c328b1d
         'D' => 
         array (
             'Doctrine\\Instantiator\\' => 22,
+            'Doctrine\\Deprecations\\' => 22,
             'Doctrine\\Common\\Lexer\\' => 22,
             'Doctrine\\Common\\Annotations\\' => 28,
             'DeepCopy\\' => 9,
@@ -207,9 +208,13 @@ class ComposerStaticInit84e7e98dc284d74567fd5cd42c328b1d
         array (
             0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
         ),
+        'Doctrine\\Deprecations\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations',
+        ),
         'Doctrine\\Common\\Lexer\\' => 
         array (
-            0 => __DIR__ . '/..' . '/doctrine/lexer/lib/Doctrine/Common/Lexer',
+            0 => __DIR__ . '/..' . '/doctrine/lexer/src',
         ),
         'Doctrine\\Common\\Annotations\\' => 
         array (
@@ -332,6 +337,7 @@ class ComposerStaticInit84e7e98dc284d74567fd5cd42c328b1d
         'PHPUnit\\Framework\\MockObject\\CannotUseOnlyMethodsException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/MockObject/Exception/CannotUseOnlyMethodsException.php',
         'PHPUnit\\Framework\\MockObject\\ClassAlreadyExistsException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/MockObject/Exception/ClassAlreadyExistsException.php',
         'PHPUnit\\Framework\\MockObject\\ClassIsFinalException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/MockObject/Exception/ClassIsFinalException.php',
+        'PHPUnit\\Framework\\MockObject\\ClassIsReadonlyException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/MockObject/Exception/ClassIsReadonlyException.php',
         'PHPUnit\\Framework\\MockObject\\ConfigurableMethod' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/MockObject/ConfigurableMethod.php',
         'PHPUnit\\Framework\\MockObject\\ConfigurableMethodsAlreadyInitializedException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/MockObject/Exception/ConfigurableMethodsAlreadyInitializedException.php',
         'PHPUnit\\Framework\\MockObject\\DuplicateMethodException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/MockObject/Exception/DuplicateMethodException.php',
@@ -924,9 +930,9 @@ class ComposerStaticInit84e7e98dc284d74567fd5cd42c328b1d
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit84e7e98dc284d74567fd5cd42c328b1d::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit84e7e98dc284d74567fd5cd42c328b1d::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit84e7e98dc284d74567fd5cd42c328b1d::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit7df12f76d32b0d7a747f3504e5531d2d::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit7df12f76d32b0d7a747f3504e5531d2d::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit7df12f76d32b0d7a747f3504e5531d2d::$classMap;
 
         }, null, ClassLoader::class);
     }

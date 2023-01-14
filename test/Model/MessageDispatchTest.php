@@ -1,6 +1,6 @@
 <?php
 /**
- * AuthenticatorAssuranceLevelTest
+ * MessageDispatchTest
  *
  * PHP version 7.3
  *
@@ -32,15 +32,15 @@ namespace Ory\Kratos\Client\Test\Model;
 use PHPUnit\Framework\TestCase;
 
 /**
- * AuthenticatorAssuranceLevelTest Class Doc Comment
+ * MessageDispatchTest Class Doc Comment
  *
  * @category    Class
- * @description The authenticator assurance level can be one of \&quot;aal1\&quot;, \&quot;aal2\&quot;, or \&quot;aal3\&quot;. A higher number means that it is harder for an attacker to compromise the account.  Generally, \&quot;aal1\&quot; implies that one authentication factor was used while AAL2 implies that two factors (e.g. password + TOTP) have been used.  To learn more about these levels please head over to: https://www.ory.sh/kratos/docs/concepts/credentials
+ * @description MessageDispatch represents an attempt of sending a courier message It contains the status of the attempt (failed or successful) and the error if any occured
  * @package     Ory\Kratos\Client
  * @author      OpenAPI Generator team
  * @link        https://openapi-generator.tech
  */
-class AuthenticatorAssuranceLevelTest extends TestCase
+class MessageDispatchTest extends TestCase
 {
 
     /**
@@ -72,9 +72,63 @@ class AuthenticatorAssuranceLevelTest extends TestCase
     }
 
     /**
-     * Test "AuthenticatorAssuranceLevel"
+     * Test "MessageDispatch"
      */
-    public function testAuthenticatorAssuranceLevel()
+    public function testMessageDispatch()
+    {
+        // TODO: implement
+        $this->markTestIncomplete('Not implemented');
+    }
+
+    /**
+     * Test attribute "createdAt"
+     */
+    public function testPropertyCreatedAt()
+    {
+        // TODO: implement
+        $this->markTestIncomplete('Not implemented');
+    }
+
+    /**
+     * Test attribute "error"
+     */
+    public function testPropertyError()
+    {
+        // TODO: implement
+        $this->markTestIncomplete('Not implemented');
+    }
+
+    /**
+     * Test attribute "id"
+     */
+    public function testPropertyId()
+    {
+        // TODO: implement
+        $this->markTestIncomplete('Not implemented');
+    }
+
+    /**
+     * Test attribute "messageId"
+     */
+    public function testPropertyMessageId()
+    {
+        // TODO: implement
+        $this->markTestIncomplete('Not implemented');
+    }
+
+    /**
+     * Test attribute "status"
+     */
+    public function testPropertyStatus()
+    {
+        // TODO: implement
+        $this->markTestIncomplete('Not implemented');
+    }
+
+    /**
+     * Test attribute "updatedAt"
+     */
+    public function testPropertyUpdatedAt()
     {
         // TODO: implement
         $this->markTestIncomplete('Not implemented');
