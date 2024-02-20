@@ -1,4 +1,4 @@
-# # IdentityCredentialsType
+# # RegistrationFlowState
 
 ## Properties
 
