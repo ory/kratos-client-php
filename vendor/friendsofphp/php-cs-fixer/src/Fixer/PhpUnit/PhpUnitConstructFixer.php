@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -13,12 +15,14 @@
 namespace PhpCsFixer\Fixer\PhpUnit;
 
 use PhpCsFixer\Fixer\AbstractPhpUnitFixer;
-use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
+use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\FixerConfiguration\AllowedValueSubset;
-use PhpCsFixer\FixerConfiguration\FixerConfigurationResolverRootless;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolverInterface;
 use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
@@ -26,27 +30,14 @@ use PhpCsFixer\Tokenizer\Tokens;
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  */
-final class PhpUnitConstructFixer extends AbstractPhpUnitFixer implements ConfigurationDefinitionFixerInterface
+final class PhpUnitConstructFixer extends AbstractPhpUnitFixer implements ConfigurableFixerInterface
 {
-    private static $assertionFixers = [
-        'assertSame' => 'fixAssertPositive',
-        'assertEquals' => 'fixAssertPositive',
-        'assertNotEquals' => 'fixAssertNegative',
-        'assertNotSame' => 'fixAssertNegative',
-    ];
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isRisky()
+    public function isRisky(): bool
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'PHPUnit assertion method calls like `->assertSame(true, $foo)` should be written with dedicated method like `->assertTrue($foo)`.',
@@ -87,26 +78,30 @@ final class FooTest extends \PHPUnit_Framework_TestCase {
      *
      * Must run before PhpUnitDedicateAssertFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
-        return -10;
+        return -8;
     }
 
     /**
-     * {@inheritdoc}
+     * @uses fixAssertNegative()
+     * @uses fixAssertPositive()
      */
-    protected function applyPhpUnitClassFix(Tokens $tokens, $startIndex, $endIndex)
+    protected function applyPhpUnitClassFix(Tokens $tokens, int $startIndex, int $endIndex): void
     {
         // no assertions to be fixed - fast return
-        if (empty($this->configuration['assertions'])) {
+        if ([] === $this->configuration['assertions']) {
             return;
         }
 
         foreach ($this->configuration['assertions'] as $assertionMethod) {
-            $assertionFixer = self::$assertionFixers[$assertionMethod];
-
             for ($index = $startIndex; $index < $endIndex; ++$index) {
-                $index = $this->{$assertionFixer}($tokens, $index, $assertionMethod);
+                $index = \call_user_func_array(
+                    \in_array($assertionMethod, ['assertSame', 'assertEquals'], true)
+                        ? [$this, 'fixAssertPositive']
+                        : [$this, 'fixAssertNegative'],
+                    [$tokens, $index, $assertionMethod]
+                );
 
                 if (null === $index) {
                     break;
@@ -115,32 +110,25 @@ final class FooTest extends \PHPUnit_Framework_TestCase {
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createConfigurationDefinition()
+    protected function createConfigurationDefinition(): FixerConfigurationResolverInterface
     {
-        return new FixerConfigurationResolverRootless('assertions', [
+        $assertMethods = [
+            'assertEquals',
+            'assertSame',
+            'assertNotEquals',
+            'assertNotSame',
+        ];
+
+        return new FixerConfigurationResolver([
             (new FixerOptionBuilder('assertions', 'List of assertion methods to fix.'))
-                ->setAllowedTypes(['array'])
-                ->setAllowedValues([new AllowedValueSubset(array_keys(self::$assertionFixers))])
-                ->setDefault([
-                    'assertEquals',
-                    'assertSame',
-                    'assertNotEquals',
-                    'assertNotSame',
-                ])
+                ->setAllowedTypes(['string[]'])
+                ->setAllowedValues([new AllowedValueSubset($assertMethods)])
+                ->setDefault($assertMethods)
                 ->getOption(),
-        ], $this->getName());
+        ]);
     }
 
-    /**
-     * @param int    $index
-     * @param string $method
-     *
-     * @return null|int
-     */
-    private function fixAssertNegative(Tokens $tokens, $index, $method)
+    private function fixAssertNegative(Tokens $tokens, int $index, string $method): ?int
     {
         static $map = [
             'false' => 'assertNotFalse',
@@ -151,13 +139,7 @@ final class FooTest extends \PHPUnit_Framework_TestCase {
         return $this->fixAssert($map, $tokens, $index, $method);
     }
 
-    /**
-     * @param int    $index
-     * @param string $method
-     *
-     * @return null|int
-     */
-    private function fixAssertPositive(Tokens $tokens, $index, $method)
+    private function fixAssertPositive(Tokens $tokens, int $index, string $method): ?int
     {
         static $map = [
             'false' => 'assertFalse',
@@ -170,12 +152,8 @@ final class FooTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @param array<string, string> $map
-     * @param int                   $index
-     * @param string                $method
-     *
-     * @return null|int
      */
-    private function fixAssert(array $map, Tokens $tokens, $index, $method)
+    private function fixAssert(array $map, Tokens $tokens, int $index, string $method): ?int
     {
         $functionsAnalyzer = new FunctionsAnalyzer();
 
@@ -191,28 +169,29 @@ final class FooTest extends \PHPUnit_Framework_TestCase {
             return null;
         }
 
-        $sequenceIndexes = array_keys($sequence);
-        if (!$functionsAnalyzer->isTheSameClassCall($tokens, $sequenceIndexes[0])) {
+        $sequenceIndices = array_keys($sequence);
+
+        if (!$functionsAnalyzer->isTheSameClassCall($tokens, $sequenceIndices[0])) {
             return null;
         }
 
-        $sequenceIndexes[2] = $tokens->getNextMeaningfulToken($sequenceIndexes[1]);
-        $firstParameterToken = $tokens[$sequenceIndexes[2]];
+        $sequenceIndices[2] = $tokens->getNextMeaningfulToken($sequenceIndices[1]);
+        $firstParameterToken = $tokens[$sequenceIndices[2]];
 
         if (!$firstParameterToken->isNativeConstant()) {
-            return $sequenceIndexes[2];
+            return $sequenceIndices[2];
         }
 
-        $sequenceIndexes[3] = $tokens->getNextMeaningfulToken($sequenceIndexes[2]);
+        $sequenceIndices[3] = $tokens->getNextMeaningfulToken($sequenceIndices[2]);
 
         // return if first method argument is an expression, not value
-        if (!$tokens[$sequenceIndexes[3]]->equals(',')) {
-            return $sequenceIndexes[3];
+        if (!$tokens[$sequenceIndices[3]]->equals(',')) {
+            return $sequenceIndices[3];
         }
 
-        $tokens[$sequenceIndexes[0]] = new Token([T_STRING, $map[strtolower($firstParameterToken->getContent())]]);
-        $tokens->clearRange($sequenceIndexes[2], $tokens->getNextNonWhitespace($sequenceIndexes[3]) - 1);
+        $tokens[$sequenceIndices[0]] = new Token([T_STRING, $map[strtolower($firstParameterToken->getContent())]]);
+        $tokens->clearRange($sequenceIndices[2], $tokens->getNextNonWhitespace($sequenceIndices[3]) - 1);
 
-        return $sequenceIndexes[3];
+        return $sequenceIndices[3];
     }
 }

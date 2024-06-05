@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -13,25 +15,26 @@
 namespace PhpCsFixer\Fixer\ClassNotation;
 
 use PhpCsFixer\AbstractFixer;
-use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
+use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolverInterface;
 use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
+use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use PhpCsFixer\Tokenizer\TokensAnalyzer;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
  */
-final class NoUnneededFinalMethodFixer extends AbstractFixer implements ConfigurationDefinitionFixerInterface
+final class NoUnneededFinalMethodFixer extends AbstractFixer implements ConfigurableFixerInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
-            'A `final` class must not have `final` methods and `private` methods must not be `final`.',
+            'Removes `final` from methods where possible.',
             [
                 new CodeSample(
                     '<?php
@@ -68,42 +71,44 @@ class Bar
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
+    public function isCandidate(Tokens $tokens): bool
     {
-        return $tokens->isAllTokenKindsFound([T_CLASS, T_FINAL]);
+        if (!$tokens->isAllTokenKindsFound([T_FINAL, T_FUNCTION])) {
+            return false;
+        }
+
+        if (\defined('T_ENUM') && $tokens->isTokenKindFound(T_ENUM)) { // @TODO: drop condition when PHP 8.1+ is required
+            return true;
+        }
+
+        return $tokens->isTokenKindFound(T_CLASS);
     }
 
-    public function isRisky()
+    public function isRisky(): bool
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
-        $tokensCount = \count($tokens);
-        for ($index = 0; $index < $tokensCount; ++$index) {
-            if (!$tokens[$index]->isGivenKind(T_CLASS)) {
+        foreach ($this->getMethods($tokens) as $element) {
+            $index = $element['method_final_index'];
+
+            if ($element['method_of_enum'] || $element['class_is_final']) {
+                $this->clearFinal($tokens, $index);
+
                 continue;
             }
 
-            $classOpen = $tokens->getNextTokenOfKind($index, ['{']);
-            $prevToken = $tokens[$tokens->getPrevMeaningfulToken($index)];
-            $classIsFinal = $prevToken->isGivenKind(T_FINAL);
+            if (!$element['method_is_private'] || false === $this->configuration['private_methods'] || $element['method_is_constructor']) {
+                continue;
+            }
 
-            $this->fixClass($tokens, $classOpen, $classIsFinal);
+            $this->clearFinal($tokens, $index);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createConfigurationDefinition()
+    protected function createConfigurationDefinition(): FixerConfigurationResolverInterface
     {
         return new FixerConfigurationResolver([
             (new FixerOptionBuilder('private_methods', 'Private methods of non-`final` classes must not be declared `final`.'))
@@ -114,63 +119,93 @@ class Bar
     }
 
     /**
-     * @param int  $classOpenIndex
-     * @param bool $classIsFinal
+     * @return \Generator<array{
+     *     classIndex: int,
+     *     token: Token,
+     *     type: string,
+     *     class_is_final?: bool,
+     *     method_final_index: int|null,
+     *     method_is_constructor?: bool,
+     *     method_is_private: bool,
+     *     method_of_enum: bool
+     * }>
      */
-    private function fixClass(Tokens $tokens, $classOpenIndex, $classIsFinal)
+    private function getMethods(Tokens $tokens): \Generator
     {
-        $tokensCount = \count($tokens);
+        $tokensAnalyzer = new TokensAnalyzer($tokens);
+        $modifierKinds = [T_PUBLIC, T_PROTECTED, T_PRIVATE, T_FINAL, T_ABSTRACT, T_STATIC];
 
-        for ($index = $classOpenIndex + 1; $index < $tokensCount; ++$index) {
-            // Class end
-            if ($tokens[$index]->equals('}')) {
-                return;
+        $enums = [];
+        $classesAreFinal = [];
+        $elements = $tokensAnalyzer->getClassyElements();
+
+        for (end($elements);; prev($elements)) {
+            $index = key($elements);
+
+            if (null === $index) {
+                break;
             }
 
-            // Skip method content
-            if ($tokens[$index]->equals('{')) {
-                $index = $tokens->findBlockEnd(Tokens::BLOCK_TYPE_CURLY_BRACE, $index);
+            $element = current($elements);
+
+            if ('method' !== $element['type']) {
+                continue; // not a method
+            }
+
+            $classIndex = $element['classIndex'];
+
+            if (!\array_key_exists($classIndex, $enums)) {
+                $enums[$classIndex] = \defined('T_ENUM') && $tokens[$classIndex]->isGivenKind(T_ENUM); // @TODO: drop condition when PHP 8.1+ is required
+            }
+
+            $element['method_final_index'] = null;
+            $element['method_is_private'] = false;
+
+            $previous = $index;
+
+            do {
+                $previous = $tokens->getPrevMeaningfulToken($previous);
+
+                if ($tokens[$previous]->isGivenKind(T_PRIVATE)) {
+                    $element['method_is_private'] = true;
+                } elseif ($tokens[$previous]->isGivenKind(T_FINAL)) {
+                    $element['method_final_index'] = $previous;
+                }
+            } while ($tokens[$previous]->isGivenKind($modifierKinds));
+
+            if ($enums[$classIndex]) {
+                $element['method_of_enum'] = true;
+
+                yield $element;
 
                 continue;
             }
 
-            if (!$tokens[$index]->isGivenKind(T_FINAL)) {
-                continue;
+            if (!\array_key_exists($classIndex, $classesAreFinal)) {
+                $modifiers = $tokensAnalyzer->getClassyModifiers($classIndex);
+                $classesAreFinal[$classIndex] = isset($modifiers['final']);
             }
 
-            if (!$classIsFinal && (!$this->isPrivateMethodOtherThanConstructor($tokens, $index, $classOpenIndex) || !$this->configuration['private_methods'])) {
-                continue;
-            }
+            $element['method_of_enum'] = false;
+            $element['class_is_final'] = $classesAreFinal[$classIndex];
+            $element['method_is_constructor'] = '__construct' === strtolower($tokens[$tokens->getNextMeaningfulToken($index)]->getContent());
 
-            $tokens->clearAt($index);
-
-            ++$index;
-
-            if ($tokens[$index]->isWhitespace()) {
-                $tokens->clearAt($index);
-            }
+            yield $element;
         }
     }
 
-    /**
-     * @param int $index
-     * @param int $classOpenIndex
-     *
-     * @return bool
-     */
-    private function isPrivateMethodOtherThanConstructor(Tokens $tokens, $index, $classOpenIndex)
+    private function clearFinal(Tokens $tokens, ?int $index): void
     {
-        $index = max($classOpenIndex + 1, $tokens->getPrevTokenOfKind($index, [';', '{', '}']));
-        $private = false;
-
-        while (!$tokens[$index]->isGivenKind(T_FUNCTION)) {
-            if ($tokens[$index]->isGivenKind(T_PRIVATE)) {
-                $private = true;
-            }
-
-            $index = $tokens->getNextMeaningfulToken($index);
+        if (null === $index) {
+            return;
         }
 
-        return $private && '__construct' !== strtolower($tokens[$tokens->getNextMeaningfulToken($index)]->getContent());
+        $tokens->clearAt($index);
+
+        ++$index;
+
+        if ($tokens[$index]->isWhitespace()) {
+            $tokens->clearAt($index);
+        }
     }
 }

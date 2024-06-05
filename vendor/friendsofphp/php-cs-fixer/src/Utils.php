@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -17,78 +19,39 @@ use PhpCsFixer\Tokenizer\Token;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
- * @author Graham Campbell <graham@alt-three.com>
+ * @author Graham Campbell <hello@gjcampbell.co.uk>
  * @author Odín del Río <odin.drp@gmail.com>
  *
  * @internal
+ *
+ * @deprecated This is a God Class anti-pattern. Don't expand it. It is fine to use logic that is already here (that's why we don't trigger deprecation warnings), but over time logic should be moved to dedicated, single-responsibility classes.
  */
 final class Utils
 {
     /**
-     * @var array<string,true>
+     * @var array<string, true>
      */
-    private static $deprecations = [];
+    private static array $deprecations = [];
 
-    /**
-     * Calculate a bitmask for given constant names.
-     *
-     * @param string[] $options constant names
-     *
-     * @return int
-     */
-    public static function calculateBitmask(array $options)
+    private function __construct()
     {
-        $bitmask = 0;
-
-        foreach ($options as $optionName) {
-            if (\defined($optionName)) {
-                $bitmask |= \constant($optionName);
-            }
-        }
-
-        return $bitmask;
+        // cannot create instance of util. class
     }
 
     /**
      * Converts a camel cased string to a snake cased string.
-     *
-     * @param string $string
-     *
-     * @return string
      */
-    public static function camelCaseToUnderscore($string)
+    public static function camelCaseToUnderscore(string $string): string
     {
-        return strtolower(Preg::replace('/(?<!^)((?=[A-Z][^A-Z])|(?<![A-Z])(?=[A-Z]))/', '_', $string));
-    }
-
-    /**
-     * Compare two integers for equality.
-     *
-     * We'll return 0 if they're equal, 1 if the first is bigger than the
-     * second, and -1 if the second is bigger than the first.
-     *
-     * @param int $a
-     * @param int $b
-     *
-     * @return int
-     */
-    public static function cmpInt($a, $b)
-    {
-        if ($a === $b) {
-            return 0;
-        }
-
-        return $a < $b ? -1 : 1;
+        return mb_strtolower(Preg::replace('/(?<!^)(?<!_)((?=[\p{Lu}][^\p{Lu}])|(?<![\p{Lu}])(?=[\p{Lu}]))/', '_', $string));
     }
 
     /**
      * Calculate the trailing whitespace.
      *
      * What we're doing here is grabbing everything after the final newline.
-     *
-     * @return string
      */
-    public static function calculateTrailingWhitespaceIndent(Token $token)
+    public static function calculateTrailingWhitespaceIndent(Token $token): string
     {
         if (!$token->isWhitespace()) {
             throw new \InvalidArgumentException(sprintf('The given token must be whitespace, got "%s".', $token->getName()));
@@ -111,77 +74,74 @@ final class Utils
      *
      * Stability is ensured by using Schwartzian transform.
      *
-     * @param mixed[]  $elements
-     * @param callable $getComparedValue a callable that takes a single element and returns the value to compare
-     * @param callable $compareValues    a callable that compares two values
+     * @template T
+     * @template R
      *
-     * @return mixed[]
+     * @param list<T>             $elements
+     * @param callable(T): R      $getComparedValue a callable that takes a single element and returns the value to compare
+     * @param callable(R, R): int $compareValues    a callable that compares two values
+     *
+     * @return list<T>
      */
-    public static function stableSort(array $elements, callable $getComparedValue, callable $compareValues)
+    public static function stableSort(array $elements, callable $getComparedValue, callable $compareValues): array
     {
-        array_walk($elements, static function (&$element, $index) use ($getComparedValue) {
+        array_walk($elements, static function (&$element, int $index) use ($getComparedValue): void {
             $element = [$element, $index, $getComparedValue($element)];
         });
 
-        usort($elements, static function ($a, $b) use ($compareValues) {
+        usort($elements, static function ($a, $b) use ($compareValues): int {
             $comparison = $compareValues($a[2], $b[2]);
 
             if (0 !== $comparison) {
                 return $comparison;
             }
 
-            return self::cmpInt($a[1], $b[1]);
+            return $a[1] <=> $b[1];
         });
 
-        return array_map(static function (array $item) {
-            return $item[0];
-        }, $elements);
+        return array_map(static fn (array $item) => $item[0], $elements);
     }
 
     /**
      * Sort fixers by their priorities.
      *
-     * @param FixerInterface[] $fixers
+     * @param list<FixerInterface> $fixers
      *
-     * @return FixerInterface[]
+     * @return list<FixerInterface>
      */
-    public static function sortFixers(array $fixers)
+    public static function sortFixers(array $fixers): array
     {
         // Schwartzian transform is used to improve the efficiency and avoid
         // `usort(): Array was modified by the user comparison function` warning for mocked objects.
         return self::stableSort(
             $fixers,
-            static function (FixerInterface $fixer) {
-                return $fixer->getPriority();
-            },
-            static function ($a, $b) {
-                return self::cmpInt($b, $a);
-            }
+            static fn (FixerInterface $fixer): int => $fixer->getPriority(),
+            static fn (int $a, int $b): int => $b <=> $a
         );
     }
 
     /**
-     * Join names in natural language wrapped in backticks, e.g. `a`, `b` and `c`.
+     * Join names in natural language using specified wrapper (double quote by default).
      *
-     * @param string[] $names
+     * @param list<string> $names
      *
      * @throws \InvalidArgumentException
-     *
-     * @return string
      */
-    public static function naturalLanguageJoinWithBackticks(array $names)
+    public static function naturalLanguageJoin(array $names, string $wrapper = '"'): string
     {
-        if (empty($names)) {
+        if (0 === \count($names)) {
             throw new \InvalidArgumentException('Array of names cannot be empty.');
         }
 
-        $names = array_map(static function ($name) {
-            return sprintf('`%s`', $name);
-        }, $names);
+        if (\strlen($wrapper) > 1) {
+            throw new \InvalidArgumentException('Wrapper should be a single-char string or empty.');
+        }
+
+        $names = array_map(static fn (string $name): string => sprintf('%2$s%1$s%2$s', $name, $wrapper), $names);
 
         $last = array_pop($names);
 
-        if ($names) {
+        if (\count($names) > 0) {
             return implode(', ', $names).' and '.$last;
         }
 
@@ -189,11 +149,28 @@ final class Utils
     }
 
     /**
-     * Handle triggering deprecation error.
+     * Join names in natural language wrapped in backticks, e.g. `a`, `b` and `c`.
+     *
+     * @param list<string> $names
+     *
+     * @throws \InvalidArgumentException
      */
-    public static function triggerDeprecation(\Exception $futureException)
+    public static function naturalLanguageJoinWithBackticks(array $names): string
     {
-        if (getenv('PHP_CS_FIXER_FUTURE_MODE')) {
+        return self::naturalLanguageJoin($names, '`');
+    }
+
+    public static function isFutureModeEnabled(): bool
+    {
+        return filter_var(
+            getenv('PHP_CS_FIXER_FUTURE_MODE'),
+            FILTER_VALIDATE_BOOL
+        );
+    }
+
+    public static function triggerDeprecation(\Exception $futureException): void
+    {
+        if (self::isFutureModeEnabled()) {
             throw new \RuntimeException(
                 'Your are using something deprecated, see previous exception. Aborting execution because `PHP_CS_FIXER_FUTURE_MODE` environment variable is set.',
                 0,
@@ -207,11 +184,59 @@ final class Utils
         @trigger_error($message, E_USER_DEPRECATED);
     }
 
-    public static function getTriggeredDeprecations()
+    /**
+     * @return list<string>
+     */
+    public static function getTriggeredDeprecations(): array
     {
         $triggeredDeprecations = array_keys(self::$deprecations);
         sort($triggeredDeprecations);
 
         return $triggeredDeprecations;
+    }
+
+    /**
+     * @param mixed $value
+     */
+    public static function toString($value): string
+    {
+        return \is_array($value)
+            ? self::arrayToString($value)
+            : self::scalarToString($value);
+    }
+
+    /**
+     * @param mixed $value
+     */
+    private static function scalarToString($value): string
+    {
+        $str = var_export($value, true);
+
+        return Preg::replace('/\bNULL\b/', 'null', $str);
+    }
+
+    /**
+     * @param array<array-key, mixed> $value
+     */
+    private static function arrayToString(array $value): string
+    {
+        if (0 === \count($value)) {
+            return '[]';
+        }
+
+        $isHash = !array_is_list($value);
+        $str = '[';
+
+        foreach ($value as $k => $v) {
+            if ($isHash) {
+                $str .= self::scalarToString($k).' => ';
+            }
+
+            $str .= \is_array($v)
+                ? self::arrayToString($v).', '
+                : self::scalarToString($v).', ';
+        }
+
+        return substr($str, 0, -2).']';
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -21,9 +23,9 @@ use PhpCsFixer\Tokenizer\Tokens;
 final class NamespacesAnalyzer
 {
     /**
-     * @return NamespaceAnalysis[]
+     * @return list<NamespaceAnalysis>
      */
-    public function getDeclarations(Tokens $tokens)
+    public function getDeclarations(Tokens $tokens): array
     {
         $namespaces = [];
 
@@ -62,22 +64,24 @@ final class NamespacesAnalyzer
             $index = $scopeEndIndex;
         }
 
-        if (0 === \count($namespaces)) {
-            $namespaces[] = new NamespaceAnalysis('', '', 0, 0, 0, \count($tokens) - 1);
+        if (0 === \count($namespaces) && $tokens->isTokenKindFound(T_OPEN_TAG)) {
+            $namespaces[] = new NamespaceAnalysis(
+                '',
+                '',
+                $openTagIndex = $tokens[0]->isGivenKind(T_INLINE_HTML) ? 1 : 0,
+                $openTagIndex,
+                $openTagIndex,
+                \count($tokens) - 1,
+            );
         }
 
         return $namespaces;
     }
 
-    /**
-     * @param int $index
-     *
-     * @return NamespaceAnalysis
-     */
-    public function getNamespaceAt(Tokens $tokens, $index)
+    public function getNamespaceAt(Tokens $tokens, int $index): NamespaceAnalysis
     {
         if (!$tokens->offsetExists($index)) {
-            throw new \InvalidArgumentException("Token index {$index} does not exist.");
+            throw new \InvalidArgumentException(sprintf('Token index %d does not exist.', $index));
         }
 
         foreach ($this->getDeclarations($tokens) as $namespace) {
@@ -86,6 +90,6 @@ final class NamespacesAnalyzer
             }
         }
 
-        throw new \LogicException("Unable to get the namespace at index {$index}.");
+        throw new \LogicException(sprintf('Unable to get the namespace at index %d.', $index));
     }
 }

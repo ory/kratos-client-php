@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -15,7 +17,8 @@ namespace PhpCsFixer\Fixer\Operator;
 use PhpCsFixer\AbstractFixer;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
-use PhpCsFixer\Tokenizer\Analyzer\Analysis\CaseAnalysis;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
+use PhpCsFixer\Tokenizer\Analyzer\AlternativeSyntaxAnalyzer;
 use PhpCsFixer\Tokenizer\Analyzer\GotoLabelAnalyzer;
 use PhpCsFixer\Tokenizer\Analyzer\SwitchAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
@@ -26,10 +29,7 @@ use PhpCsFixer\Tokenizer\Tokens;
  */
 final class TernaryOperatorSpacesFixer extends AbstractFixer
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'Standardize spaces around ternary operator.',
@@ -42,44 +42,32 @@ final class TernaryOperatorSpacesFixer extends AbstractFixer
      *
      * Must run after ArraySyntaxFixer, ListSyntaxFixer, TernaryToElvisOperatorFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
-        return 0;
+        return 1;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
+    public function isCandidate(Tokens $tokens): bool
     {
         return $tokens->isAllTokenKindsFound(['?', ':']);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
+        $alternativeSyntaxAnalyzer = new AlternativeSyntaxAnalyzer();
         $gotoLabelAnalyzer = new GotoLabelAnalyzer();
         $ternaryOperatorIndices = [];
-        $excludedIndices = [];
 
         foreach ($tokens as $index => $token) {
-            if ($token->isGivenKind(T_SWITCH)) {
-                $excludedIndices = array_merge($excludedIndices, $this->getColonIndicesForSwitch($tokens, $index));
-
-                continue;
-            }
-
             if (!$token->equalsAny(['?', ':'])) {
                 continue;
             }
 
-            if (\in_array($index, $excludedIndices, true)) {
+            if (SwitchAnalyzer::belongsToSwitch($tokens, $index)) {
                 continue;
             }
 
-            if ($this->belongsToAlternativeSyntax($tokens, $index)) {
+            if ($alternativeSyntaxAnalyzer->belongsToAlternativeSyntax($tokens, $index)) {
                 continue;
             }
 
@@ -124,56 +112,11 @@ final class TernaryOperatorSpacesFixer extends AbstractFixer
         }
     }
 
-    /**
-     * @param int $index
-     *
-     * @return bool
-     */
-    private function belongsToAlternativeSyntax(Tokens $tokens, $index)
-    {
-        if (!$tokens[$index]->equals(':')) {
-            return false;
-        }
-
-        $closeParenthesisIndex = $tokens->getPrevMeaningfulToken($index);
-        if ($tokens[$closeParenthesisIndex]->isGivenKind(T_ELSE)) {
-            return true;
-        }
-        if (!$tokens[$closeParenthesisIndex]->equals(')')) {
-            return false;
-        }
-
-        $openParenthesisIndex = $tokens->findBlockStart(Tokens::BLOCK_TYPE_PARENTHESIS_BRACE, $closeParenthesisIndex);
-
-        $alternativeControlStructureIndex = $tokens->getPrevMeaningfulToken($openParenthesisIndex);
-
-        return $tokens[$alternativeControlStructureIndex]->isGivenKind([T_DECLARE, T_ELSEIF, T_FOR, T_FOREACH, T_IF, T_SWITCH, T_WHILE]);
-    }
-
-    /**
-     * @param int $switchIndex
-     *
-     * @return int[]
-     */
-    private function getColonIndicesForSwitch(Tokens $tokens, $switchIndex)
-    {
-        return array_map(
-            static function (CaseAnalysis $caseAnalysis) {
-                return $caseAnalysis->getColonIndex();
-            },
-            (new SwitchAnalyzer())->getSwitchAnalysis($tokens, $switchIndex)->getCases()
-        );
-    }
-
-    /**
-     * @param int  $index
-     * @param bool $after
-     */
-    private function ensureWhitespaceExistence(Tokens $tokens, $index, $after)
+    private function ensureWhitespaceExistence(Tokens $tokens, int $index, bool $after): void
     {
         if ($tokens[$index]->isWhitespace()) {
             if (
-                false === strpos($tokens[$index]->getContent(), "\n")
+                !str_contains($tokens[$index]->getContent(), "\n")
                 && !$tokens[$index - 1]->isComment()
             ) {
                 $tokens[$index] = new Token([T_WHITESPACE, ' ']);

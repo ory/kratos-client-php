@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -13,11 +15,13 @@
 namespace PhpCsFixer\Fixer\PhpUnit;
 
 use PhpCsFixer\Fixer\AbstractPhpUnitFixer;
-use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
+use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolverInterface;
 use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
@@ -25,12 +29,12 @@ use PhpCsFixer\Tokenizer\TokensAnalyzer;
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
  */
-final class PhpUnitDedicateAssertInternalTypeFixer extends AbstractPhpUnitFixer implements ConfigurationDefinitionFixerInterface
+final class PhpUnitDedicateAssertInternalTypeFixer extends AbstractPhpUnitFixer implements ConfigurableFixerInterface
 {
     /**
-     * @var array
+     * @var array<string, string>
      */
-    private $typeToDedicatedAssertMap = [
+    private array $typeToDedicatedAssertMap = [
         'array' => 'assertIsArray',
         'boolean' => 'assertIsBool',
         'bool' => 'assertIsBool',
@@ -49,10 +53,7 @@ final class PhpUnitDedicateAssertInternalTypeFixer extends AbstractPhpUnitFixer 
         'iterable' => 'assertIsIterable',
     ];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'PHPUnit assertions like `assertIsArray` should be used over `assertInternalType`.',
@@ -88,10 +89,7 @@ final class MyTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isRisky()
+    public function isRisky(): bool
     {
         return true;
     }
@@ -99,17 +97,14 @@ final class MyTest extends \PHPUnit\Framework\TestCase
     /**
      * {@inheritdoc}
      *
-     * Must run after PhpUnitDedicateAssertFixer.
+     * Must run after NoBinaryStringFixer, NoUselessConcatOperatorFixer, PhpUnitDedicateAssertFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return -16;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createConfigurationDefinition()
+    protected function createConfigurationDefinition(): FixerConfigurationResolverInterface
     {
         return new FixerConfigurationResolver([
             (new FixerOptionBuilder('target', 'Target version of PHPUnit.'))
@@ -120,27 +115,25 @@ final class MyTest extends \PHPUnit\Framework\TestCase
         ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyPhpUnitClassFix(Tokens $tokens, $startIndex, $endIndex)
+    protected function applyPhpUnitClassFix(Tokens $tokens, int $startIndex, int $endIndex): void
     {
-        $anonymousClassIndexes = [];
+        $anonymousClassIndices = [];
         $tokenAnalyzer = new TokensAnalyzer($tokens);
+
         for ($index = $startIndex; $index < $endIndex; ++$index) {
-            if (!$tokens[$index]->isClassy() || !$tokenAnalyzer->isAnonymousClass($index)) {
+            if (!$tokens[$index]->isGivenKind(T_CLASS) || !$tokenAnalyzer->isAnonymousClass($index)) {
                 continue;
             }
 
             $openingBraceIndex = $tokens->getNextTokenOfKind($index, ['{']);
             $closingBraceIndex = $tokens->findBlockEnd(Tokens::BLOCK_TYPE_CURLY_BRACE, $openingBraceIndex);
 
-            $anonymousClassIndexes[$closingBraceIndex] = $openingBraceIndex;
+            $anonymousClassIndices[$closingBraceIndex] = $openingBraceIndex;
         }
 
         for ($index = $endIndex - 1; $index > $startIndex; --$index) {
-            if (isset($anonymousClassIndexes[$index])) {
-                $index = $anonymousClassIndexes[$index];
+            if (isset($anonymousClassIndices[$index])) {
+                $index = $anonymousClassIndices[$index];
 
                 continue;
             }
@@ -150,32 +143,38 @@ final class MyTest extends \PHPUnit\Framework\TestCase
             }
 
             $functionName = strtolower($tokens[$index]->getContent());
+
             if ('assertinternaltype' !== $functionName && 'assertnotinternaltype' !== $functionName) {
                 continue;
             }
 
             $bracketTokenIndex = $tokens->getNextMeaningfulToken($index);
+
             if (!$tokens[$bracketTokenIndex]->equals('(')) {
                 continue;
             }
 
             $expectedTypeTokenIndex = $tokens->getNextMeaningfulToken($bracketTokenIndex);
             $expectedTypeToken = $tokens[$expectedTypeTokenIndex];
-            if (!$expectedTypeToken->equals([T_CONSTANT_ENCAPSED_STRING])) {
+
+            if (!$expectedTypeToken->isGivenKind(T_CONSTANT_ENCAPSED_STRING)) {
                 continue;
             }
 
             $expectedType = trim($expectedTypeToken->getContent(), '\'"');
+
             if (!isset($this->typeToDedicatedAssertMap[$expectedType])) {
                 continue;
             }
 
             $commaTokenIndex = $tokens->getNextMeaningfulToken($expectedTypeTokenIndex);
+
             if (!$tokens[$commaTokenIndex]->equals(',')) {
                 continue;
             }
 
             $newAssertion = $this->typeToDedicatedAssertMap[$expectedType];
+
             if ('assertnotinternaltype' === $functionName) {
                 $newAssertion = str_replace('Is', 'IsNot', $newAssertion);
                 $newAssertion = str_replace('Null', 'NotNull', $newAssertion);

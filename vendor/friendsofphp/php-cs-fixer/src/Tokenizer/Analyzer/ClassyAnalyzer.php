@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -20,12 +22,7 @@ use PhpCsFixer\Tokenizer\Tokens;
  */
 final class ClassyAnalyzer
 {
-    /**
-     * @param int $index
-     *
-     * @return bool
-     */
-    public function isClassyInvocation(Tokens $tokens, $index)
+    public function isClassyInvocation(Tokens $tokens, int $index): bool
     {
         $token = $tokens[$index];
 
@@ -33,7 +30,7 @@ final class ClassyAnalyzer
             throw new \LogicException(sprintf('No T_STRING at given index %d, got "%s".', $index, $tokens[$index]->getName()));
         }
 
-        if (\in_array(strtolower($token->getContent()), ['bool', 'float', 'int', 'iterable', 'object', 'parent', 'self', 'string', 'void', 'null', 'false'], true)) {
+        if ((new Analysis\TypeAnalysis($token->getContent()))->isReservedType()) {
             return false;
         }
 
@@ -44,7 +41,7 @@ final class ClassyAnalyzer
             return false;
         }
 
-        if ($nextToken->isGivenKind([T_DOUBLE_COLON, T_ELLIPSIS, CT::T_TYPE_ALTERNATION, T_VARIABLE])) {
+        if ($nextToken->isGivenKind([T_DOUBLE_COLON, T_ELLIPSIS, CT::T_TYPE_ALTERNATION, CT::T_TYPE_INTERSECTION, T_VARIABLE])) {
             return true;
         }
 
@@ -56,7 +53,15 @@ final class ClassyAnalyzer
 
         $prevToken = $tokens[$prev];
 
-        if ($prevToken->isGivenKind([T_EXTENDS, T_INSTANCEOF, T_INSTEADOF, T_IMPLEMENTS, T_NEW, CT::T_NULLABLE_TYPE, CT::T_TYPE_ALTERNATION, CT::T_TYPE_COLON, CT::T_USE_TRAIT])) {
+        if ($prevToken->isGivenKind([T_EXTENDS, T_INSTANCEOF, T_INSTEADOF, T_IMPLEMENTS, T_NEW, CT::T_NULLABLE_TYPE, CT::T_TYPE_ALTERNATION, CT::T_TYPE_INTERSECTION, CT::T_TYPE_COLON, CT::T_USE_TRAIT])) {
+            return true;
+        }
+
+        if (\PHP_VERSION_ID >= 8_00_00 && $nextToken->equals(')') && $prevToken->equals('(') && $tokens[$tokens->getPrevMeaningfulToken($prev)]->isGivenKind(T_CATCH)) {
+            return true;
+        }
+
+        if (AttributeAnalyzer::isAttribute($tokens, $index)) {
             return true;
         }
 

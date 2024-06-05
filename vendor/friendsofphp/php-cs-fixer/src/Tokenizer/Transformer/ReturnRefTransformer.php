@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -26,36 +28,19 @@ use PhpCsFixer\Tokenizer\Tokens;
  */
 final class ReturnRefTransformer extends AbstractTransformer
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getRequiredPhpVersionId()
+    public function getRequiredPhpVersionId(): int
     {
-        return 50000;
+        return 5_00_00;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function process(Tokens $tokens, Token $token, $index)
+    public function process(Tokens $tokens, Token $token, int $index): void
     {
-        $prevKinds = [T_FUNCTION];
-        if (\PHP_VERSION_ID >= 70400) {
-            $prevKinds[] = T_FN;
-        }
-
-        if (
-            $token->equals('&')
-            && $tokens[$tokens->getPrevMeaningfulToken($index)]->isGivenKind($prevKinds)
-        ) {
+        if ($token->equals('&') && $tokens[$tokens->getPrevMeaningfulToken($index)]->isGivenKind([T_FUNCTION, T_FN])) {
             $tokens[$index] = new Token([CT::T_RETURN_REF, '&']);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCustomTokens()
+    public function getCustomTokens(): array
     {
         return [CT::T_RETURN_REF];
     }

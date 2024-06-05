@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -25,18 +27,14 @@ use PhpCsFixer\Tokenizer\Tokens;
 final class FunctionsAnalyzer
 {
     /**
-     * @var array
+     * @var array{tokens: string, imports: list<NamespaceUseAnalysis>, declarations: list<int>}
      */
-    private $functionsAnalysis = ['tokens' => '', 'imports' => [], 'declarations' => []];
+    private array $functionsAnalysis = ['tokens' => '', 'imports' => [], 'declarations' => []];
 
     /**
      * Important: risky because of the limited (file) scope of the tool.
-     *
-     * @param int $index
-     *
-     * @return bool
      */
-    public function isGlobalFunctionCall(Tokens $tokens, $index)
+    public function isGlobalFunctionCall(Tokens $tokens, int $index): bool
     {
         if (!$tokens[$index]->isGivenKind(T_STRING)) {
             return false;
@@ -56,7 +54,10 @@ final class FunctionsAnalyzer
             $prevIndex = $tokens->getPrevMeaningfulToken($prevIndex);
         }
 
-        $possibleKind = array_merge([T_DOUBLE_COLON, T_FUNCTION, CT::T_NAMESPACE_OPERATOR, T_NEW, CT::T_RETURN_REF, T_STRING], Token::getObjectOperatorKinds());
+        $possibleKind = [
+            T_DOUBLE_COLON, T_FUNCTION, CT::T_NAMESPACE_OPERATOR, T_NEW, CT::T_RETURN_REF, T_STRING,
+            ...Token::getObjectOperatorKinds(),
+        ];
 
         // @TODO: drop condition when PHP 8.0+ is required
         if (\defined('T_ATTRIBUTE')) {
@@ -64,6 +65,10 @@ final class FunctionsAnalyzer
         }
 
         if ($tokens[$prevIndex]->isGivenKind($possibleKind)) {
+            return false;
+        }
+
+        if ($tokens[$tokens->getNextMeaningfulToken($nextIndex)]->isGivenKind(CT::T_FIRST_CLASS_CALLABLE)) {
             return false;
         }
 
@@ -76,19 +81,16 @@ final class FunctionsAnalyzer
         }
 
         // figure out in which namespace we are
-        $namespaceAnalyzer = new NamespacesAnalyzer();
-
-        $declarations = $namespaceAnalyzer->getDeclarations($tokens);
         $scopeStartIndex = 0;
         $scopeEndIndex = \count($tokens) - 1;
         $inGlobalNamespace = false;
 
-        foreach ($declarations as $declaration) {
+        foreach ($tokens->getNamespaceDeclarations() as $declaration) {
             $scopeStartIndex = $declaration->getScopeStartIndex();
             $scopeEndIndex = $declaration->getScopeEndIndex();
 
             if ($index >= $scopeStartIndex && $index <= $scopeEndIndex) {
-                $inGlobalNamespace = '' === $declaration->getFullName();
+                $inGlobalNamespace = $declaration->isGlobalNamespace();
 
                 break;
             }
@@ -127,17 +129,19 @@ final class FunctionsAnalyzer
             return $functionUse->getShortName() === ltrim($functionUse->getFullName(), '\\');
         }
 
+        if (AttributeAnalyzer::isAttribute($tokens, $index)) {
+            return false;
+        }
+
         return true;
     }
 
     /**
-     * @param int $methodIndex
-     *
-     * @return ArgumentAnalysis[]
+     * @return array<string, ArgumentAnalysis>
      */
-    public function getFunctionArguments(Tokens $tokens, $methodIndex)
+    public function getFunctionArguments(Tokens $tokens, int $functionIndex): array
     {
-        $argumentsStart = $tokens->getNextTokenOfKind($methodIndex, ['(']);
+        $argumentsStart = $tokens->getNextTokenOfKind($functionIndex, ['(']);
         $argumentsEnd = $tokens->findBlockEnd(Tokens::BLOCK_TYPE_PARENTHESIS_BRACE, $argumentsStart);
         $argumentAnalyzer = new ArgumentsAnalyzer();
         $arguments = [];
@@ -150,12 +154,7 @@ final class FunctionsAnalyzer
         return $arguments;
     }
 
-    /**
-     * @param int $methodIndex
-     *
-     * @return null|TypeAnalysis
-     */
-    public function getFunctionReturnType(Tokens $tokens, $methodIndex)
+    public function getFunctionReturnType(Tokens $tokens, int $methodIndex): ?TypeAnalysis
     {
         $argumentsStart = $tokens->getNextTokenOfKind($methodIndex, ['(']);
         $argumentsEnd = $tokens->findBlockEnd(Tokens::BLOCK_TYPE_PARENTHESIS_BRACE, $argumentsStart);
@@ -182,15 +181,10 @@ final class FunctionsAnalyzer
         return new TypeAnalysis($type, $typeStartIndex, $typeEndIndex);
     }
 
-    /**
-     * @param int $index
-     *
-     * @return bool
-     */
-    public function isTheSameClassCall(Tokens $tokens, $index)
+    public function isTheSameClassCall(Tokens $tokens, int $index): bool
     {
         if (!$tokens->offsetExists($index)) {
-            return false;
+            throw new \InvalidArgumentException(sprintf('Token index %d does not exist.', $index));
         }
 
         $operatorIndex = $tokens->getPrevMeaningfulToken($index);
@@ -209,10 +203,14 @@ final class FunctionsAnalyzer
             return false;
         }
 
-        return $tokens[$referenceIndex]->equalsAny([[T_VARIABLE, '$this'], [T_STRING, 'self'], [T_STATIC, 'static']], false);
+        if (!$tokens[$referenceIndex]->equalsAny([[T_VARIABLE, '$this'], [T_STRING, 'self'], [T_STATIC, 'static']], false)) {
+            return false;
+        }
+
+        return $tokens[$tokens->getNextMeaningfulToken($index)]->equals('(');
     }
 
-    private function buildFunctionsAnalysis(Tokens $tokens)
+    private function buildFunctionsAnalysis(Tokens $tokens): void
     {
         $this->functionsAnalysis = [
             'tokens' => $tokens->getCodeHash(),

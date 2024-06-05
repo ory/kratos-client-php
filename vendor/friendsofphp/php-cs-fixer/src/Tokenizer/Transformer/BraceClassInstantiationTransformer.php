@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -27,36 +29,29 @@ use PhpCsFixer\Tokenizer\Tokens;
  */
 final class BraceClassInstantiationTransformer extends AbstractTransformer
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getPriority()
+    public function getPriority(): int
     {
         // must run after CurlyBraceTransformer and SquareBraceTransformer
         return -2;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getRequiredPhpVersionId()
+    public function getRequiredPhpVersionId(): int
     {
-        return 50000;
+        return 5_00_00;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function process(Tokens $tokens, Token $token, $index)
+    public function process(Tokens $tokens, Token $token, int $index): void
     {
-        if (!$tokens[$index]->equals('(') || !$tokens[$tokens->getNextMeaningfulToken($index)]->equals([T_NEW])) {
+        if (!$tokens[$index]->equals('(') || !$tokens[$tokens->getNextMeaningfulToken($index)]->isGivenKind(T_NEW)) {
             return;
         }
 
         if ($tokens[$tokens->getPrevMeaningfulToken($index)]->equalsAny([
+            ')',
             ']',
             [CT::T_ARRAY_INDEX_CURLY_BRACE_CLOSE],
             [CT::T_ARRAY_SQUARE_BRACE_CLOSE],
+            [CT::T_BRACE_CLASS_INSTANTIATION_CLOSE],
             [T_ARRAY],
             [T_CLASS],
             [T_ELSEIF],
@@ -78,10 +73,7 @@ final class BraceClassInstantiationTransformer extends AbstractTransformer
         $tokens[$closeIndex] = new Token([CT::T_BRACE_CLASS_INSTANTIATION_CLOSE, ')']);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCustomTokens()
+    public function getCustomTokens(): array
     {
         return [CT::T_BRACE_CLASS_INSTANTIATION_OPEN, CT::T_BRACE_CLASS_INSTANTIATION_CLOSE];
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -13,19 +15,22 @@
 namespace PhpCsFixer\Fixer\PhpUnit;
 
 use PhpCsFixer\AbstractFixer;
-use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
+use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolverInterface;
 use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Preg;
+use PhpCsFixer\Tokenizer\Analyzer\ClassyAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  */
-final class PhpUnitNamespacedFixer extends AbstractFixer implements ConfigurationDefinitionFixerInterface
+final class PhpUnitNamespacedFixer extends AbstractFixer implements ConfigurableFixerInterface
 {
     /**
      * @var string
@@ -40,14 +45,11 @@ final class PhpUnitNamespacedFixer extends AbstractFixer implements Configuratio
      *    space class and need a dedicated translation table. This trans-
      *    lation table is defined in @see configure.
      *
-     * @var array|string[] Class Mappings
+     * @var array<string, string> Class Mappings
      */
     private $classMap;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         $codeSample = '<?php
 final class MyTest extends \PHPUnit_Framework_TestCase
@@ -73,26 +75,17 @@ final class MyTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
+    public function isCandidate(Tokens $tokens): bool
     {
         return $tokens->isTokenKindFound(T_STRING);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isRisky()
+    public function isRisky(): bool
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function configure(array $configuration = null)
+    public function configure(array $configuration): void
     {
         parent::configure($configuration);
 
@@ -129,7 +122,7 @@ final class MyTest extends \PHPUnit_Framework_TestCase
                 'PHPUnit_Util_XML' => 'PHPUnit\Util\Xml',
             ];
         } elseif (PhpUnitTargetVersion::fulfills($this->configuration['target'], PhpUnitTargetVersion::VERSION_5_7)) {
-            $this->originalClassRegEx = '/^PHPUnit_Framework_TestCase|PHPUnit_Framework_Assert|PHPUnit_Framework_BaseTestListener|PHPUnit_Framework_TestListener$/i';
+            $this->originalClassRegEx = '/^PHPUnit_Framework_(TestCase|Assert|BaseTestListener|TestListener)+$/i';
             $this->classMap = [];
         } else {
             $this->originalClassRegEx = '/^PHPUnit_Framework_TestCase$/i';
@@ -137,15 +130,12 @@ final class MyTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
         $importedOriginalClassesMap = [];
         $currIndex = 0;
 
-        while (null !== $currIndex) {
+        while (true) {
             $currIndex = $tokens->getNextTokenOfKind($currIndex, [[T_STRING]]);
 
             if (null === $currIndex) {
@@ -153,13 +143,16 @@ final class MyTest extends \PHPUnit_Framework_TestCase
             }
 
             $prevIndex = $tokens->getPrevMeaningfulToken($currIndex);
+
             if ($tokens[$prevIndex]->isGivenKind([T_CONST, T_DOUBLE_COLON])) {
                 continue;
             }
 
             $originalClass = $tokens[$currIndex]->getContent();
+            $allowedReplacementScenarios = (new ClassyAnalyzer())->isClassyInvocation($tokens, $currIndex)
+                || $this->isImport($tokens, $currIndex);
 
-            if (1 !== Preg::match($this->originalClassRegEx, $originalClass)) {
+            if (!$allowedReplacementScenarios || !Preg::match($this->originalClassRegEx, $originalClass)) {
                 ++$currIndex;
 
                 continue;
@@ -186,10 +179,7 @@ final class MyTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createConfigurationDefinition()
+    protected function createConfigurationDefinition(): FixerConfigurationResolverInterface
     {
         return new FixerConfigurationResolver([
             (new FixerOptionBuilder('target', 'Target version of PHPUnit.'))
@@ -200,31 +190,38 @@ final class MyTest extends \PHPUnit_Framework_TestCase
         ]);
     }
 
-    /**
-     * @param string $originalClassName
-     *
-     * @return Tokens
-     */
-    private function generateReplacement($originalClassName)
+    private function generateReplacement(string $originalClassName): Tokens
     {
         $delimiter = '_';
         $string = $originalClassName;
 
-        if (isset($this->classMap[$originalClassName])) {
+        $map = array_change_key_case($this->classMap);
+        if (isset($map[strtolower($originalClassName)])) {
             $delimiter = '\\';
-            $string = $this->classMap[$originalClassName];
+            $string = $map[strtolower($originalClassName)];
         }
 
         $parts = explode($delimiter, $string);
-
         $tokensArray = [];
-        while (!empty($parts)) {
+
+        while ([] !== $parts) {
             $tokensArray[] = new Token([T_STRING, array_shift($parts)]);
-            if (!empty($parts)) {
+            if ([] !== $parts) {
                 $tokensArray[] = new Token([T_NS_SEPARATOR, '\\']);
             }
         }
 
         return Tokens::fromArray($tokensArray);
+    }
+
+    private function isImport(Tokens $tokens, int $currIndex): bool
+    {
+        $prevIndex = $tokens->getPrevMeaningfulToken($currIndex);
+
+        if ($tokens[$prevIndex]->isGivenKind([T_NS_SEPARATOR])) {
+            $prevIndex = $tokens->getPrevMeaningfulToken($prevIndex);
+        }
+
+        return $tokens[$prevIndex]->isGivenKind([T_USE]);
     }
 }

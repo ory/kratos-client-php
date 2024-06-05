@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -14,21 +16,24 @@ namespace PhpCsFixer\Fixer\FunctionNotation;
 
 use PhpCsFixer\AbstractPhpdocToTypeDeclarationFixer;
 use PhpCsFixer\DocBlock\Annotation;
+use PhpCsFixer\Fixer\ExperimentalFixerInterface;
+use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
-use PhpCsFixer\FixerDefinition\VersionSpecification;
-use PhpCsFixer\FixerDefinition\VersionSpecificCodeSample;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 
 /**
  * @author Jan Gantzert <jan@familie-gantzert.de>
  */
-final class PhpdocToParamTypeFixer extends AbstractPhpdocToTypeDeclarationFixer
+final class PhpdocToParamTypeFixer extends AbstractPhpdocToTypeDeclarationFixer implements ExperimentalFixerInterface
 {
+    private const TYPE_CHECK_TEMPLATE = '<?php function f(%s $x) {}';
+
     /**
-     * @var array{int, string}[]
+     * @var list<array{int, string}>
      */
-    private $excludeFuncNames = [
+    private const EXCLUDE_FUNC_NAMES = [
         [T_STRING, '__clone'],
         [T_STRING, '__destruct'],
     ];
@@ -36,61 +41,57 @@ final class PhpdocToParamTypeFixer extends AbstractPhpdocToTypeDeclarationFixer
     /**
      * @var array<string, true>
      */
-    private $skippedTypes = [
-        'mixed' => true,
+    private const SKIPPED_TYPES = [
         'resource' => true,
         'static' => true,
         'void' => true,
     ];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
-            'EXPERIMENTAL: Takes `@param` annotations of non-mixed types and adjusts accordingly the function signature. Requires PHP >= 7.0.',
+            'Takes `@param` annotations of non-mixed types and adjusts accordingly the function signature. Requires PHP >= 7.0.',
             [
-                new VersionSpecificCodeSample(
+                new CodeSample(
                     '<?php
 
-/** @param string $bar */
-function my_foo($bar)
+/**
+ * @param string $foo
+ * @param string|null $bar
+ */
+function f($foo, $bar)
 {}
-',
-                    new VersionSpecification(70000)
+'
                 ),
-                new VersionSpecificCodeSample(
+                new CodeSample(
                     '<?php
 
-/** @param string|null $bar */
-function my_foo($bar)
-{}
-',
-                    new VersionSpecification(70100)
-                ),
-                new VersionSpecificCodeSample(
-                    '<?php
 /** @param Foo $foo */
 function foo($foo) {}
 /** @param string $foo */
 function bar($foo) {}
 ',
-                    new VersionSpecification(70100),
                     ['scalar_types' => false]
+                ),
+                new CodeSample(
+                    '<?php
+
+/** @param Foo $foo */
+function foo($foo) {}
+/** @param int|string $foo */
+function bar($foo) {}
+',
+                    ['union_types' => false]
                 ),
             ],
             null,
-            'This rule is EXPERIMENTAL and [1] is not covered with backward compatibility promise. [2] `@param` annotation is mandatory for the fixer to make changes, signatures of methods without it (no docblock, inheritdocs) will not be fixed. [3] Manual actions are required if inherited signatures are not properly documented.'
+            'The `@param` annotation is mandatory for the fixer to make changes, signatures of methods without it (no docblock, inheritdocs) will not be fixed. Manual actions are required if inherited signatures are not properly documented.'
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
+    public function isCandidate(Tokens $tokens): bool
     {
-        return \PHP_VERSION_ID >= 70000 && $tokens->isTokenKindFound(T_FUNCTION);
+        return $tokens->isAnyTokenKindsFound([T_FUNCTION, T_FN]);
     }
 
     /**
@@ -99,28 +100,25 @@ function bar($foo) {}
      * Must run before NoSuperfluousPhpdocTagsFixer, PhpdocAlignFixer.
      * Must run after AlignMultilineCommentFixer, CommentToPhpdocFixer, PhpdocIndentFixer, PhpdocScalarFixer, PhpdocToCommentFixer, PhpdocTypesFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return 8;
     }
 
-    protected function isSkippedType($type)
+    protected function isSkippedType(string $type): bool
     {
-        return isset($this->skippedTypes[$type]);
+        return isset(self::SKIPPED_TYPES[$type]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
         for ($index = $tokens->count() - 1; 0 < $index; --$index) {
-            if (!$tokens[$index]->isGivenKind(T_FUNCTION)) {
+            if (!$tokens[$index]->isGivenKind([T_FUNCTION, T_FN])) {
                 continue;
             }
 
             $funcName = $tokens->getNextMeaningfulToken($index);
-            if ($tokens[$funcName]->equalsAny($this->excludeFuncNames, false)) {
+            if ($tokens[$funcName]->equalsAny(self::EXCLUDE_FUNC_NAMES, false)) {
                 continue;
             }
 
@@ -131,13 +129,34 @@ function bar($foo) {}
             }
 
             foreach ($this->getAnnotationsFromDocComment('param', $tokens, $docCommentIndex) as $paramTypeAnnotation) {
-                $typeInfo = $this->getCommonTypeFromAnnotation($paramTypeAnnotation, false);
+                $typesExpression = $paramTypeAnnotation->getTypeExpression();
 
-                if (null === $typeInfo) {
+                if (null === $typesExpression) {
                     continue;
                 }
 
-                list($paramType, $isNullable) = $typeInfo;
+                $typeInfo = $this->getCommonTypeInfo($typesExpression, false);
+                $unionTypes = null;
+
+                if (null === $typeInfo) {
+                    $unionTypes = $this->getUnionTypes($typesExpression, false);
+                }
+
+                if (null === $typeInfo && null === $unionTypes) {
+                    continue;
+                }
+
+                if (null !== $typeInfo) {
+                    $paramType = $typeInfo['commonType'];
+                    $isNullable = $typeInfo['isNullable'];
+                } elseif (null !== $unionTypes) {
+                    $paramType = $unionTypes;
+                    $isNullable = false;
+                }
+
+                if (!isset($paramType, $isNullable)) {
+                    continue;
+                }
 
                 $startIndex = $tokens->getNextTokenOfKind($index, ['(']);
                 $variableIndex = $this->findCorrectVariable($tokens, $startIndex, $paramTypeAnnotation);
@@ -147,6 +166,7 @@ function bar($foo) {}
                 }
 
                 $byRefIndex = $tokens->getPrevMeaningfulToken($variableIndex);
+
                 if ($tokens[$byRefIndex]->equals('&')) {
                     $variableIndex = $byRefIndex;
                 }
@@ -155,7 +175,7 @@ function bar($foo) {}
                     continue;
                 }
 
-                if (!$this->isValidSyntax(sprintf('<?php function f(%s $x) {}', $paramType))) {
+                if (!$this->isValidSyntax(sprintf(self::TYPE_CHECK_TEMPLATE, $paramType))) {
                     continue;
                 }
 
@@ -167,13 +187,17 @@ function bar($foo) {}
         }
     }
 
-    /**
-     * @param int        $startIndex
-     * @param Annotation $paramTypeAnnotation
-     *
-     * @return null|int
-     */
-    private function findCorrectVariable(Tokens $tokens, $startIndex, $paramTypeAnnotation)
+    protected function createTokensFromRawType(string $type): Tokens
+    {
+        $typeTokens = Tokens::fromCode(sprintf(self::TYPE_CHECK_TEMPLATE, $type));
+        $typeTokens->clearRange(0, 4);
+        $typeTokens->clearRange(\count($typeTokens) - 6, \count($typeTokens) - 1);
+        $typeTokens->clearEmptyTokens();
+
+        return $typeTokens;
+    }
+
+    private function findCorrectVariable(Tokens $tokens, int $startIndex, Annotation $paramTypeAnnotation): ?int
     {
         $endIndex = $tokens->findBlockEnd(Tokens::BLOCK_TYPE_PARENTHESIS_BRACE, $startIndex);
 
@@ -183,6 +207,7 @@ function bar($foo) {}
             }
 
             $variableName = $tokens[$index]->getContent();
+
             if ($paramTypeAnnotation->getVariableName() === $variableName) {
                 return $index;
             }
@@ -195,10 +220,8 @@ function bar($foo) {}
      * Determine whether the function already has a param type hint.
      *
      * @param int $index The index of the end of the function definition line, EG at { or ;
-     *
-     * @return bool
      */
-    private function hasParamTypeHint(Tokens $tokens, $index)
+    private function hasParamTypeHint(Tokens $tokens, int $index): bool
     {
         $prevIndex = $tokens->getPrevMeaningfulToken($index);
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -15,6 +17,7 @@ namespace PhpCsFixer\Fixer\PhpUnit;
 use PhpCsFixer\Fixer\AbstractPhpUnitFixer;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
@@ -24,10 +27,7 @@ use PhpCsFixer\Tokenizer\Tokens;
  */
 final class PhpUnitFqcnAnnotationFixer extends AbstractPhpUnitFixer
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'PHPUnit annotations should be a FQCNs including a root namespace.',
@@ -55,15 +55,12 @@ final class MyTest extends \PHPUnit_Framework_TestCase
      *
      * Must run before NoUnusedImportsFixer, PhpdocOrderByValueFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return -9;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyPhpUnitClassFix(Tokens $tokens, $startIndex, $endIndex)
+    protected function applyPhpUnitClassFix(Tokens $tokens, int $startIndex, int $endIndex): void
     {
         $prevDocCommentIndex = $tokens->getPrevTokenOfKind($startIndex, [[T_DOC_COMMENT]]);
 
@@ -74,17 +71,13 @@ final class MyTest extends \PHPUnit_Framework_TestCase
         $this->fixPhpUnitClass($tokens, $startIndex, $endIndex);
     }
 
-    /**
-     * @param int $startIndex
-     * @param int $endIndex
-     */
-    private function fixPhpUnitClass(Tokens $tokens, $startIndex, $endIndex)
+    private function fixPhpUnitClass(Tokens $tokens, int $startIndex, int $endIndex): void
     {
         for ($index = $startIndex; $index < $endIndex; ++$index) {
             if ($tokens[$index]->isGivenKind(T_DOC_COMMENT)) {
                 $tokens[$index] = new Token([T_DOC_COMMENT, Preg::replace(
                     '~^(\s*\*\s*@(?:expectedException|covers|coversDefaultClass|uses)\h+)(?!(?:self|static)::)(\w.*)$~m',
-                    '$1\\\\$2',
+                    '$1\\\$2',
                     $tokens[$index]->getContent()
                 )]);
             }

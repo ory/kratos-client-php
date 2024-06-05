@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -15,6 +17,7 @@ namespace PhpCsFixer\Fixer\StringNotation;
 use PhpCsFixer\AbstractFixer;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
@@ -24,21 +27,18 @@ use PhpCsFixer\Tokenizer\Tokens;
  */
 final class HeredocToNowdocFixer extends AbstractFixer
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'Convert `heredoc` to `nowdoc` where possible.',
             [
                 new CodeSample(
                     <<<'EOF'
-<?php $a = <<<"TEST"
-Foo
-TEST;
+                        <?php $a = <<<"TEST"
+                        Foo
+                        TEST;
 
-EOF
+                        EOF
                 ),
             ]
         );
@@ -47,28 +47,22 @@ EOF
     /**
      * {@inheritdoc}
      *
-     * Must run after EscapeImplicitBackslashesFixer.
+     * Must run after EscapeImplicitBackslashesFixer, StringImplicitBackslashesFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return 0;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
+    public function isCandidate(Tokens $tokens): bool
     {
         return $tokens->isTokenKindFound(T_START_HEREDOC);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
         foreach ($tokens as $index => $token) {
-            if (!$token->isGivenKind(T_START_HEREDOC) || false !== strpos($token->getContent(), "'")) {
+            if (!$token->isGivenKind(T_START_HEREDOC) || str_contains($token->getContent(), "'")) {
                 continue;
             }
 
@@ -87,12 +81,12 @@ EOF
 
             $content = $tokens[$index + 1]->getContent();
             // regex: odd number of backslashes, not followed by dollar
-            if (Preg::match('/(?<!\\\\)(?:\\\\{2})*\\\\(?![$\\\\])/', $content)) {
+            if (Preg::match('/(?<!\\\)(?:\\\{2})*\\\(?![$\\\])/', $content)) {
                 continue;
             }
 
             $tokens[$index] = $this->convertToNowdoc($token);
-            $content = str_replace(['\\\\', '\\$'], ['\\', '$'], $content);
+            $content = str_replace(['\\\\', '\$'], ['\\', '$'], $content);
             $tokens[$index + 1] = new Token([
                 $tokens[$index + 1]->getId(),
                 $content,
@@ -102,10 +96,8 @@ EOF
 
     /**
      * Transforms the heredoc start token to nowdoc notation.
-     *
-     * @return Token
      */
-    private function convertToNowdoc(Token $token)
+    private function convertToNowdoc(Token $token): Token
     {
         return new Token([
             $token->getId(),

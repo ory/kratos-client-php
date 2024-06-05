@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -13,11 +15,13 @@
 namespace PhpCsFixer\Fixer\Alias;
 
 use PhpCsFixer\AbstractFunctionReferenceFixer;
-use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
-use PhpCsFixer\FixerConfiguration\FixerConfigurationResolverRootless;
+use PhpCsFixer\Fixer\ConfigurableFixerInterface;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolverInterface;
 use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tokenizer\Analyzer\ArgumentsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
@@ -26,12 +30,12 @@ use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 /**
  * @author Vladimir Reznichenko <kalessil@gmail.com>
  */
-final class RandomApiMigrationFixer extends AbstractFunctionReferenceFixer implements ConfigurationDefinitionFixerInterface
+final class RandomApiMigrationFixer extends AbstractFunctionReferenceFixer implements ConfigurableFixerInterface
 {
     /**
-     * @var array
+     * @var array<string, array<int, int>>
      */
-    private static $argumentCounts = [
+    private static array $argumentCounts = [
         'getrandmax' => [0],
         'mt_rand' => [1, 2],
         'rand' => [0, 2],
@@ -39,25 +43,12 @@ final class RandomApiMigrationFixer extends AbstractFunctionReferenceFixer imple
         'random_int' => [0, 2],
     ];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function configure(array $configuration = null)
+    public function configure(array $configuration): void
     {
         parent::configure($configuration);
-
-        foreach ($this->configuration['replacements'] as $functionName => $replacement) {
-            $this->configuration['replacements'][$functionName] = [
-                'alternativeName' => $replacement,
-                'argumentCount' => self::$argumentCounts[$functionName],
-            ];
-        }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'Replaces `rand`, `srand`, `getrandmax` functions calls with their `mt_*` analogs or `random_int`.',
@@ -77,29 +68,18 @@ final class RandomApiMigrationFixer extends AbstractFunctionReferenceFixer imple
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
-    {
-        return $tokens->isTokenKindFound(T_STRING);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
         $argumentsAnalyzer = new ArgumentsAnalyzer();
 
         foreach ($this->configuration['replacements'] as $functionIdentity => $functionReplacement) {
-            if ($functionIdentity === $functionReplacement['alternativeName']) {
+            if ($functionIdentity === $functionReplacement) {
                 continue;
             }
 
             $currIndex = 0;
 
-            while (null !== $currIndex) {
+            do {
                 // try getting function reference and translate boundaries for humans
                 $boundaries = $this->find($functionIdentity, $tokens, $currIndex, $tokens->count() - 1);
 
@@ -108,18 +88,18 @@ final class RandomApiMigrationFixer extends AbstractFunctionReferenceFixer imple
                     continue 2;
                 }
 
-                list($functionName, $openParenthesis, $closeParenthesis) = $boundaries;
+                [$functionName, $openParenthesis, $closeParenthesis] = $boundaries;
                 $count = $argumentsAnalyzer->countArguments($tokens, $openParenthesis, $closeParenthesis);
 
-                if (!\in_array($count, $functionReplacement['argumentCount'], true)) {
+                if (!\in_array($count, self::$argumentCounts[$functionIdentity], true)) {
                     continue 2;
                 }
 
                 // analysing cursor shift, so nested calls could be processed
                 $currIndex = $openParenthesis;
-                $tokens[$functionName] = new Token([T_STRING, $functionReplacement['alternativeName']]);
+                $tokens[$functionName] = new Token([T_STRING, $functionReplacement]);
 
-                if (0 === $count && 'random_int' === $functionReplacement['alternativeName']) {
+                if (0 === $count && 'random_int' === $functionReplacement) {
                     $tokens->insertAt($currIndex + 1, [
                         new Token([T_LNUMBER, '0']),
                         new Token(','),
@@ -131,19 +111,16 @@ final class RandomApiMigrationFixer extends AbstractFunctionReferenceFixer imple
 
                     $currIndex += 6;
                 }
-            }
+            } while (null !== $currIndex);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createConfigurationDefinition()
+    protected function createConfigurationDefinition(): FixerConfigurationResolverInterface
     {
-        return new FixerConfigurationResolverRootless('replacements', [
+        return new FixerConfigurationResolver([
             (new FixerOptionBuilder('replacements', 'Mapping between replaced functions with the new ones.'))
                 ->setAllowedTypes(['array'])
-                ->setAllowedValues([static function ($value) {
+                ->setAllowedValues([static function (array $value): bool {
                     foreach ($value as $functionName => $replacement) {
                         if (!\array_key_exists($functionName, self::$argumentCounts)) {
                             throw new InvalidOptionsException(sprintf(
@@ -156,7 +133,7 @@ final class RandomApiMigrationFixer extends AbstractFunctionReferenceFixer imple
                             throw new InvalidOptionsException(sprintf(
                                 'Replacement for function "%s" must be a string, "%s" given.',
                                 $functionName,
-                                \is_object($replacement) ? \get_class($replacement) : \gettype($replacement)
+                                get_debug_type($replacement)
                             ));
                         }
                     }
@@ -169,6 +146,6 @@ final class RandomApiMigrationFixer extends AbstractFunctionReferenceFixer imple
                     'srand' => 'mt_srand',
                 ])
                 ->getOption(),
-        ], $this->getName());
+        ]);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -12,7 +14,7 @@
 
 namespace PhpCsFixer;
 
-use PhpCsFixer\Event\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Event that is fired when file was processed by Fixer.
@@ -26,34 +28,39 @@ final class FixerFileProcessedEvent extends Event
     /**
      * Event name.
      */
-    const NAME = 'fixer.file_processed';
+    public const NAME = 'fixer.file_processed';
 
-    const STATUS_UNKNOWN = 0;
-    const STATUS_INVALID = 1;
-    const STATUS_SKIPPED = 2;
-    const STATUS_NO_CHANGES = 3;
-    const STATUS_FIXED = 4;
-    const STATUS_EXCEPTION = 5;
-    const STATUS_LINT = 6;
+    public const STATUS_INVALID = 1;
+    public const STATUS_SKIPPED = 2;
+    public const STATUS_NO_CHANGES = 3;
+    public const STATUS_FIXED = 4;
+    public const STATUS_EXCEPTION = 5;
+    public const STATUS_LINT = 6;
 
-    /**
-     * @var int
-     */
-    private $status;
+    private int $status;
 
-    /**
-     * @param int $status
-     */
-    public function __construct($status)
+    private ?string $fileRelativePath;
+    private ?string $fileHash;
+
+    public function __construct(int $status, ?string $fileRelativePath = null, ?string $fileHash = null)
     {
         $this->status = $status;
+        $this->fileRelativePath = $fileRelativePath;
+        $this->fileHash = $fileHash;
     }
 
-    /**
-     * @return int
-     */
-    public function getStatus()
+    public function getStatus(): int
     {
         return $this->status;
+    }
+
+    public function getFileRelativePath(): ?string
+    {
+        return $this->fileRelativePath;
+    }
+
+    public function getFileHash(): ?string
+    {
+        return $this->fileHash;
     }
 }

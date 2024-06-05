@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -13,11 +15,13 @@
 namespace PhpCsFixer\Fixer\ControlStructure;
 
 use PhpCsFixer\AbstractFixer;
-use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
+use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolverInterface;
 use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
@@ -26,9 +30,8 @@ use PhpCsFixer\Tokenizer\TokensAnalyzer;
 /**
  * @author Bram Gotink <bram@gotink.me>
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
- * @author SpacePossum
  */
-final class YodaStyleFixer extends AbstractFixer implements ConfigurationDefinitionFixerInterface
+final class YodaStyleFixer extends AbstractFixer implements ConfigurableFixerInterface
 {
     /**
      * @var array<int|string, Token>
@@ -41,24 +44,18 @@ final class YodaStyleFixer extends AbstractFixer implements ConfigurationDefinit
     private $candidateTypesConfiguration;
 
     /**
-     * @var array<int|string>
+     * @var list<int|string>
      */
     private $candidateTypes;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function configure(array $configuration = null)
+    public function configure(array $configuration): void
     {
         parent::configure($configuration);
 
         $this->resolveConfiguration();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'Write conditions in Yoda style (`true`), non-Yoda style (`[\'equal\' => false, \'identical\' => false, \'less_and_greater\' => false]`) or ignore those conditions (`null`) based on configuration.',
@@ -112,31 +109,22 @@ return $foo === count($bar);
      *
      * Must run after IsNullFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return 0;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
+    public function isCandidate(Tokens $tokens): bool
     {
         return $tokens->isAnyTokenKindsFound($this->candidateTypes);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
         $this->fixTokens($tokens);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createConfigurationDefinition()
+    protected function createConfigurationDefinition(): FixerConfigurationResolverInterface
     {
         return new FixerConfigurationResolver([
             (new FixerOptionBuilder('equal', 'Style for equal (`==`, `!=`) statements.'))
@@ -171,12 +159,14 @@ return $foo === count($bar);
      *
      * @return int The last index of the right-hand side of the comparison
      */
-    private function findComparisonEnd(Tokens $tokens, $index)
+    private function findComparisonEnd(Tokens $tokens, int $index): int
     {
         ++$index;
         $count = \count($tokens);
+
         while ($index < $count) {
             $token = $tokens[$index];
+
             if ($token->isGivenKind([T_WHITESPACE, T_COMMENT, T_DOC_COMMENT])) {
                 ++$index;
 
@@ -188,6 +178,7 @@ return $foo === count($bar);
             }
 
             $block = Tokens::detectBlockType($token);
+
             if (null === $block) {
                 ++$index;
 
@@ -219,17 +210,22 @@ return $foo === count($bar);
      *
      * @return int The first index of the left-hand side of the comparison
      */
-    private function findComparisonStart(Tokens $tokens, $index)
+    private function findComparisonStart(Tokens $tokens, int $index): int
     {
         --$index;
         $nonBlockFound = false;
 
         while (0 <= $index) {
             $token = $tokens[$index];
+
             if ($token->isGivenKind([T_WHITESPACE, T_COMMENT, T_DOC_COMMENT])) {
                 --$index;
 
                 continue;
+            }
+
+            if ($token->isGivenKind([CT::T_NAMED_ARGUMENT_COLON])) {
+                break;
             }
 
             if ($this->isOfLowerPrecedence($token)) {
@@ -237,6 +233,7 @@ return $foo === count($bar);
             }
 
             $block = Tokens::detectBlockType($token);
+
             if (null === $block) {
                 --$index;
                 $nonBlockFound = true;
@@ -257,10 +254,7 @@ return $foo === count($bar);
         return $tokens->getNextMeaningfulToken($index);
     }
 
-    /**
-     * @return Tokens
-     */
-    private function fixTokens(Tokens $tokens)
+    private function fixTokens(Tokens $tokens): Tokens
     {
         for ($i = \count($tokens) - 1; $i > 1; --$i) {
             if ($tokens[$i]->isGivenKind($this->candidateTypes)) {
@@ -275,6 +269,7 @@ return $foo === count($bar);
             }
 
             $fixableCompareInfo = $this->getCompareFixableInfo($tokens, $i, $yoda);
+
             if (null === $fixableCompareInfo) {
                 continue;
             }
@@ -303,24 +298,19 @@ return $foo === count($bar);
      * If the left-hand side and right-hand side of the given comparison are
      * swapped, this function runs recursively on the previous left-hand-side.
      *
-     * @param int $startLeft
-     * @param int $endLeft
-     * @param int $compareOperatorIndex
-     * @param int $startRight
-     * @param int $endRight
-     *
-     * @return int a upper bound for all non-fixed comparisons
+     * @return int an upper bound for all non-fixed comparisons
      */
     private function fixTokensCompare(
         Tokens $tokens,
-        $startLeft,
-        $endLeft,
-        $compareOperatorIndex,
-        $startRight,
-        $endRight
-    ) {
+        int $startLeft,
+        int $endLeft,
+        int $compareOperatorIndex,
+        int $startRight,
+        int $endRight
+    ): int {
         $type = $tokens[$compareOperatorIndex]->getId();
         $content = $tokens[$compareOperatorIndex]->getContent();
+
         if (\array_key_exists($type, $this->candidatesMap)) {
             $tokens[$compareOperatorIndex] = clone $this->candidatesMap[$type];
         } elseif (\array_key_exists($content, $this->candidatesMap)) {
@@ -344,13 +334,7 @@ return $foo === count($bar);
         return $startLeft;
     }
 
-    /**
-     * @param int $start
-     * @param int $end
-     *
-     * @return Tokens
-     */
-    private function fixTokensComparePart(Tokens $tokens, $start, $end)
+    private function fixTokensComparePart(Tokens $tokens, int $start, int $end): Tokens
     {
         $newTokens = $tokens->generatePartialCode($start, $end);
         $newTokens = $this->fixTokens(Tokens::fromCode(sprintf('<?php %s;', $newTokens)));
@@ -362,30 +346,28 @@ return $foo === count($bar);
     }
 
     /**
-     * @param int  $index
-     * @param bool $yoda
-     *
-     * @return null|array
+     * @return null|array{left: array{start: int, end: int}, right: array{start: int, end: int}}
      */
-    private function getCompareFixableInfo(Tokens $tokens, $index, $yoda)
+    private function getCompareFixableInfo(Tokens $tokens, int $index, bool $yoda): ?array
     {
-        $left = $this->getLeftSideCompareFixableInfo($tokens, $index);
         $right = $this->getRightSideCompareFixableInfo($tokens, $index);
 
         if (!$yoda && $this->isOfLowerPrecedenceAssignment($tokens[$tokens->getNextMeaningfulToken($right['end'])])) {
             return null;
         }
 
+        $left = $this->getLeftSideCompareFixableInfo($tokens, $index);
+
         if ($this->isListStatement($tokens, $left['start'], $left['end']) || $this->isListStatement($tokens, $right['start'], $right['end'])) {
             return null; // do not fix lists assignment inside statements
         }
 
+        /** @var bool $strict */
         $strict = $this->configuration['always_move_variable'];
-
         $leftSideIsVariable = $this->isVariable($tokens, $left['start'], $left['end'], $strict);
         $rightSideIsVariable = $this->isVariable($tokens, $right['start'], $right['end'], $strict);
 
-        if (!($leftSideIsVariable ^ $rightSideIsVariable)) {
+        if (!($leftSideIsVariable xor $rightSideIsVariable)) {
             return null; // both are (not) variables, do not touch
         }
 
@@ -396,16 +378,13 @@ return $foo === count($bar);
 
         return ($yoda && !$leftSideIsVariable) || (!$yoda && !$rightSideIsVariable)
             ? null
-            : ['left' => $left, 'right' => $right]
-        ;
+            : ['left' => $left, 'right' => $right];
     }
 
     /**
-     * @param int $index
-     *
-     * @return array
+     * @return array{start: int, end: int}
      */
-    private function getLeftSideCompareFixableInfo(Tokens $tokens, $index)
+    private function getLeftSideCompareFixableInfo(Tokens $tokens, int $index): array
     {
         return [
             'start' => $this->findComparisonStart($tokens, $index),
@@ -414,11 +393,9 @@ return $foo === count($bar);
     }
 
     /**
-     * @param int $index
-     *
-     * @return array
+     * @return array{start: int, end: int}
      */
-    private function getRightSideCompareFixableInfo(Tokens $tokens, $index)
+    private function getRightSideCompareFixableInfo(Tokens $tokens, int $index): array
     {
         return [
             'start' => $tokens->getNextMeaningfulToken($index),
@@ -426,13 +403,7 @@ return $foo === count($bar);
         ];
     }
 
-    /**
-     * @param int $index
-     * @param int $end
-     *
-     * @return bool
-     */
-    private function isListStatement(Tokens $tokens, $index, $end)
+    private function isListStatement(Tokens $tokens, int $index, int $end): bool
     {
         for ($i = $index; $i <= $end; ++$i) {
             if ($tokens[$i]->isGivenKind([T_LIST, CT::T_DESTRUCTURING_SQUARE_BRACE_OPEN, CT::T_DESTRUCTURING_SQUARE_BRACE_CLOSE])) {
@@ -451,7 +422,7 @@ return $foo === count($bar);
      *
      * @return bool Whether the token has a lower precedence
      */
-    private function isOfLowerPrecedence(Token $token)
+    private function isOfLowerPrecedence(Token $token): bool
     {
         static $tokens;
 
@@ -471,13 +442,14 @@ return $foo === count($bar);
                 T_PRINT,        // print
                 T_RETURN,       // return
                 T_THROW,        // throw
+                T_COALESCE,
                 T_YIELD,        // yield
+                T_YIELD_FROM,
+                T_REQUIRE,
+                T_REQUIRE_ONCE,
+                T_INCLUDE,
+                T_INCLUDE_ONCE,
             ];
-
-            // @TODO: drop condition when PHP 7.0+ is required
-            if (\defined('T_COALESCE')) {
-                $tokens[] = T_COALESCE; // ??
-            }
         }
 
         static $otherTokens = [
@@ -496,30 +468,26 @@ return $foo === count($bar);
      * Checks whether the given assignment token has a lower precedence than `T_IS_EQUAL`
      * or `T_IS_IDENTICAL`.
      */
-    private function isOfLowerPrecedenceAssignment(Token $token)
+    private function isOfLowerPrecedenceAssignment(Token $token): bool
     {
         static $tokens;
 
         if (null === $tokens) {
             $tokens = [
-                T_AND_EQUAL,    // &=
-                T_CONCAT_EQUAL, // .=
-                T_DIV_EQUAL,    // /=
-                T_MINUS_EQUAL,  // -=
-                T_MOD_EQUAL,    // %=
-                T_MUL_EQUAL,    // *=
-                T_OR_EQUAL,     // |=
-                T_PLUS_EQUAL,   // +=
-                T_POW_EQUAL,    // **=
-                T_SL_EQUAL,     // <<=
-                T_SR_EQUAL,     // >>=
-                T_XOR_EQUAL,    // ^=
+                T_AND_EQUAL,      // &=
+                T_CONCAT_EQUAL,   // .=
+                T_DIV_EQUAL,      // /=
+                T_MINUS_EQUAL,    // -=
+                T_MOD_EQUAL,      // %=
+                T_MUL_EQUAL,      // *=
+                T_OR_EQUAL,       // |=
+                T_PLUS_EQUAL,     // +=
+                T_POW_EQUAL,      // **=
+                T_SL_EQUAL,       // <<=
+                T_SR_EQUAL,       // >>=
+                T_XOR_EQUAL,      // ^=
+                T_COALESCE_EQUAL, // ??=
             ];
-
-            // @TODO: drop condition when PHP 7.4+ is required
-            if (\defined('T_COALESCE_EQUAL')) {
-                $tokens[] = T_COALESCE_EQUAL; // ??=
-            }
         }
 
         return $token->equals('=') || $token->isGivenKind($tokens);
@@ -536,7 +504,7 @@ return $foo === count($bar);
      *
      * @return bool Whether the tokens describe a variable
      */
-    private function isVariable(Tokens $tokens, $start, $end, $strict)
+    private function isVariable(Tokens $tokens, int $start, int $end, bool $strict): bool
     {
         $tokenAnalyzer = new TokensAnalyzer($tokens);
 
@@ -573,6 +541,7 @@ return $foo === count($bar);
         }
 
         $expectString = false;
+
         while ($index <= $end) {
             $current = $tokens[$index];
             if ($current->isComment() || $current->isWhitespace() || $tokens->isEmptyAt($index)) {
@@ -678,7 +647,7 @@ return $foo === count($bar);
         return !$this->isConstant($tokens, $start, $end);
     }
 
-    private function isConstant(Tokens $tokens, $index, $end)
+    private function isConstant(Tokens $tokens, int $index, int $end): bool
     {
         $expectArrayOnly = false;
         $expectNumberOnly = false;
@@ -703,7 +672,7 @@ return $foo === count($bar);
                 return false;
             }
 
-            if ($token->isGivenKind([T_ARRAY,  CT::T_ARRAY_SQUARE_BRACE_OPEN])) {
+            if ($token->isGivenKind([T_ARRAY, CT::T_ARRAY_SQUARE_BRACE_OPEN])) {
                 $expectArrayOnly = true;
 
                 continue;
@@ -734,7 +703,7 @@ return $foo === count($bar);
         return true;
     }
 
-    private function resolveConfiguration()
+    private function resolveConfiguration(): void
     {
         $candidateTypes = [];
         $this->candidatesMap = [];

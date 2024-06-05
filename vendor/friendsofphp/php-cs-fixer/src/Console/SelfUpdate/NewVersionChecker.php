@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -21,18 +23,12 @@ use Composer\Semver\VersionParser;
  */
 final class NewVersionChecker implements NewVersionCheckerInterface
 {
-    /**
-     * @var GithubClientInterface
-     */
-    private $githubClient;
+    private GithubClientInterface $githubClient;
+
+    private VersionParser $versionParser;
 
     /**
-     * @var VersionParser
-     */
-    private $versionParser;
-
-    /**
-     * @var null|string[]
+     * @var null|list<string>
      */
     private $availableVersions;
 
@@ -42,20 +38,14 @@ final class NewVersionChecker implements NewVersionCheckerInterface
         $this->versionParser = new VersionParser();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getLatestVersion()
+    public function getLatestVersion(): string
     {
         $this->retrieveAvailableVersions();
 
         return $this->availableVersions[0];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getLatestVersionOfMajor($majorVersion)
+    public function getLatestVersionOfMajor(int $majorVersion): ?string
     {
         $this->retrieveAvailableVersions();
 
@@ -70,10 +60,7 @@ final class NewVersionChecker implements NewVersionCheckerInterface
         return null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function compareVersions($versionA, $versionB)
+    public function compareVersions(string $versionA, string $versionB): int
     {
         $versionA = $this->versionParser->normalize($versionA);
         $versionB = $this->versionParser->normalize($versionB);
@@ -89,15 +76,13 @@ final class NewVersionChecker implements NewVersionCheckerInterface
         return 0;
     }
 
-    private function retrieveAvailableVersions()
+    private function retrieveAvailableVersions(): void
     {
         if (null !== $this->availableVersions) {
             return;
         }
 
-        foreach ($this->githubClient->getTags() as $tag) {
-            $version = $tag['name'];
-
+        foreach ($this->githubClient->getTags() as $version) {
             try {
                 $this->versionParser->normalize($version);
 
@@ -109,6 +94,9 @@ final class NewVersionChecker implements NewVersionCheckerInterface
             }
         }
 
-        $this->availableVersions = Semver::rsort($this->availableVersions);
+        $versions = Semver::rsort($this->availableVersions);
+        \assert(array_is_list($versions)); // Semver::rsort provides soft `array` type, let's validate and ensure proper type for SCA
+
+        $this->availableVersions = $versions;
     }
 }

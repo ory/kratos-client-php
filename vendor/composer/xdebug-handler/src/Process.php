@@ -9,6 +9,8 @@
  * the LICENSE file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Composer\XdebugHandler;
 
 use Composer\Pcre\Preg;
@@ -27,12 +29,10 @@ class Process
      * MIT Licensed (c) John Stevenson <john-stevenson@blueyonder.co.uk>
      *
      * @param string $arg  The argument to be escaped
-     * @param bool   $meta Additionally escape cmd.exe meta characters
+     * @param bool $meta Additionally escape cmd.exe meta characters
      * @param bool $module The argument is the module to invoke
-     *
-     * @return string The escaped argument
      */
-    public static function escape($arg, $meta = true, $module = false)
+    public static function escape(string $arg, bool $meta = true, bool $module = false): string
     {
         if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
             return "'".str_replace("'", "'\\''", $arg)."'";
@@ -41,6 +41,7 @@ class Process
         $quote = strpbrk($arg, " \t") !== false || $arg === '';
 
         $arg = Preg::replace('/(\\\\*)"/', '$1$1\\"', $arg, -1, $dquotes);
+        $dquotes = (bool) $dquotes;
 
         if ($meta) {
             $meta = $dquotes || Preg::isMatch('/%[^%]+%/', $arg);
@@ -67,10 +68,8 @@ class Process
      * Escapes an array of arguments that make up a shell command
      *
      * @param string[] $args Argument list, with the module name first
-     *
-     * @return string The escaped command line
      */
-    public static function escapeShellCommand(array $args)
+    public static function escapeShellCommand(array $args): string
     {
         $command = '';
         $module = array_shift($args);
@@ -90,11 +89,9 @@ class Process
      * Makes putenv environment changes available in $_SERVER and $_ENV
      *
      * @param string $name
-     * @param string|null $value A null value unsets the variable
-     *
-     * @return bool Whether the environment variable was set
-     */
-    public static function setEnv($name, $value = null)
+     * @param ?string $value A null value unsets the variable
+      */
+    public static function setEnv(string $name, ?string $value = null): bool
     {
         $unset = null === $value;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -15,17 +17,17 @@ namespace PhpCsFixer\Fixer\Comment;
 use PhpCsFixer\AbstractFixer;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Tokens;
 
-/**
- * @author SpacePossum
- */
 final class NoEmptyCommentFixer extends AbstractFixer
 {
-    const TYPE_HASH = 1;
-    const TYPE_DOUBLE_SLASH = 2;
-    const TYPE_SLASH_ASTERISK = 3;
+    private const TYPE_HASH = 1;
+
+    private const TYPE_DOUBLE_SLASH = 2;
+
+    private const TYPE_SLASH_ASTERISK = 3;
 
     /**
      * {@inheritdoc}
@@ -33,15 +35,12 @@ final class NoEmptyCommentFixer extends AbstractFixer
      * Must run before NoExtraBlankLinesFixer, NoTrailingWhitespaceFixer, NoWhitespaceInBlankLineFixer.
      * Must run after PhpdocToCommentFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return 2;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'There should not be any empty comments.',
@@ -49,25 +48,23 @@ final class NoEmptyCommentFixer extends AbstractFixer
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
+    public function isCandidate(Tokens $tokens): bool
     {
         return $tokens->isTokenKindFound(T_COMMENT);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
         for ($index = 1, $count = \count($tokens); $index < $count; ++$index) {
             if (!$tokens[$index]->isGivenKind(T_COMMENT)) {
                 continue;
             }
 
-            list($blockStart, $index, $isEmpty) = $this->getCommentBlock($tokens, $index);
+            $blockInfo = $this->getCommentBlock($tokens, $index);
+            $blockStart = $blockInfo['blockStart'];
+            $index = $blockInfo['blockEnd'];
+            $isEmpty = $blockInfo['isEmpty'];
+
             if (false === $isEmpty) {
                 continue;
             }
@@ -83,15 +80,19 @@ final class NoEmptyCommentFixer extends AbstractFixer
      *
      * @param int $index T_COMMENT index
      *
-     * @return array
+     * @return array{blockStart: int, blockEnd: int, isEmpty: bool}
      */
-    private function getCommentBlock(Tokens $tokens, $index)
+    private function getCommentBlock(Tokens $tokens, int $index): array
     {
         $commentType = $this->getCommentType($tokens[$index]->getContent());
         $empty = $this->isEmptyComment($tokens[$index]->getContent());
 
         if (self::TYPE_SLASH_ASTERISK === $commentType) {
-            return [$index, $index, $empty];
+            return [
+                'blockStart' => $index,
+                'blockEnd' => $index,
+                'isEmpty' => $empty,
+            ];
         }
 
         $start = $index;
@@ -116,17 +117,16 @@ final class NoEmptyCommentFixer extends AbstractFixer
             }
         }
 
-        return [$start, $index - 1, $empty];
+        return [
+            'blockStart' => $start,
+            'blockEnd' => $index - 1,
+            'isEmpty' => $empty,
+        ];
     }
 
-    /**
-     * @param string $content
-     *
-     * @return int
-     */
-    private function getCommentType($content)
+    private function getCommentType(string $content): int
     {
-        if ('#' === $content[0]) {
+        if (str_starts_with($content, '#')) {
             return self::TYPE_HASH;
         }
 
@@ -137,13 +137,7 @@ final class NoEmptyCommentFixer extends AbstractFixer
         return self::TYPE_DOUBLE_SLASH;
     }
 
-    /**
-     * @param int $whiteStart
-     * @param int $whiteEnd
-     *
-     * @return int
-     */
-    private function getLineBreakCount(Tokens $tokens, $whiteStart, $whiteEnd)
+    private function getLineBreakCount(Tokens $tokens, int $whiteStart, int $whiteEnd): int
     {
         $lineCount = 0;
         for ($i = $whiteStart; $i < $whiteEnd; ++$i) {
@@ -153,12 +147,7 @@ final class NoEmptyCommentFixer extends AbstractFixer
         return $lineCount;
     }
 
-    /**
-     * @param string $content
-     *
-     * @return bool
-     */
-    private function isEmptyComment($content)
+    private function isEmptyComment(string $content): bool
     {
         static $mapper = [
             self::TYPE_HASH => '|^#\s*$|', // single line comment starting with '#'
@@ -168,6 +157,6 @@ final class NoEmptyCommentFixer extends AbstractFixer
 
         $type = $this->getCommentType($content);
 
-        return 1 === Preg::match($mapper[$type], $content);
+        return Preg::match($mapper[$type], $content);
     }
 }

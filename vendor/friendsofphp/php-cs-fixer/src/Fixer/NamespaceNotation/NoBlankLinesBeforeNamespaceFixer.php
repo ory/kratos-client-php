@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -12,28 +14,32 @@
 
 namespace PhpCsFixer\Fixer\NamespaceNotation;
 
-use PhpCsFixer\AbstractLinesBeforeNamespaceFixer;
+use PhpCsFixer\AbstractProxyFixer;
+use PhpCsFixer\Fixer\DeprecatedFixerInterface;
+use PhpCsFixer\Fixer\WhitespacesAwareFixerInterface;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tokenizer\Tokens;
 
 /**
- * @author Graham Campbell <graham@alt-three.com>
+ * @author Graham Campbell <hello@gjcampbell.co.uk>
+ *
+ * @deprecated Use `blank_lines_before_namespace` with config: ['min_line_breaks' => 0, 'max_line_breaks' => 1]
  */
-final class NoBlankLinesBeforeNamespaceFixer extends AbstractLinesBeforeNamespaceFixer
+final class NoBlankLinesBeforeNamespaceFixer extends AbstractProxyFixer implements WhitespacesAwareFixerInterface, DeprecatedFixerInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
+    public function getSuccessorsNames(): array
+    {
+        return array_keys($this->proxyFixers);
+    }
+
+    public function isCandidate(Tokens $tokens): bool
     {
         return $tokens->isTokenKindFound(T_NAMESPACE);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'There should be no blank lines before a namespace declaration.',
@@ -50,24 +56,21 @@ final class NoBlankLinesBeforeNamespaceFixer extends AbstractLinesBeforeNamespac
      *
      * Must run after BlankLineAfterOpeningTagFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return 0;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function createProxyFixers(): array
     {
-        for ($index = 0, $limit = $tokens->count(); $index < $limit; ++$index) {
-            $token = $tokens[$index];
+        $blankLineBeforeNamespace = new BlankLinesBeforeNamespaceFixer();
+        $blankLineBeforeNamespace->configure([
+            'min_line_breaks' => 0,
+            'max_line_breaks' => 1,
+        ]);
 
-            if (!$token->isGivenKind(T_NAMESPACE)) {
-                continue;
-            }
-
-            $this->fixLinesBeforeNamespace($tokens, $index, 0, 1);
-        }
+        return [
+            $blankLineBeforeNamespace,
+        ];
     }
 }

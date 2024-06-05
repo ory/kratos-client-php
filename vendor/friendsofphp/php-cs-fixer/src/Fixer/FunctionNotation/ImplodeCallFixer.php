@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -15,6 +17,7 @@ namespace PhpCsFixer\Fixer\FunctionNotation;
 use PhpCsFixer\AbstractFixer;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tokenizer\Analyzer\ArgumentsAnalyzer;
 use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
@@ -25,10 +28,7 @@ use PhpCsFixer\Tokenizer\Tokens;
  */
 final class ImplodeCallFixer extends AbstractFixer
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'Function `implode` must be called with 2 arguments in the documented order.',
@@ -41,18 +41,12 @@ final class ImplodeCallFixer extends AbstractFixer
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isRisky()
+    public function isRisky(): bool
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
+    public function isCandidate(Tokens $tokens): bool
     {
         return $tokens->isTokenKindFound(T_STRING);
     }
@@ -63,15 +57,12 @@ final class ImplodeCallFixer extends AbstractFixer
      * Must run before MethodArgumentSpaceFixer.
      * Must run after NoAliasFunctionsFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return 37;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
         $functionsAnalyzer = new FunctionsAnalyzer();
 
@@ -87,7 +78,7 @@ final class ImplodeCallFixer extends AbstractFixer
             $argumentsIndices = $this->getArgumentIndices($tokens, $index);
 
             if (1 === \count($argumentsIndices)) {
-                $firstArgumentIndex = key($argumentsIndices);
+                $firstArgumentIndex = array_key_first($argumentsIndices);
                 $tokens->insertAt($firstArgumentIndex, [
                     new Token([T_CONSTANT_ENCAPSED_STRING, "''"]),
                     new Token(','),
@@ -98,7 +89,7 @@ final class ImplodeCallFixer extends AbstractFixer
             }
 
             if (2 === \count($argumentsIndices)) {
-                list($firstArgumentIndex, $secondArgumentIndex) = array_keys($argumentsIndices);
+                [$firstArgumentIndex, $secondArgumentIndex] = array_keys($argumentsIndices);
 
                 // If the first argument is string we have nothing to do
                 if ($tokens[$firstArgumentIndex]->isGivenKind(T_CONSTANT_ENCAPSED_STRING)) {
@@ -112,7 +103,7 @@ final class ImplodeCallFixer extends AbstractFixer
                 // collect tokens from first argument
                 $firstArgumentEndIndex = $argumentsIndices[key($argumentsIndices)];
                 $newSecondArgumentTokens = [];
-                for ($i = key($argumentsIndices); $i <= $firstArgumentEndIndex; ++$i) {
+                for ($i = array_key_first($argumentsIndices); $i <= $firstArgumentEndIndex; ++$i) {
                     $newSecondArgumentTokens[] = clone $tokens[$i];
                     $tokens->clearAt($i);
                 }
@@ -128,11 +119,9 @@ final class ImplodeCallFixer extends AbstractFixer
     }
 
     /**
-     * @param int $functionNameIndex
-     *
      * @return array<int, int> In the format: startIndex => endIndex
      */
-    private function getArgumentIndices(Tokens $tokens, $functionNameIndex)
+    private function getArgumentIndices(Tokens $tokens, int $functionNameIndex): array
     {
         $argumentsAnalyzer = new ArgumentsAnalyzer();
 

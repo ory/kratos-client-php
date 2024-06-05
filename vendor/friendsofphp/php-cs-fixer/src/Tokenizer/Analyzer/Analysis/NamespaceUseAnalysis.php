@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -13,142 +15,152 @@
 namespace PhpCsFixer\Tokenizer\Analyzer\Analysis;
 
 /**
+ * @author VeeWee <toonverwerft@gmail.com>
+ * @author Greg Korba <greg@codito.dev>
+ *
  * @internal
  */
 final class NamespaceUseAnalysis implements StartEndTokenAwareAnalysis
 {
-    const TYPE_CLASS = 1;
-    const TYPE_FUNCTION = 2;
-    const TYPE_CONSTANT = 3;
+    public const TYPE_CLASS = 1; // "classy" could be class, interface or trait
+    public const TYPE_FUNCTION = 2;
+    public const TYPE_CONSTANT = 3;
 
     /**
      * The fully qualified use namespace.
-     *
-     * @var string
      */
-    private $fullName;
+    private string $fullName;
 
     /**
      * The short version of use namespace or the alias name in case of aliased use statements.
-     *
-     * @var string
      */
-    private $shortName;
+    private string $shortName;
+
+    /**
+     * Is the use statement part of multi-use (`use A, B, C;`, `use A\{B, C};`)?
+     */
+    private bool $isInMulti;
 
     /**
      * Is the use statement being aliased?
-     *
-     * @var bool
      */
-    private $isAliased;
+    private bool $isAliased;
 
     /**
      * The start index of the namespace declaration in the analyzed Tokens.
-     *
-     * @var int
      */
-    private $startIndex;
+    private int $startIndex;
 
     /**
      * The end index of the namespace declaration in the analyzed Tokens.
-     *
-     * @var int
      */
-    private $endIndex;
+    private int $endIndex;
+
+    /**
+     * The start index of the single import in the multi-use statement.
+     */
+    private ?int $chunkStartIndex;
+
+    /**
+     * The end index of the single import in the multi-use statement.
+     */
+    private ?int $chunkEndIndex;
 
     /**
      * The type of import: class, function or constant.
      *
-     * @var int
+     * @var self::TYPE_*
      */
-    private $type;
+    private int $type;
 
     /**
-     * @param string $fullName
-     * @param string $shortName
-     * @param bool   $isAliased
-     * @param int    $startIndex
-     * @param int    $endIndex
-     * @param int    $type
+     * @param self::TYPE_* $type
      */
-    public function __construct($fullName, $shortName, $isAliased, $startIndex, $endIndex, $type)
-    {
+    public function __construct(
+        int $type,
+        string $fullName,
+        string $shortName,
+        bool $isAliased,
+        bool $isInMulti,
+        int $startIndex,
+        int $endIndex,
+        ?int $chunkStartIndex = null,
+        ?int $chunkEndIndex = null
+    ) {
+        if (true === $isInMulti && (null === $chunkStartIndex || null === $chunkEndIndex)) {
+            throw new \LogicException('Chunk start and end index must be set when the import is part of a multi-use statement.');
+        }
+
+        $this->type = $type;
         $this->fullName = $fullName;
         $this->shortName = $shortName;
         $this->isAliased = $isAliased;
+        $this->isInMulti = $isInMulti;
         $this->startIndex = $startIndex;
         $this->endIndex = $endIndex;
-        $this->type = $type;
+        $this->chunkStartIndex = $chunkStartIndex;
+        $this->chunkEndIndex = $chunkEndIndex;
     }
 
-    /**
-     * @return string
-     */
-    public function getFullName()
+    public function getFullName(): string
     {
         return $this->fullName;
     }
 
-    /**
-     * @return string
-     */
-    public function getShortName()
+    public function getShortName(): string
     {
         return $this->shortName;
     }
 
-    /**
-     * @return bool
-     */
-    public function isAliased()
+    public function isAliased(): bool
     {
         return $this->isAliased;
     }
 
-    /**
-     * @return int
-     */
-    public function getStartIndex()
+    public function isInMulti(): bool
+    {
+        return $this->isInMulti;
+    }
+
+    public function getStartIndex(): int
     {
         return $this->startIndex;
     }
 
-    /**
-     * @return int
-     */
-    public function getEndIndex()
+    public function getEndIndex(): int
     {
         return $this->endIndex;
     }
 
+    public function getChunkStartIndex(): ?int
+    {
+        return $this->chunkStartIndex;
+    }
+
+    public function getChunkEndIndex(): ?int
+    {
+        return $this->chunkEndIndex;
+    }
+
     /**
-     * @return int
+     * @return self::TYPE_*
      */
-    public function getType()
+    public function getType(): int
     {
         return $this->type;
     }
 
-    /**
-     * @return bool
-     */
-    public function isClass()
+    public function isClass(): bool
     {
         return self::TYPE_CLASS === $this->type;
     }
 
-    /**
-     * @return bool
-     */
-    public function isFunction()
+    public function isFunction(): bool
     {
         return self::TYPE_FUNCTION === $this->type;
     }
 
-    /**
-     * @return bool
-     */
-    public function isConstant()
+    public function isConstant(): bool
     {
         return self::TYPE_CONSTANT === $this->type;
     }

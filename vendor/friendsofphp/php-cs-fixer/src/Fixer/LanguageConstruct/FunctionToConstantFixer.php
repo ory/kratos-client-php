@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -13,31 +15,30 @@
 namespace PhpCsFixer\Fixer\LanguageConstruct;
 
 use PhpCsFixer\AbstractFixer;
-use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
+use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\FixerConfiguration\AllowedValueSubset;
 use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolverInterface;
 use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 
-/**
- * @author SpacePossum
- */
-final class FunctionToConstantFixer extends AbstractFixer implements ConfigurationDefinitionFixerInterface
+final class FunctionToConstantFixer extends AbstractFixer implements ConfigurableFixerInterface
 {
     /**
-     * @var array<string, Token[]>
+     * @var array<string, list<Token>>
      */
     private static $availableFunctions;
 
     /**
-     * @var array<string, Token[]>
+     * @var array<string, list<Token>>
      */
-    private $functionsFixMap;
+    private array $functionsFixMap;
 
     public function __construct()
     {
@@ -48,7 +49,11 @@ final class FunctionToConstantFixer extends AbstractFixer implements Configurati
                     new Token([T_DOUBLE_COLON, '::']),
                     new Token([CT::T_CLASS_CONSTANT, 'class']),
                 ],
-                'get_class' => [new Token([T_CLASS_C, '__CLASS__'])],
+                'get_class' => [
+                    new Token([T_STRING, 'self']),
+                    new Token([T_DOUBLE_COLON, '::']),
+                    new Token([CT::T_CLASS_CONSTANT, 'class']),
+                ],
                 'get_class_this' => [
                     new Token([T_STATIC, 'static']),
                     new Token([T_DOUBLE_COLON, '::']),
@@ -63,23 +68,18 @@ final class FunctionToConstantFixer extends AbstractFixer implements Configurati
         parent::__construct();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function configure(array $configuration = null)
+    public function configure(array $configuration): void
     {
         parent::configure($configuration);
 
         $this->functionsFixMap = [];
+
         foreach ($this->configuration['functions'] as $key) {
             $this->functionsFixMap[$key] = self::$availableFunctions[$key];
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'Replace core functions calls returning constants with the constants.',
@@ -100,34 +100,25 @@ final class FunctionToConstantFixer extends AbstractFixer implements Configurati
     /**
      * {@inheritdoc}
      *
-     * Must run before NativeFunctionCasingFixer, NoExtraBlankLinesFixer, NoSinglelineWhitespaceBeforeSemicolonsFixer, NoTrailingWhitespaceFixer, NoWhitespaceInBlankLineFixer, SelfStaticAccessorFixer.
-     * Must run after NoSpacesAfterFunctionNameFixer, NoSpacesInsideParenthesisFixer.
+     * Must run before NativeConstantInvocationFixer, NativeFunctionCasingFixer, NoExtraBlankLinesFixer, NoSinglelineWhitespaceBeforeSemicolonsFixer, NoTrailingWhitespaceFixer, NoWhitespaceInBlankLineFixer, SelfStaticAccessorFixer.
+     * Must run after NoSpacesAfterFunctionNameFixer, NoSpacesInsideParenthesisFixer, SpacesInsideParenthesesFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
-        return 1;
+        return 2;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
+    public function isCandidate(Tokens $tokens): bool
     {
         return $tokens->isTokenKindFound(T_STRING);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isRisky()
+    public function isRisky(): bool
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
         $functionAnalyzer = new FunctionsAnalyzer();
 
@@ -147,35 +138,30 @@ final class FunctionToConstantFixer extends AbstractFixer implements Configurati
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createConfigurationDefinition()
+    protected function createConfigurationDefinition(): FixerConfigurationResolverInterface
     {
         $functionNames = array_keys(self::$availableFunctions);
 
         return new FixerConfigurationResolver([
             (new FixerOptionBuilder('functions', 'List of function names to fix.'))
-                ->setAllowedTypes(['array'])
+                ->setAllowedTypes(['string[]'])
                 ->setAllowedValues([new AllowedValueSubset($functionNames)])
                 ->setDefault([
+                    'get_called_class',
                     'get_class',
+                    'get_class_this',
                     'php_sapi_name',
                     'phpversion',
                     'pi',
-                    // TODO on v3.0 add 'get_called_class' and `get_class_this` here
                 ])
                 ->getOption(),
         ]);
     }
 
     /**
-     * @param int     $index
-     * @param int     $braceOpenIndex
-     * @param int     $braceCloseIndex
-     * @param Token[] $replacements
+     * @param list<Token> $replacements
      */
-    private function fixFunctionCallToConstant(Tokens $tokens, $index, $braceOpenIndex, $braceCloseIndex, array $replacements)
+    private function fixFunctionCallToConstant(Tokens $tokens, int $index, int $braceOpenIndex, int $braceCloseIndex, array $replacements): void
     {
         for ($i = $braceCloseIndex; $i >= $braceOpenIndex; --$i) {
             if ($tokens[$i]->isGivenKind([T_WHITESPACE, T_COMMENT, T_DOC_COMMENT])) {
@@ -185,7 +171,10 @@ final class FunctionToConstantFixer extends AbstractFixer implements Configurati
             $tokens->clearTokenAndMergeSurroundingWhitespace($i);
         }
 
-        if ($replacements[0]->isGivenKind([T_CLASS_C, T_STATIC])) {
+        if (
+            $replacements[0]->isGivenKind([T_CLASS_C, T_STATIC])
+            || ($replacements[0]->isGivenKind(T_STRING) && 'self' === $replacements[0]->getContent())
+        ) {
             $prevIndex = $tokens->getPrevMeaningfulToken($index);
             $prevToken = $tokens[$prevIndex];
             if ($prevToken->isGivenKind(T_NS_SEPARATOR)) {
@@ -198,15 +187,13 @@ final class FunctionToConstantFixer extends AbstractFixer implements Configurati
     }
 
     /**
-     * @param int $index
-     *
-     * @return null|array
+     * @return ?array{int, int, list<Token>}
      */
     private function getReplaceCandidate(
         Tokens $tokens,
         FunctionsAnalyzer $functionAnalyzer,
-        $index
-    ) {
+        int $index
+    ): ?array {
         if (!$tokens[$index]->isGivenKind(T_STRING)) {
             return null;
         }
@@ -240,15 +227,13 @@ final class FunctionToConstantFixer extends AbstractFixer implements Configurati
     }
 
     /**
-     * @param int $index
-     *
-     * @return null|array
+     * @return ?array{int, int, list<Token>}
      */
     private function fixGetClassCall(
         Tokens $tokens,
         FunctionsAnalyzer $functionAnalyzer,
-        $index
-    ) {
+        int $index
+    ): ?array {
         if (!isset($this->functionsFixMap['get_class']) && !isset($this->functionsFixMap['get_class_this'])) {
             return null;
         }
@@ -296,18 +281,14 @@ final class FunctionToConstantFixer extends AbstractFixer implements Configurati
     }
 
     /**
-     * @param string $lowerContent
-     * @param int    $braceOpenIndex
-     * @param int    $braceCloseIndex
-     *
-     * @return array
+     * @return array{int, int, list<Token>}
      */
-    private function getReplacementTokenClones($lowerContent, $braceOpenIndex, $braceCloseIndex)
+    private function getReplacementTokenClones(string $lowerContent, int $braceOpenIndex, int $braceCloseIndex): array
     {
-        $clones = [];
-        foreach ($this->functionsFixMap[$lowerContent] as $token) {
-            $clones[] = clone $token;
-        }
+        $clones = array_map(
+            static fn (Token $token): Token => clone $token,
+            $this->functionsFixMap[$lowerContent],
+        );
 
         return [
             $braceOpenIndex,

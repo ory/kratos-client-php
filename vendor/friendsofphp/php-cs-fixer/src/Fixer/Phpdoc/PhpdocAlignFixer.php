@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -14,141 +16,169 @@ namespace PhpCsFixer\Fixer\Phpdoc;
 
 use PhpCsFixer\AbstractFixer;
 use PhpCsFixer\DocBlock\DocBlock;
-use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
+use PhpCsFixer\DocBlock\TypeExpression;
+use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\Fixer\WhitespacesAwareFixerInterface;
-use PhpCsFixer\FixerConfiguration\AllowedValueSubset;
 use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolverInterface;
 use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Jordi Boggiano <j.boggiano@seld.be>
  * @author Sebastiaan Stok <s.stok@rollerscapes.net>
- * @author Graham Campbell <graham@alt-three.com>
+ * @author Graham Campbell <hello@gjcampbell.co.uk>
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * @author Jakub Kwaśniewski <jakub@zero-85.pl>
  */
-final class PhpdocAlignFixer extends AbstractFixer implements ConfigurationDefinitionFixerInterface, WhitespacesAwareFixerInterface
+final class PhpdocAlignFixer extends AbstractFixer implements ConfigurableFixerInterface, WhitespacesAwareFixerInterface
 {
     /**
      * @internal
      */
-    const ALIGN_LEFT = 'left';
+    public const ALIGN_LEFT = 'left';
 
     /**
      * @internal
      */
-    const ALIGN_VERTICAL = 'vertical';
+    public const ALIGN_VERTICAL = 'vertical';
 
-    /**
-     * @var string
-     */
-    private $regex;
-
-    /**
-     * @var string
-     */
-    private $regexCommentLine;
-
-    /**
-     * @var string
-     */
-    private $align;
-
-    private static $alignableTags = [
+    private const DEFAULT_TAGS = [
+        'method',
         'param',
         'property',
-        'property-read',
-        'property-write',
         'return',
         'throws',
         'type',
         'var',
-        'method',
     ];
 
-    private static $tagsWithName = [
+    private const TAGS_WITH_NAME = [
         'param',
         'property',
+        'property-read',
+        'property-write',
+        'phpstan-param',
+        'phpstan-property',
+        'phpstan-property-read',
+        'phpstan-property-write',
+        'phpstan-assert',
+        'phpstan-assert-if-true',
+        'phpstan-assert-if-false',
+        'psalm-param',
+        'psalm-param-out',
+        'psalm-property',
+        'psalm-property-read',
+        'psalm-property-write',
+        'psalm-assert',
+        'psalm-assert-if-true',
+        'psalm-assert-if-false',
     ];
 
-    private static $tagsWithMethodSignature = [
+    private const TAGS_WITH_METHOD_SIGNATURE = [
         'method',
+        'phpstan-method',
+        'psalm-method',
     ];
+
+    private const DEFAULT_SPACING = 1;
+
+    private const DEFAULT_SPACING_KEY = '_default';
+
+    private string $regex;
+
+    private string $regexCommentLine;
+
+    private string $align;
 
     /**
-     * {@inheritdoc}
+     * same spacing for all or specific for different tags.
+     *
+     * @var array<string, int>|int
      */
-    public function configure(array $configuration = null)
+    private $spacing = 1;
+
+    public function configure(array $configuration): void
     {
         parent::configure($configuration);
 
-        $tagsWithNameToAlign = array_intersect($this->configuration['tags'], self::$tagsWithName);
-        $tagsWithMethodSignatureToAlign = array_intersect($this->configuration['tags'], self::$tagsWithMethodSignature);
+        $tagsWithNameToAlign = array_intersect($this->configuration['tags'], self::TAGS_WITH_NAME);
+        $tagsWithMethodSignatureToAlign = array_intersect($this->configuration['tags'], self::TAGS_WITH_METHOD_SIGNATURE);
         $tagsWithoutNameToAlign = array_diff($this->configuration['tags'], $tagsWithNameToAlign, $tagsWithMethodSignatureToAlign);
+
+        $indentRegex = '^(?P<indent>(?:\ {2}|\t)*)\ ?';
+
         $types = [];
 
-        $indent = '(?P<indent>(?: {2}|\t)*)';
         // e.g. @param <hint> <$var>
-        if (!empty($tagsWithNameToAlign)) {
-            $types[] = '(?P<tag>'.implode('|', $tagsWithNameToAlign).')\s+(?P<hint>[^$]+?)\s+(?P<var>(?:&|\.{3})?\$[^\s]+)';
+        if ([] !== $tagsWithNameToAlign) {
+            $types[] = '(?P<tag>'.implode('|', $tagsWithNameToAlign).')\s+(?P<hint>(?:'.TypeExpression::REGEX_TYPES.')?)\s*(?P<var>(?:&|\.{3})?\$\S+)';
         }
 
         // e.g. @return <hint>
-        if (!empty($tagsWithoutNameToAlign)) {
-            $types[] = '(?P<tag2>'.implode('|', $tagsWithoutNameToAlign).')\s+(?P<hint2>[^\s]+?)';
+        if ([] !== $tagsWithoutNameToAlign) {
+            $types[] = '(?P<tag2>'.implode('|', $tagsWithoutNameToAlign).')\s+(?P<hint2>(?:'.TypeExpression::REGEX_TYPES.')?)';
         }
 
         // e.g. @method <hint> <signature>
-        if (!empty($tagsWithMethodSignatureToAlign)) {
-            $types[] = '(?P<tag3>'.implode('|', $tagsWithMethodSignatureToAlign).')(\s+(?P<hint3>[^\s(]+)|)\s+(?P<signature>.+\))';
+        if ([] !== $tagsWithMethodSignatureToAlign) {
+            $types[] = '(?P<tag3>'.implode('|', $tagsWithMethodSignatureToAlign).')(\s+(?P<static>static))?(\s+(?P<hint3>(?:'.TypeExpression::REGEX_TYPES.')?))\s+(?P<signature>.+\))';
         }
 
         // optional <desc>
         $desc = '(?:\s+(?P<desc>\V*))';
 
-        $this->regex = '/^'.$indent.' \* @(?:'.implode('|', $types).')'.$desc.'\s*$/u';
-        $this->regexCommentLine = '/^'.$indent.' \*(?! @)(?:\s+(?P<desc>\V+))(?<!\*\/)\r?$/u';
+        $this->regex = '/'.$indentRegex.'\*\h*@(?J)(?:'.implode('|', $types).')'.$desc.'\h*\r?$/';
+        $this->regexCommentLine = '/'.$indentRegex.'\*(?!\h?+@)(?:\s+(?P<desc>\V+))(?<!\*\/)\r?$/';
         $this->align = $this->configuration['align'];
+        $this->spacing = $this->configuration['spacing'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         $code = <<<'EOF'
-<?php
-/**
- * @param  EngineInterface $templating
- * @param string      $format
- * @param  int  $code       an HTTP response status code
- * @param    bool         $debug
- * @param  mixed    &$reference     a parameter passed by reference
- */
+            <?php
+            /**
+             * @param  EngineInterface $templating
+             * @param string      $format
+             * @param  int  $code       an HTTP response status code
+             * @param    bool         $debug
+             * @param  mixed    &$reference     a parameter passed by reference
+             *
+             * @return Foo description foo
+             *
+             * @throws Foo            description foo
+             *             description foo
+             *
+             */
 
-EOF;
+            EOF;
 
         return new FixerDefinition(
-            'All items of the given phpdoc tags must be either left-aligned or (by default) aligned vertically.',
+            'All items of the given PHPDoc tags must be either left-aligned or (by default) aligned vertically.',
             [
                 new CodeSample($code),
                 new CodeSample($code, ['align' => self::ALIGN_VERTICAL]),
                 new CodeSample($code, ['align' => self::ALIGN_LEFT]),
-            ]
+                new CodeSample($code, ['align' => self::ALIGN_LEFT, 'spacing' => 2]),
+                new CodeSample($code, ['align' => self::ALIGN_LEFT, 'spacing' => ['param' => 2]]),
+            ],
         );
     }
 
     /**
      * {@inheritdoc}
      *
-     * Must run after AlignMultilineCommentFixer, CommentToPhpdocFixer, CommentToPhpdocFixer, GeneralPhpdocAnnotationRemoveFixer, GeneralPhpdocTagRenameFixer, NoBlankLinesAfterPhpdocFixer, NoEmptyPhpdocFixer, NoSuperfluousPhpdocTagsFixer, PhpdocAddMissingParamAnnotationFixer, PhpdocAddMissingParamAnnotationFixer, PhpdocAnnotationWithoutDotFixer, PhpdocIndentFixer, PhpdocIndentFixer, PhpdocInlineTagFixer, PhpdocInlineTagNormalizerFixer, PhpdocLineSpanFixer, PhpdocNoAccessFixer, PhpdocNoAliasTagFixer, PhpdocNoEmptyReturnFixer, PhpdocNoPackageFixer, PhpdocNoUselessInheritdocFixer, PhpdocOrderByValueFixer, PhpdocOrderFixer, PhpdocReturnSelfReferenceFixer, PhpdocScalarFixer, PhpdocScalarFixer, PhpdocSeparationFixer, PhpdocSingleLineVarSpacingFixer, PhpdocSummaryFixer, PhpdocTagCasingFixer, PhpdocTagTypeFixer, PhpdocToCommentFixer, PhpdocToCommentFixer, PhpdocToParamTypeFixer, PhpdocToPropertyTypeFixer, PhpdocToReturnTypeFixer, PhpdocTrimConsecutiveBlankLineSeparationFixer, PhpdocTrimFixer, PhpdocTypesFixer, PhpdocTypesFixer, PhpdocTypesOrderFixer, PhpdocVarAnnotationCorrectOrderFixer, PhpdocVarWithoutNameFixer.
+     * Must run after AlignMultilineCommentFixer, CommentToPhpdocFixer, GeneralPhpdocAnnotationRemoveFixer, GeneralPhpdocTagRenameFixer, NoBlankLinesAfterPhpdocFixer, NoEmptyPhpdocFixer, NoSuperfluousPhpdocTagsFixer, PhpdocAddMissingParamAnnotationFixer, PhpdocAnnotationWithoutDotFixer, PhpdocArrayTypeFixer, PhpdocIndentFixer, PhpdocInlineTagNormalizerFixer, PhpdocLineSpanFixer, PhpdocListTypeFixer, PhpdocNoAccessFixer, PhpdocNoAliasTagFixer, PhpdocNoEmptyReturnFixer, PhpdocNoPackageFixer, PhpdocNoUselessInheritdocFixer, PhpdocOrderByValueFixer, PhpdocOrderFixer, PhpdocParamOrderFixer, PhpdocReadonlyClassCommentToKeywordFixer, PhpdocReturnSelfReferenceFixer, PhpdocScalarFixer, PhpdocSeparationFixer, PhpdocSingleLineVarSpacingFixer, PhpdocSummaryFixer, PhpdocTagCasingFixer, PhpdocTagTypeFixer, PhpdocToCommentFixer, PhpdocToParamTypeFixer, PhpdocToPropertyTypeFixer, PhpdocToReturnTypeFixer, PhpdocTrimConsecutiveBlankLineSeparationFixer, PhpdocTrimFixer, PhpdocTypesFixer, PhpdocTypesOrderFixer, PhpdocVarAnnotationCorrectOrderFixer, PhpdocVarWithoutNameFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         /*
          * Should be run after all other docblock fixers. This because they
@@ -160,18 +190,12 @@ EOF;
         return -42;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
+    public function isCandidate(Tokens $tokens): bool
     {
         return $tokens->isTokenKindFound(T_DOC_COMMENT);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
         foreach ($tokens as $index => $token) {
             if (!$token->isGivenKind(T_DOC_COMMENT)) {
@@ -188,44 +212,52 @@ EOF;
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createConfigurationDefinition()
+    protected function createConfigurationDefinition(): FixerConfigurationResolverInterface
     {
-        $tags = new FixerOptionBuilder('tags', 'The tags that should be aligned.');
+        $allowPositiveIntegers = static function ($value) {
+            $spacings = \is_array($value) ? $value : [$value];
+            foreach ($spacings as $val) {
+                if (\is_int($val) && $val <= 0) {
+                    throw new InvalidOptionsException('The option "spacing" is invalid. All spacings must be greater than zero.');
+                }
+            }
+
+            return true;
+        };
+
+        $tags = new FixerOptionBuilder(
+            'tags',
+            'The tags that should be aligned. Allowed values are tags with name (`\''.implode('\', \'', self::TAGS_WITH_NAME).'\'`), tags with method signature (`\''.implode('\', \'', self::TAGS_WITH_METHOD_SIGNATURE).'\'`) and any custom tag with description (e.g. `@tag <desc>`).'
+        );
         $tags
-            ->setAllowedTypes(['array'])
-            ->setAllowedValues([new AllowedValueSubset(self::$alignableTags)])
-            /*
-             * By default, all tags apart from @property and @method will be aligned for backwards compatibility
-             * @TODO 3.0 Align all available tags by default
-             */
-            ->setDefault([
-                'param',
-                'return',
-                'throws',
-                'type',
-                'var',
-            ])
+            ->setAllowedTypes(['string[]'])
+            ->setDefault(self::DEFAULT_TAGS)
         ;
 
-        $align = new FixerOptionBuilder('align', 'Align comments');
+        $align = new FixerOptionBuilder('align', 'How comments should be aligned.');
         $align
             ->setAllowedTypes(['string'])
             ->setAllowedValues([self::ALIGN_LEFT, self::ALIGN_VERTICAL])
             ->setDefault(self::ALIGN_VERTICAL)
         ;
 
-        return new FixerConfigurationResolver([$tags->getOption(), $align->getOption()]);
+        $spacing = new FixerOptionBuilder(
+            'spacing',
+            'Spacing between tag, hint, comment, signature, etc. You can set same spacing for all tags using a positive integer or different spacings for different tags using an associative array of positive integers `[\'tagA\' => spacingForA, \'tagB\' => spacingForB]`. If you want to define default spacing to more than 1 space use `_default` key in config array, e.g.: `[\'tagA\' => spacingForA, \'tagB\' => spacingForB, \'_default\' => spacingForAllOthers]`.'
+        );
+        $spacing->setAllowedTypes(['int', 'int[]'])
+            ->setAllowedValues([$allowPositiveIntegers])
+            ->setDefault(self::DEFAULT_SPACING)
+        ;
+
+        return new FixerConfigurationResolver([$tags->getOption(), $align->getOption(), $spacing->getOption()]);
     }
 
-    private function fixDocBlock(DocBlock $docBlock)
+    private function fixDocBlock(DocBlock $docBlock): void
     {
         $lineEnding = $this->whitespacesConfig->getLineEnding();
 
         for ($i = 0, $l = \count($docBlock->getLines()); $i < $l; ++$i) {
-            $items = [];
             $matches = $this->getMatches($docBlock->getLine($i)->getContent());
 
             if (null === $matches) {
@@ -233,7 +265,7 @@ EOF;
             }
 
             $current = $i;
-            $items[] = $matches;
+            $items = [$matches];
 
             while (true) {
                 if (null === $docBlock->getLine(++$i)) {
@@ -249,6 +281,7 @@ EOF;
             }
 
             // compute the max length of the tag, hint and variables
+            $hasStatic = false;
             $tagMax = 0;
             $hintMax = 0;
             $varMax = 0;
@@ -258,100 +291,140 @@ EOF;
                     continue;
                 }
 
+                $hasStatic |= '' !== $item['static'];
                 $tagMax = max($tagMax, \strlen($item['tag']));
                 $hintMax = max($hintMax, \strlen($item['hint']));
                 $varMax = max($varMax, \strlen($item['var']));
             }
 
+            $itemOpeningLine = null;
+
             $currTag = null;
+            $spacingForTag = $this->spacingForTag($currTag);
 
             // update
             foreach ($items as $j => $item) {
                 if (null === $item['tag']) {
                     if ('@' === $item['desc'][0]) {
-                        $docBlock->getLine($current + $j)->setContent($item['indent'].' * '.$item['desc'].$lineEnding);
+                        $line = $item['indent'].' * '.$item['desc'];
+                        $docBlock->getLine($current + $j)->setContent($line.$lineEnding);
 
                         continue;
                     }
 
-                    $extraIndent = 2;
+                    $extraIndent = 2 * $spacingForTag;
 
-                    if (\in_array($currTag, self::$tagsWithName, true) || \in_array($currTag, self::$tagsWithMethodSignature, true)) {
-                        $extraIndent = 3;
+                    if (\in_array($itemOpeningLine['tag'], self::TAGS_WITH_NAME, true) || \in_array($itemOpeningLine['tag'], self::TAGS_WITH_METHOD_SIGNATURE, true)) {
+                        $extraIndent += $varMax + $spacingForTag;
+                    }
+
+                    if ($hasStatic) {
+                        $extraIndent += 7; // \strlen('static ');
                     }
 
                     $line =
                         $item['indent']
-                        .' *  '
+                        .' * '
+                        .('' !== $itemOpeningLine['hint'] ? ' ' : '')
                         .$this->getIndent(
-                            $tagMax + $hintMax + $varMax + $extraIndent,
+                            $tagMax + $hintMax + $extraIndent,
                             $this->getLeftAlignedDescriptionIndent($items, $j)
                         )
-                        .$item['desc']
-                        .$lineEnding;
+                        .$item['desc'];
 
-                    $docBlock->getLine($current + $j)->setContent($line);
+                    $docBlock->getLine($current + $j)->setContent($line.$lineEnding);
 
                     continue;
                 }
 
                 $currTag = $item['tag'];
 
+                $spacingForTag = $this->spacingForTag($currTag);
+
+                $itemOpeningLine = $item;
+
                 $line =
                     $item['indent']
                     .' * @'
-                    .$item['tag']
-                    .$this->getIndent(
-                        $tagMax - \strlen($item['tag']) + 1,
-                        $item['hint'] ? 1 : 0
-                    )
-                    .$item['hint']
-                ;
+                    .$item['tag'];
 
-                if (!empty($item['var'])) {
+                if ($hasStatic) {
                     $line .=
-                        $this->getIndent(($hintMax ?: -1) - \strlen($item['hint']) + 1)
-                        .$item['var']
-                        .(
-                            !empty($item['desc'])
-                            ? $this->getIndent($varMax - \strlen($item['var']) + 1).$item['desc'].$lineEnding
-                            : $lineEnding
+                        $this->getIndent(
+                            $tagMax - \strlen($item['tag']) + $spacingForTag,
+                            '' !== $item['static'] ? $spacingForTag : 0
                         )
-                    ;
-                } elseif (!empty($item['desc'])) {
-                    $line .= $this->getIndent($hintMax - \strlen($item['hint']) + 1).$item['desc'].$lineEnding;
+                        .('' !== $item['static'] ? $item['static'] : $this->getIndent(6 /* \strlen('static') */, 0));
+                    $hintVerticalAlignIndent = $spacingForTag;
                 } else {
-                    $line .= $lineEnding;
+                    $hintVerticalAlignIndent = $tagMax - \strlen($item['tag']) + $spacingForTag;
                 }
 
-                $docBlock->getLine($current + $j)->setContent($line);
+                $line .=
+                    $this->getIndent(
+                        $hintVerticalAlignIndent,
+                        '' !== $item['hint'] ? $spacingForTag : 0
+                    )
+                    .$item['hint'];
+
+                if ('' !== $item['var']) {
+                    $line .=
+                        $this->getIndent((0 !== $hintMax ? $hintMax : -1) - \strlen($item['hint']) + $spacingForTag, $spacingForTag)
+                        .$item['var']
+                        .(
+                            '' !== $item['desc']
+                            ? $this->getIndent($varMax - \strlen($item['var']) + $spacingForTag, $spacingForTag).$item['desc']
+                            : ''
+                        );
+                } elseif ('' !== $item['desc']) {
+                    $line .= $this->getIndent($hintMax - \strlen($item['hint']) + $spacingForTag, $spacingForTag).$item['desc'];
+                }
+
+                $docBlock->getLine($current + $j)->setContent($line.$lineEnding);
             }
         }
     }
 
+    private function spacingForTag(?string $tag): int
+    {
+        return (\is_int($this->spacing))
+            ? $this->spacing
+            : ($this->spacing[$tag] ?? $this->spacing[self::DEFAULT_SPACING_KEY] ?? self::DEFAULT_SPACING);
+    }
+
     /**
-     * @param string $line
-     * @param bool   $matchCommentOnly
+     * @TODO Introduce proper DTO instead of an array
      *
-     * @return null|array<string, null|string>
+     * @return null|array{indent: null|string, tag: null|string, hint: string, var: null|string, static: string, desc?: null|string}
      */
-    private function getMatches($line, $matchCommentOnly = false)
+    private function getMatches(string $line, bool $matchCommentOnly = false): ?array
     {
         if (Preg::match($this->regex, $line, $matches)) {
-            if (!empty($matches['tag2'])) {
+            if (isset($matches['tag2']) && '' !== $matches['tag2']) {
                 $matches['tag'] = $matches['tag2'];
                 $matches['hint'] = $matches['hint2'];
                 $matches['var'] = '';
             }
 
-            if (!empty($matches['tag3'])) {
+            if (isset($matches['tag3']) && '' !== $matches['tag3']) {
                 $matches['tag'] = $matches['tag3'];
                 $matches['hint'] = $matches['hint3'];
                 $matches['var'] = $matches['signature'];
+
+                // Since static can be both a return type declaration & a keyword that defines static methods
+                // we assume it's a type declaration when only one value is present
+                if ('' === $matches['hint'] && '' !== $matches['static']) {
+                    $matches['hint'] = $matches['static'];
+                    $matches['static'] = '';
+                }
             }
 
             if (isset($matches['hint'])) {
                 $matches['hint'] = trim($matches['hint']);
+            }
+
+            if (!isset($matches['static'])) {
+                $matches['static'] = '';
             }
 
             return $matches;
@@ -361,6 +434,7 @@ EOF;
             $matches['tag'] = null;
             $matches['var'] = '';
             $matches['hint'] = '';
+            $matches['static'] = '';
 
             return $matches;
         }
@@ -368,13 +442,7 @@ EOF;
         return null;
     }
 
-    /**
-     * @param int $verticalAlignIndent
-     * @param int $leftAlignIndent
-     *
-     * @return string
-     */
-    private function getIndent($verticalAlignIndent, $leftAlignIndent = 1)
+    private function getIndent(int $verticalAlignIndent, int $leftAlignIndent = 1): string
     {
         $indent = self::ALIGN_VERTICAL === $this->align ? $verticalAlignIndent : $leftAlignIndent;
 
@@ -382,12 +450,9 @@ EOF;
     }
 
     /**
-     * @param array[] $items
-     * @param int     $index
-     *
-     * @return int
+     * @param non-empty-list<array{indent: null|string, tag: null|string, hint: string, var: null|string, static: string, desc?: null|string}> $items
      */
-    private function getLeftAlignedDescriptionIndent(array $items, $index)
+    private function getLeftAlignedDescriptionIndent(array $items, int $index): int
     {
         if (self::ALIGN_LEFT !== $this->align) {
             return 0;
@@ -407,21 +472,20 @@ EOF;
             return 0;
         }
 
+        $spacingForTag = $this->spacingForTag($item['tag']);
+
         // Indent according to existing values:
         return
-            $this->getSentenceIndent($item['tag']) +
-            $this->getSentenceIndent($item['hint']) +
-            $this->getSentenceIndent($item['var']);
+            $this->getSentenceIndent($item['static'], $spacingForTag) +
+            $this->getSentenceIndent($item['tag'], $spacingForTag) +
+            $this->getSentenceIndent($item['hint'], $spacingForTag) +
+            $this->getSentenceIndent($item['var'], $spacingForTag);
     }
 
     /**
      * Get indent for sentence.
-     *
-     * @param null|string $sentence
-     *
-     * @return int
      */
-    private function getSentenceIndent($sentence)
+    private function getSentenceIndent(?string $sentence, int $spacingForTag = 1): int
     {
         if (null === $sentence) {
             return 0;
@@ -429,6 +493,6 @@ EOF;
 
         $length = \strlen($sentence);
 
-        return 0 === $length ? 0 : $length + 1;
+        return 0 === $length ? 0 : $length + $spacingForTag;
     }
 }

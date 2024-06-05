@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -12,21 +14,20 @@
 
 namespace PhpCsFixer\Fixer\DoctrineAnnotation;
 
-use Doctrine\Common\Annotations\DocLexer;
 use PhpCsFixer\AbstractDoctrineAnnotationFixer;
+use PhpCsFixer\Doctrine\Annotation\DocLexer;
 use PhpCsFixer\Doctrine\Annotation\Tokens;
 use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolverInterface;
 use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Preg;
 
 final class DoctrineAnnotationIndentationFixer extends AbstractDoctrineAnnotationFixer
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'Doctrine annotations must be indented with four spaces.',
@@ -40,26 +41,18 @@ final class DoctrineAnnotationIndentationFixer extends AbstractDoctrineAnnotatio
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createConfigurationDefinition()
+    protected function createConfigurationDefinition(): FixerConfigurationResolverInterface
     {
-        return new FixerConfigurationResolver(array_merge(
-            parent::createConfigurationDefinition()->getOptions(),
-            [
-                (new FixerOptionBuilder('indent_mixed_lines', 'Whether to indent lines that have content before closing parenthesis.'))
-                    ->setAllowedTypes(['bool'])
-                    ->setDefault(false)
-                    ->getOption(),
-            ]
-        ));
+        return new FixerConfigurationResolver([
+            ...parent::createConfigurationDefinition()->getOptions(),
+            (new FixerOptionBuilder('indent_mixed_lines', 'Whether to indent lines that have content before closing parenthesis.'))
+                ->setAllowedTypes(['bool'])
+                ->setDefault(false)
+                ->getOption(),
+        ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function fixAnnotations(Tokens $doctrineAnnotationTokens)
+    protected function fixAnnotations(Tokens $doctrineAnnotationTokens): void
     {
         $annotationPositions = [];
         for ($index = 0, $max = \count($doctrineAnnotationTokens); $index < $max; ++$index) {
@@ -78,7 +71,7 @@ final class DoctrineAnnotationIndentationFixer extends AbstractDoctrineAnnotatio
 
         $indentLevel = 0;
         foreach ($doctrineAnnotationTokens as $index => $token) {
-            if (!$token->isType(DocLexer::T_NONE) || false === strpos($token->getContent(), "\n")) {
+            if (!$token->isType(DocLexer::T_NONE) || !str_contains($token->getContent(), "\n")) {
                 continue;
             }
 
@@ -94,7 +87,7 @@ final class DoctrineAnnotationIndentationFixer extends AbstractDoctrineAnnotatio
             if ($indentLevel > 0 && ($delta < 0 || $mixedBraces)) {
                 --$indentLevel;
 
-                if ($this->configuration['indent_mixed_lines'] && $this->isClosingLineWithMeaningfulContent($doctrineAnnotationTokens, $index)) {
+                if (true === $this->configuration['indent_mixed_lines'] && $this->isClosingLineWithMeaningfulContent($doctrineAnnotationTokens, $index)) {
                     $extraIndentLevel = 1;
                 }
             }
@@ -112,18 +105,16 @@ final class DoctrineAnnotationIndentationFixer extends AbstractDoctrineAnnotatio
     }
 
     /**
-     * @param int $index
-     *
-     * @return int[]
+     * @return array{int, int}
      */
-    private function getLineBracesCount(Tokens $tokens, $index)
+    private function getLineBracesCount(Tokens $tokens, int $index): array
     {
         $opening = 0;
         $closing = 0;
 
         while (isset($tokens[++$index])) {
             $token = $tokens[$index];
-            if ($token->isType(DocLexer::T_NONE) && false !== strpos($token->getContent(), "\n")) {
+            if ($token->isType(DocLexer::T_NONE) && str_contains($token->getContent(), "\n")) {
                 break;
             }
 
@@ -147,17 +138,12 @@ final class DoctrineAnnotationIndentationFixer extends AbstractDoctrineAnnotatio
         return [$opening, $closing];
     }
 
-    /**
-     * @param int $index
-     *
-     * @return bool
-     */
-    private function isClosingLineWithMeaningfulContent(Tokens $tokens, $index)
+    private function isClosingLineWithMeaningfulContent(Tokens $tokens, int $index): bool
     {
         while (isset($tokens[++$index])) {
             $token = $tokens[$index];
             if ($token->isType(DocLexer::T_NONE)) {
-                if (false !== strpos($token->getContent(), "\n")) {
+                if (str_contains($token->getContent(), "\n")) {
                     return false;
                 }
 
@@ -171,12 +157,9 @@ final class DoctrineAnnotationIndentationFixer extends AbstractDoctrineAnnotatio
     }
 
     /**
-     * @param int               $newLineTokenIndex
-     * @param array<array<int>> $annotationPositions Pairs of begin and end indexes of main annotations
-     *
-     * @return bool
+     * @param list<array{int, int}> $annotationPositions Pairs of begin and end indices of main annotations
      */
-    private function indentationCanBeFixed(Tokens $tokens, $newLineTokenIndex, array $annotationPositions)
+    private function indentationCanBeFixed(Tokens $tokens, int $newLineTokenIndex, array $annotationPositions): bool
     {
         foreach ($annotationPositions as $position) {
             if ($newLineTokenIndex >= $position[0] && $newLineTokenIndex <= $position[1]) {
@@ -187,7 +170,7 @@ final class DoctrineAnnotationIndentationFixer extends AbstractDoctrineAnnotatio
         for ($index = $newLineTokenIndex + 1, $max = \count($tokens); $index < $max; ++$index) {
             $token = $tokens[$index];
 
-            if (false !== strpos($token->getContent(), "\n")) {
+            if (str_contains($token->getContent(), "\n")) {
                 return false;
             }
 

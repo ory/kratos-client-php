@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -16,6 +18,7 @@ use PhpCsFixer\AbstractFixer;
 use PhpCsFixer\Fixer\WhitespacesAwareFixerInterface;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 
@@ -24,10 +27,7 @@ use PhpCsFixer\Tokenizer\Tokens;
  */
 final class BlankLineAfterOpeningTagFixer extends AbstractFixer implements WhitespacesAwareFixerInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'Ensure there is no code on the same line as the PHP open tag and it is followed by a blank line.',
@@ -38,38 +38,26 @@ final class BlankLineAfterOpeningTagFixer extends AbstractFixer implements White
     /**
      * {@inheritdoc}
      *
-     * Must run before NoBlankLinesBeforeNamespaceFixer.
+     * Must run before BlankLinesBeforeNamespaceFixer, NoBlankLinesBeforeNamespaceFixer.
      * Must run after DeclareStrictTypesFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return 1;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
+    public function isCandidate(Tokens $tokens): bool
     {
-        return $tokens->isTokenKindFound(T_OPEN_TAG);
+        return $tokens->isMonolithicPhp() && !$tokens->isTokenKindFound(T_OPEN_TAG_WITH_ECHO);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
         $lineEnding = $this->whitespacesConfig->getLineEnding();
 
-        // ignore files with short open tag and ignore non-monolithic files
-        if (!$tokens[0]->isGivenKind(T_OPEN_TAG) || !$tokens->isMonolithicPhp()) {
-            return;
-        }
-
         $newlineFound = false;
-        /** @var Token $token */
         foreach ($tokens as $token) {
-            if ($token->isWhitespace() && false !== strpos($token->getContent(), "\n")) {
+            if (($token->isWhitespace() || $token->isGivenKind(T_OPEN_TAG)) && str_contains($token->getContent(), "\n")) {
                 $newlineFound = true;
 
                 break;
@@ -81,17 +69,19 @@ final class BlankLineAfterOpeningTagFixer extends AbstractFixer implements White
             return;
         }
 
-        $token = $tokens[0];
+        $openTagIndex = $tokens[0]->isGivenKind(T_INLINE_HTML) ? 1 : 0;
+        $token = $tokens[$openTagIndex];
 
-        if (false === strpos($token->getContent(), "\n")) {
-            $tokens[0] = new Token([$token->getId(), rtrim($token->getContent()).$lineEnding]);
+        if (!str_contains($token->getContent(), "\n")) {
+            $tokens[$openTagIndex] = new Token([$token->getId(), rtrim($token->getContent()).$lineEnding]);
         }
 
-        if (false === strpos($tokens[1]->getContent(), "\n")) {
-            if ($tokens[1]->isWhitespace()) {
-                $tokens[1] = new Token([T_WHITESPACE, $lineEnding.$tokens[1]->getContent()]);
+        $newLineIndex = $openTagIndex + 1;
+        if (isset($tokens[$newLineIndex]) && !str_contains($tokens[$newLineIndex]->getContent(), "\n")) {
+            if ($tokens[$newLineIndex]->isWhitespace()) {
+                $tokens[$newLineIndex] = new Token([T_WHITESPACE, $lineEnding.$tokens[$newLineIndex]->getContent()]);
             } else {
-                $tokens->insertAt(1, new Token([T_WHITESPACE, $lineEnding]));
+                $tokens->insertAt($newLineIndex, new Token([T_WHITESPACE, $lineEnding]));
             }
         }
     }

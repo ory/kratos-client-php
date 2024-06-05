@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -15,7 +17,7 @@ namespace PhpCsFixer;
 /**
  * File reader that unify access to regular file and stdin-alike file.
  *
- * Regular file could be read multiple times with `file_get_contents`, but file provided on stdin can not.
+ * Regular file could be read multiple times with `file_get_contents`, but file provided on stdin cannot.
  * Consecutive try will provide empty content for stdin-alike file.
  * This reader unifies access to them.
  *
@@ -28,10 +30,7 @@ final class FileReader
      */
     private $stdinContent;
 
-    /**
-     * @return self
-     */
-    public static function createSingleton()
+    public static function createSingleton(): self
     {
         static $instance = null;
 
@@ -42,12 +41,7 @@ final class FileReader
         return $instance;
     }
 
-    /**
-     * @param string $filePath
-     *
-     * @return string
-     */
-    public function read($filePath)
+    public function read(string $filePath): string
     {
         if ('php://stdin' === $filePath) {
             if (null === $this->stdinContent) {
@@ -60,12 +54,7 @@ final class FileReader
         return $this->readRaw($filePath);
     }
 
-    /**
-     * @param string $realPath
-     *
-     * @return string
-     */
-    private function readRaw($realPath)
+    private function readRaw(string $realPath): string
     {
         $content = @file_get_contents($realPath);
 
@@ -75,7 +64,7 @@ final class FileReader
             throw new \RuntimeException(sprintf(
                 'Failed to read content from "%s".%s',
                 $realPath,
-                $error ? ' '.$error['message'] : ''
+                null !== $error ? ' '.$error['message'] : ''
             ));
         }
 

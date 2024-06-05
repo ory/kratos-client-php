@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -15,18 +17,14 @@ namespace PhpCsFixer\Fixer\Phpdoc;
 use PhpCsFixer\AbstractFixer;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Preg;
+use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 
-/**
- * @author SpacePossum
- */
 final class NoEmptyPhpdocFixer extends AbstractFixer
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'There should not be empty PHPDoc blocks.',
@@ -37,35 +35,50 @@ final class NoEmptyPhpdocFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      *
-     * Must run before NoExtraBlankLinesFixer, NoTrailingWhitespaceFixer, NoWhitespaceInBlankLineFixer, PhpdocAlignFixer.
-     * Must run after AlignMultilineCommentFixer, CommentToPhpdocFixer, GeneralPhpdocAnnotationRemoveFixer, NoSuperfluousPhpdocTagsFixer, PhpUnitNoExpectationAnnotationFixer, PhpUnitTestAnnotationFixer, PhpdocAddMissingParamAnnotationFixer, PhpdocIndentFixer, PhpdocNoAccessFixer, PhpdocNoEmptyReturnFixer, PhpdocNoPackageFixer, PhpdocNoUselessInheritdocFixer, PhpdocScalarFixer, PhpdocToCommentFixer, PhpdocTypesFixer.
+     * Must run before NoExtraBlankLinesFixer, NoTrailingWhitespaceFixer, PhpdocAlignFixer.
+     * Must run after AlignMultilineCommentFixer, CommentToPhpdocFixer, GeneralPhpdocAnnotationRemoveFixer, NoSuperfluousPhpdocTagsFixer, PhpUnitNoExpectationAnnotationFixer, PhpUnitTestAnnotationFixer, PhpdocAddMissingParamAnnotationFixer, PhpdocIndentFixer, PhpdocNoAccessFixer, PhpdocNoEmptyReturnFixer, PhpdocNoPackageFixer, PhpdocNoUselessInheritdocFixer, PhpdocReadonlyClassCommentToKeywordFixer, PhpdocScalarFixer, PhpdocToCommentFixer, PhpdocTypesFixer.
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return 3;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCandidate(Tokens $tokens)
+    public function isCandidate(Tokens $tokens): bool
     {
         return $tokens->isTokenKindFound(T_DOC_COMMENT);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
         foreach ($tokens as $index => $token) {
             if (!$token->isGivenKind(T_DOC_COMMENT)) {
                 continue;
             }
 
-            if (Preg::match('#^/\*\*[\s\*]*\*/$#', $token->getContent())) {
-                $tokens->clearTokenAndMergeSurroundingWhitespace($index);
+            if (!Preg::match('#^/\*\*[\s\*]*\*/$#', $token->getContent())) {
+                continue;
             }
+
+            if (
+                $tokens[$index - 1]->isGivenKind([T_OPEN_TAG, T_WHITESPACE])
+                && substr_count($tokens[$index - 1]->getContent(), "\n") > 0
+                && $tokens[$index + 1]->isGivenKind(T_WHITESPACE)
+                && Preg::match('/^\R/', $tokens[$index + 1]->getContent())
+            ) {
+                $tokens[$index - 1] = new Token([
+                    $tokens[$index - 1]->getId(),
+                    Preg::replace('/\h*$/', '', $tokens[$index - 1]->getContent()),
+                ]);
+
+                $newContent = Preg::replace('/^\R/', '', $tokens[$index + 1]->getContent());
+                if ('' === $newContent) {
+                    $tokens->clearAt($index + 1);
+                } else {
+                    $tokens[$index + 1] = new Token([T_WHITESPACE, $newContent]);
+                }
+            }
+
+            $tokens->clearTokenAndMergeSurroundingWhitespace($index);
         }
     }
 }

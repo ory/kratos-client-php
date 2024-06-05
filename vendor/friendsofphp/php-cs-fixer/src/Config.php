@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -13,58 +15,41 @@
 namespace PhpCsFixer;
 
 use PhpCsFixer\Fixer\FixerInterface;
+use PhpCsFixer\Runner\Parallel\ParallelConfig;
+use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Katsuhiro Ogawa <ko.fivestar@gmail.com>
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  */
-class Config implements ConfigInterface
+class Config implements ConfigInterface, ParallelAwareConfigInterface
 {
-    /**
-     * @var string
-     */
-    private $cacheFile = '.php_cs.cache';
+    private string $cacheFile = '.php-cs-fixer.cache';
 
     /**
-     * @var FixerInterface[]
+     * @var list<FixerInterface>
      */
-    private $customFixers = [];
+    private array $customFixers = [];
 
     /**
-     * @var null|iterable
+     * @var null|iterable<\SplFileInfo>
      */
-    private $finder;
+    private ?iterable $finder = null;
 
-    /**
-     * @var string
-     */
-    private $format = 'txt';
+    private string $format = 'txt';
 
-    /**
-     * @var bool
-     */
-    private $hideProgress = false;
+    private bool $hideProgress = false;
 
-    /**
-     * @var string
-     */
-    private $indent = '    ';
+    private string $indent = '    ';
 
-    /**
-     * @var bool
-     */
-    private $isRiskyAllowed = false;
+    private bool $isRiskyAllowed = false;
 
-    /**
-     * @var string
-     */
-    private $lineEnding = "\n";
+    private string $lineEnding = "\n";
 
-    /**
-     * @var string
-     */
-    private $name;
+    private string $name;
+
+    private ParallelConfig $parallelConfig;
 
     /**
      * @var null|string
@@ -72,44 +57,39 @@ class Config implements ConfigInterface
     private $phpExecutable;
 
     /**
-     * @var array
-     */
-    private $rules = ['@PSR2' => true];
-
-    /**
-     * @var bool
-     */
-    private $usingCache = true;
-
-    public function __construct($name = 'default')
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * @return static
+     * @TODO: 4.0 - update to @PER
      *
-     * @deprecated since 2.17
+     * @var array<string, array<string, mixed>|bool>
      */
-    public static function create()
-    {
-        Utils::triggerDeprecation(new \RuntimeException(__METHOD__.' is deprecated since 2.17 and will be removed in 3.0, use the constructor instead.'));
+    private array $rules;
 
-        return new static();
+    private bool $usingCache = true;
+
+    public function __construct(string $name = 'default')
+    {
+        // @TODO 4.0 cleanup
+        if (Utils::isFutureModeEnabled()) {
+            $this->name = $name.' (future mode)';
+            $this->rules = ['@PER-CS' => true];
+        } else {
+            $this->name = $name;
+            $this->rules = ['@PSR12' => true];
+        }
+
+        // @TODO 4.0 cleanup
+        if (Utils::isFutureModeEnabled() || filter_var(getenv('PHP_CS_FIXER_PARALLEL'), FILTER_VALIDATE_BOOL)) {
+            $this->parallelConfig = ParallelConfigFactory::detect();
+        } else {
+            $this->parallelConfig = ParallelConfigFactory::sequential();
+        }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCacheFile()
+    public function getCacheFile(): string
     {
         return $this->cacheFile;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCustomFixers()
+    public function getCustomFixers(): array
     {
         return $this->customFixers;
     }
@@ -117,99 +97,65 @@ class Config implements ConfigInterface
     /**
      * @return Finder
      */
-    public function getFinder()
+    public function getFinder(): iterable
     {
-        if (null === $this->finder) {
-            $this->finder = new Finder();
-        }
+        $this->finder ??= new Finder();
 
         return $this->finder;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormat()
+    public function getFormat(): string
     {
         return $this->format;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getHideProgress()
+    public function getHideProgress(): bool
     {
         return $this->hideProgress;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getIndent()
+    public function getIndent(): string
     {
         return $this->indent;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getLineEnding()
+    public function getLineEnding(): string
     {
         return $this->lineEnding;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getPhpExecutable()
+    public function getParallelConfig(): ParallelConfig
+    {
+        return $this->parallelConfig;
+    }
+
+    public function getPhpExecutable(): ?string
     {
         return $this->phpExecutable;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getRiskyAllowed()
+    public function getRiskyAllowed(): bool
     {
         return $this->isRiskyAllowed;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getRules()
+    public function getRules(): array
     {
         return $this->rules;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getUsingCache()
+    public function getUsingCache(): bool
     {
         return $this->usingCache;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function registerCustomFixers($fixers)
+    public function registerCustomFixers(iterable $fixers): ConfigInterface
     {
-        if (false === \is_array($fixers) && false === $fixers instanceof \Traversable) {
-            throw new \InvalidArgumentException(sprintf(
-                'Argument must be an array or a Traversable, got "%s".',
-                \is_object($fixers) ? \get_class($fixers) : \gettype($fixers)
-            ));
-        }
-
         foreach ($fixers as $fixer) {
             $this->addCustomFixer($fixer);
         }
@@ -217,114 +163,84 @@ class Config implements ConfigInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setCacheFile($cacheFile)
+    public function setCacheFile(string $cacheFile): ConfigInterface
     {
         $this->cacheFile = $cacheFile;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setFinder($finder)
+    public function setFinder(iterable $finder): ConfigInterface
     {
-        if (false === \is_array($finder) && false === $finder instanceof \Traversable) {
-            throw new \InvalidArgumentException(sprintf(
-                'Argument must be an array or a Traversable, got "%s".',
-                \is_object($finder) ? \get_class($finder) : \gettype($finder)
-            ));
-        }
-
         $this->finder = $finder;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setFormat($format)
+    public function setFormat(string $format): ConfigInterface
     {
         $this->format = $format;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setHideProgress($hideProgress)
+    public function setHideProgress(bool $hideProgress): ConfigInterface
     {
         $this->hideProgress = $hideProgress;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setIndent($indent)
+    public function setIndent(string $indent): ConfigInterface
     {
         $this->indent = $indent;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setLineEnding($lineEnding)
+    public function setLineEnding(string $lineEnding): ConfigInterface
     {
         $this->lineEnding = $lineEnding;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setPhpExecutable($phpExecutable)
+    public function setParallelConfig(ParallelConfig $config): ConfigInterface
+    {
+        $this->parallelConfig = $config;
+
+        return $this;
+    }
+
+    public function setPhpExecutable(?string $phpExecutable): ConfigInterface
     {
         $this->phpExecutable = $phpExecutable;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setRiskyAllowed($isRiskyAllowed)
+    public function setRiskyAllowed(bool $isRiskyAllowed): ConfigInterface
     {
         $this->isRiskyAllowed = $isRiskyAllowed;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setRules(array $rules)
+    public function setRules(array $rules): ConfigInterface
     {
         $this->rules = $rules;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setUsingCache($usingCache)
+    public function setUsingCache(bool $usingCache): ConfigInterface
     {
         $this->usingCache = $usingCache;
 
         return $this;
     }
 
-    private function addCustomFixer(FixerInterface $fixer)
+    private function addCustomFixer(FixerInterface $fixer): void
     {
         $this->customFixers[] = $fixer;
     }

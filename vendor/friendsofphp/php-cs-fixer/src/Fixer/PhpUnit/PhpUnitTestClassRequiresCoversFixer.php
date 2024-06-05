@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -12,25 +14,20 @@
 
 namespace PhpCsFixer\Fixer\PhpUnit;
 
-use PhpCsFixer\DocBlock\DocBlock;
-use PhpCsFixer\DocBlock\Line;
 use PhpCsFixer\Fixer\AbstractPhpUnitFixer;
 use PhpCsFixer\Fixer\WhitespacesAwareFixerInterface;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
-use PhpCsFixer\Preg;
-use PhpCsFixer\Tokenizer\Token;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tokenizer\Tokens;
+use PhpCsFixer\Tokenizer\TokensAnalyzer;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  */
 final class PhpUnitTestClassRequiresCoversFixer extends AbstractPhpUnitFixer implements WhitespacesAwareFixerInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
+    public function getDefinition(): FixerDefinitionInterface
     {
         return new FixerDefinition(
             'Adds a default `@coversNothing` annotation to PHPUnit test classes that have no `@covers*` annotation.',
@@ -52,81 +49,38 @@ final class MyTest extends \PHPUnit_Framework_TestCase
 
     /**
      * {@inheritdoc}
+     *
+     * Must run before PhpdocSeparationFixer.
      */
-    protected function applyPhpUnitClassFix(Tokens $tokens, $startIndex, $endIndex)
+    public function getPriority(): int
+    {
+        return 0;
+    }
+
+    protected function applyPhpUnitClassFix(Tokens $tokens, int $startIndex, int $endIndex): void
     {
         $classIndex = $tokens->getPrevTokenOfKind($startIndex, [[T_CLASS]]);
-        $prevIndex = $tokens->getPrevMeaningfulToken($classIndex);
 
-        // don't add `@covers` annotation for abstract base classes
-        if ($tokens[$prevIndex]->isGivenKind(T_ABSTRACT)) {
-            return;
+        $tokensAnalyzer = new TokensAnalyzer($tokens);
+        $modifiers = $tokensAnalyzer->getClassyModifiers($classIndex);
+
+        if (isset($modifiers['abstract'])) {
+            return; // don't add `@covers` annotation for abstract base classes
         }
 
-        $index = $tokens[$prevIndex]->isGivenKind(T_FINAL) ? $prevIndex : $classIndex;
-
-        $indent = $tokens[$index - 1]->isGivenKind(T_WHITESPACE)
-            ? Preg::replace('/^.*\R*/', '', $tokens[$index - 1]->getContent())
-            : '';
-
-        $prevIndex = $tokens->getPrevNonWhitespace($index);
-
-        if ($tokens[$prevIndex]->isGivenKind(T_DOC_COMMENT)) {
-            $docIndex = $prevIndex;
-            $docContent = $tokens[$docIndex]->getContent();
-
-            // ignore one-line phpdocs like `/** foo */`, as there is no place to put new annotations
-            if (false === strpos($docContent, "\n")) {
-                return;
-            }
-
-            $doc = new DocBlock($docContent);
-
-            // skip if already has annotation
-            if (!empty($doc->getAnnotationsOfType([
+        $this->ensureIsDocBlockWithAnnotation(
+            $tokens,
+            $classIndex,
+            'coversNothing',
+            [
                 'covers',
                 'coversDefaultClass',
                 'coversNothing',
-            ]))) {
-                return;
-            }
-        } else {
-            $docIndex = $index;
-            $tokens->insertAt($docIndex, [
-                new Token([T_DOC_COMMENT, sprintf('/**%s%s */', $this->whitespacesConfig->getLineEnding(), $indent)]),
-                new Token([T_WHITESPACE, sprintf('%s%s', $this->whitespacesConfig->getLineEnding(), $indent)]),
-            ]);
-
-            if (!$tokens[$docIndex - 1]->isGivenKind(T_WHITESPACE)) {
-                $extraNewLines = $this->whitespacesConfig->getLineEnding();
-
-                if (!$tokens[$docIndex - 1]->isGivenKind(T_OPEN_TAG)) {
-                    $extraNewLines .= $this->whitespacesConfig->getLineEnding();
-                }
-
-                $tokens->insertAt($docIndex, [
-                    new Token([T_WHITESPACE, $extraNewLines.$indent]),
-                ]);
-                ++$docIndex;
-            }
-
-            $doc = new DocBlock($tokens[$docIndex]->getContent());
-        }
-
-        $lines = $doc->getLines();
-        array_splice(
-            $lines,
-            \count($lines) - 1,
-            0,
+            ],
             [
-                new Line(sprintf(
-                    '%s * @coversNothing%s',
-                    $indent,
-                    $this->whitespacesConfig->getLineEnding()
-                )),
-            ]
+                'phpunit\framework\attributes\coversclass',
+                'phpunit\framework\attributes\coversnothing',
+            ],
         );
-
-        $tokens[$docIndex] = new Token([T_DOC_COMMENT, implode('', $lines)]);
     }
 }

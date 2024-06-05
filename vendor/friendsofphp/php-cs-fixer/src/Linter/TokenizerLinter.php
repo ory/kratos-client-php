@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of PHP CS Fixer.
  *
@@ -25,38 +27,17 @@ use PhpCsFixer\Tokenizer\Tokens;
  */
 final class TokenizerLinter implements LinterInterface
 {
-    public function __construct()
-    {
-        if (
-            // @TODO: drop condition when PHP 7.0+ is required
-            false === \defined('TOKEN_PARSE')
-            // @TODO: drop condition when PHP 7.3+ is required
-            || false === class_exists(\CompileError::class)
-        ) {
-            throw new UnavailableLinterException('Cannot use tokenizer as linter.');
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isAsync()
+    public function isAsync(): bool
     {
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function lintFile($path)
+    public function lintFile(string $path): LintingResultInterface
     {
         return $this->lintSource(FileReader::createSingleton()->read($path));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function lintSource($source)
+    public function lintSource(string $source): LintingResultInterface
     {
         try {
             // To lint, we will parse the source into Tokens.
@@ -68,9 +49,7 @@ final class TokenizerLinter implements LinterInterface
             Tokens::fromCode($source);
 
             return new TokenizerLintingResult();
-        } catch (\ParseError $e) {
-            return new TokenizerLintingResult($e);
-        } catch (\CompileError $e) {
+        } catch (\CompileError|\ParseError $e) {
             return new TokenizerLintingResult($e);
         }
     }
