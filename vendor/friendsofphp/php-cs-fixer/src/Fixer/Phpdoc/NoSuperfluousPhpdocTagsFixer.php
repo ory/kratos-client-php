@@ -460,7 +460,7 @@ class Foo {
                 continue;
             }
 
-            $beforeArgumentIndex = $tokens->getPrevTokenOfKind($index, ['(', ',']);
+            $beforeArgumentIndex = $tokens->getPrevTokenOfKind($index, ['(', ',', [CT::T_ATTRIBUTE_CLOSE]]);
             $typeIndex = $tokens->getNextMeaningfulToken($beforeArgumentIndex);
 
             if ($typeIndex !== $index) {
@@ -620,7 +620,10 @@ class Foo {
 
         // retry comparison with annotation type unioned with null
         // phpstan implies the null presence from the native type
-        return $actualTypes === $this->toComparableNames(array_merge($annotationTypes, ['null']), null, null, []);
+        $annotationTypes = array_merge($annotationTypes, ['null']);
+        sort($annotationTypes);
+
+        return $actualTypes === $annotationTypes;
     }
 
     /**
@@ -637,6 +640,13 @@ class Foo {
      */
     private function toComparableNames(array $types, ?string $namespace, ?string $currentSymbol, array $symbolShortNames): array
     {
+        if (isset($types[0][0]) && '?' === $types[0][0]) {
+            $types = [
+                substr($types[0], 1),
+                'null',
+            ];
+        }
+
         $normalized = array_map(
             function (string $type) use ($namespace, $currentSymbol, $symbolShortNames): string {
                 if (str_contains($type, '&')) {

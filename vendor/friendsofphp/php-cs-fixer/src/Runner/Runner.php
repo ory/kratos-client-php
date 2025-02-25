@@ -27,11 +27,12 @@ use PhpCsFixer\Error\ErrorsManager;
 use PhpCsFixer\Error\SourceExceptionFactory;
 use PhpCsFixer\FileReader;
 use PhpCsFixer\Fixer\FixerInterface;
-use PhpCsFixer\FixerFileProcessedEvent;
 use PhpCsFixer\Linter\LinterInterface;
 use PhpCsFixer\Linter\LintingException;
 use PhpCsFixer\Linter\LintingResultInterface;
 use PhpCsFixer\Preg;
+use PhpCsFixer\Runner\Event\AnalysisStarted;
+use PhpCsFixer\Runner\Event\FileProcessed;
 use PhpCsFixer\Runner\Parallel\ParallelAction;
 use PhpCsFixer\Runner\Parallel\ParallelConfig;
 use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
@@ -66,7 +67,7 @@ final class Runner
 
     private DifferInterface $differ;
 
-    private ?DirectoryInterface $directory;
+    private DirectoryInterface $directory;
 
     private ?EventDispatcherInterface $eventDispatcher;
 
@@ -81,7 +82,7 @@ final class Runner
     /**
      * @var null|\Traversable<array-key, \SplFileInfo>
      */
-    private $fileIterator;
+    private ?\Traversable $fileIterator = null;
 
     private int $fileCount;
 
@@ -159,10 +160,20 @@ final class Runner
             return [];
         }
 
-        // @TODO Remove condition for the input argument in 4.0, as it should be required in the constructor
-        return $this->parallelConfig->getMaxProcesses() > 1 && null !== $this->input
-            ? $this->fixParallel()
-            : $this->fixSequential();
+        // @TODO 4.0: Remove condition and its body, as no longer needed when param will be required in the constructor.
+        // This is a fallback only in case someone calls `new Runner()` in a custom repo and does not provide v4-ready params in v3-codebase.
+        if (null === $this->input) {
+            return $this->fixSequential();
+        }
+
+        if (
+            1 === $this->parallelConfig->getMaxProcesses()
+            || $this->fileCount <= $this->parallelConfig->getFilesPerProcess()
+        ) {
+            return $this->fixSequential();
+        }
+
+        return $this->fixParallel();
     }
 
     /**
@@ -172,13 +183,15 @@ final class Runner
      */
     private function fixParallel(): array
     {
+        $this->dispatchEvent(AnalysisStarted::NAME, new AnalysisStarted(AnalysisStarted::MODE_PARALLEL, $this->isDryRun));
+
         $changed = [];
         $streamSelectLoop = new StreamSelectLoop();
         $server = new TcpServer('127.0.0.1:0', $streamSelectLoop);
         $serverPort = parse_url($server->getAddress() ?? '', PHP_URL_PORT);
 
         if (!is_numeric($serverPort)) {
-            throw new ParallelisationException(sprintf(
+            throw new ParallelisationException(\sprintf(
                 'Unable to parse server port from "%s"',
                 $server->getAddress() ?? ''
             ));
@@ -273,10 +286,7 @@ final class Runner
                         $fileRelativePath = $this->directory->getRelativePathTo($fileAbsolutePath);
 
                         // Dispatch an event for each file processed and dispatch its status (required for progress output)
-                        $this->dispatchEvent(
-                            FixerFileProcessedEvent::NAME,
-                            new FixerFileProcessedEvent($workerResponse['status'])
-                        );
+                        $this->dispatchEvent(FileProcessed::NAME, new FileProcessed($workerResponse['status']));
 
                         if (isset($workerResponse['fileHash'])) {
                             $this->cacheManager->setFileHash($fileRelativePath, $workerResponse['fileHash']);
@@ -347,7 +357,7 @@ final class Runner
                     }
 
                     $errorsReported = Preg::matchAll(
-                        sprintf('/^(?:%s)([^\n]+)+/m', WorkerCommand::ERROR_PREFIX),
+                        \sprintf('/^(?:%s)([^\n]+)+/m', WorkerCommand::ERROR_PREFIX),
                         $output,
                         $matches
                     );
@@ -369,6 +379,8 @@ final class Runner
      */
     private function fixSequential(): array
     {
+        $this->dispatchEvent(AnalysisStarted::NAME, new AnalysisStarted(AnalysisStarted::MODE_SEQUENTIAL, $this->isDryRun));
+
         $changed = [];
         $collection = $this->getLintingFileIterator();
 
@@ -402,8 +414,8 @@ final class Runner
             $lintingResult->check();
         } catch (LintingException $e) {
             $this->dispatchEvent(
-                FixerFileProcessedEvent::NAME,
-                new FixerFileProcessedEvent(FixerFileProcessedEvent::STATUS_INVALID)
+                FileProcessed::NAME,
+                new FileProcessed(FileProcessed::STATUS_INVALID)
             );
 
             $this->errorsManager->report(new Error(Error::TYPE_INVALID, $name, $e));
@@ -441,10 +453,7 @@ final class Runner
                 }
             }
         } catch (\ParseError $e) {
-            $this->dispatchEvent(
-                FixerFileProcessedEvent::NAME,
-                new FixerFileProcessedEvent(FixerFileProcessedEvent::STATUS_LINT)
-            );
+            $this->dispatchEvent(FileProcessed::NAME, new FileProcessed(FileProcessed::STATUS_LINT));
 
             $this->errorsManager->report(new Error(Error::TYPE_LINT, $name, $e));
 
@@ -475,10 +484,7 @@ final class Runner
             try {
                 $this->linter->lintSource($new)->check();
             } catch (LintingException $e) {
-                $this->dispatchEvent(
-                    FixerFileProcessedEvent::NAME,
-                    new FixerFileProcessedEvent(FixerFileProcessedEvent::STATUS_LINT)
-                );
+                $this->dispatchEvent(FileProcessed::NAME, new FileProcessed(FileProcessed::STATUS_LINT));
 
                 $this->errorsManager->report(new Error(Error::TYPE_LINT, $name, $e, $fixInfo['appliedFixers'], $fixInfo['diff']));
 
@@ -490,7 +496,7 @@ final class Runner
 
                 if (!file_exists($fileName)) {
                     throw new IOException(
-                        sprintf('Failed to write file "%s" (no longer) exists.', $file->getPathname()),
+                        \sprintf('Failed to write file "%s" (no longer) exists.', $file->getPathname()),
                         0,
                         null,
                         $file->getPathname()
@@ -499,7 +505,7 @@ final class Runner
 
                 if (is_dir($fileName)) {
                     throw new IOException(
-                        sprintf('Cannot write file "%s" as the location exists as directory.', $fileName),
+                        \sprintf('Cannot write file "%s" as the location exists as directory.', $fileName),
                         0,
                         null,
                         $fileName
@@ -508,7 +514,7 @@ final class Runner
 
                 if (!is_writable($fileName)) {
                     throw new IOException(
-                        sprintf('Cannot write to file "%s" as it is not writable.', $fileName),
+                        \sprintf('Cannot write to file "%s" as it is not writable.', $fileName),
                         0,
                         null,
                         $fileName
@@ -519,7 +525,7 @@ final class Runner
                     $error = error_get_last();
 
                     throw new IOException(
-                        sprintf('Failed to write file "%s", "%s".', $fileName, null !== $error ? $error['message'] : 'no reason available'),
+                        \sprintf('Failed to write file "%s", "%s".', $fileName, null !== $error ? $error['message'] : 'no reason available'),
                         0,
                         null,
                         $fileName
@@ -531,8 +537,8 @@ final class Runner
         $this->cacheManager->setFileHash($name, $newHash);
 
         $this->dispatchEvent(
-            FixerFileProcessedEvent::NAME,
-            new FixerFileProcessedEvent(null !== $fixInfo ? FixerFileProcessedEvent::STATUS_FIXED : FixerFileProcessedEvent::STATUS_NO_CHANGES, $name, $newHash)
+            FileProcessed::NAME,
+            new FileProcessed(null !== $fixInfo ? FileProcessed::STATUS_FIXED : FileProcessed::STATUS_NO_CHANGES, $name, $newHash)
         );
 
         return $fixInfo;
@@ -543,10 +549,7 @@ final class Runner
      */
     private function processException(string $name, \Throwable $e): void
     {
-        $this->dispatchEvent(
-            FixerFileProcessedEvent::NAME,
-            new FixerFileProcessedEvent(FixerFileProcessedEvent::STATUS_EXCEPTION)
-        );
+        $this->dispatchEvent(FileProcessed::NAME, new FileProcessed(FileProcessed::STATUS_EXCEPTION));
 
         $this->errorsManager->report(new Error(Error::TYPE_EXCEPTION, $name, $e));
     }

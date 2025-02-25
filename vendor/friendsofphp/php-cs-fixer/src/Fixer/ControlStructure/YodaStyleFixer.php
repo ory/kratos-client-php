@@ -55,17 +55,17 @@ final class YodaStyleFixer extends AbstractFixer implements ConfigurableFixerInt
     /**
      * @var array<int|string, Token>
      */
-    private $candidatesMap;
+    private array $candidatesMap;
 
     /**
      * @var array<int|string, null|bool>
      */
-    private $candidateTypesConfiguration;
+    private array $candidateTypesConfiguration;
 
     /**
      * @var list<int|string>
      */
-    private $candidateTypes;
+    private array $candidateTypes;
 
     public function getDefinition(): FixerDefinitionInterface
     {
@@ -354,7 +354,7 @@ return $foo === count($bar);
     private function fixTokensComparePart(Tokens $tokens, int $start, int $end): Tokens
     {
         $newTokens = $tokens->generatePartialCode($start, $end);
-        $newTokens = $this->fixTokens(Tokens::fromCode(sprintf('<?php %s;', $newTokens)));
+        $newTokens = $this->fixTokens(Tokens::fromCode(\sprintf('<?php %s;', $newTokens)));
         $newTokens->clearAt(\count($newTokens) - 1);
         $newTokens->clearAt(0);
         $newTokens->clearEmptyTokens();

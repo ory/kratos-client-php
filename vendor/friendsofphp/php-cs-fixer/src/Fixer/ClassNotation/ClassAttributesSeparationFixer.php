@@ -162,7 +162,7 @@ class Sample
      * {@inheritdoc}
      *
      * Must run before BracesFixer, IndentationTypeFixer, NoExtraBlankLinesFixer, StatementIndentationFixer.
-     * Must run after OrderedClassElementsFixer, SingleClassElementPerStatementFixer, VisibilityRequiredFixer.
+     * Must run after OrderedClassElementsFixer, PhpUnitDataProviderMethodOrderFixer, SingleClassElementPerStatementFixer, VisibilityRequiredFixer.
      */
     public function getPriority(): int
     {
@@ -217,7 +217,7 @@ class Sample
 
                         if (!\in_array($type, $supportedTypes, true)) {
                             throw new InvalidOptionsException(
-                                sprintf(
+                                \sprintf(
                                     'Unexpected element type, expected any of %s, got "%s".',
                                     Utils::naturalLanguageJoin($supportedTypes),
                                     \gettype($type).'#'.$type
@@ -229,7 +229,7 @@ class Sample
 
                         if (!\in_array($spacing, $supportedSpacings, true)) {
                             throw new InvalidOptionsException(
-                                sprintf(
+                                \sprintf(
                                     'Unexpected spacing for element type "%s", expected any of %s, got "%s".',
                                     $spacing,
                                     Utils::naturalLanguageJoin($supportedSpacings),
@@ -363,7 +363,7 @@ class Sample
             return $tokens[$aboveElementDocCandidateIndex]->isGivenKind([T_DOC_COMMENT, CT::T_ATTRIBUTE_CLOSE]) ? 2 : 1;
         }
 
-        throw new \RuntimeException(sprintf('Unknown spacing "%s".', $spacing));
+        throw new \RuntimeException(\sprintf('Unknown spacing "%s".', $spacing));
     }
 
     /**
@@ -476,16 +476,8 @@ class Sample
     {
         $tokensAnalyzer = new TokensAnalyzer($tokens);
         $class = $classIndex = false;
-        $elements = $tokensAnalyzer->getClassyElements();
 
-        for (end($elements);; prev($elements)) {
-            $index = key($elements);
-
-            if (null === $index) {
-                break;
-            }
-
-            $element = current($elements);
+        foreach (array_reverse($tokensAnalyzer->getClassyElements(), true) as $index => $element) {
             $element['index'] = $index;
 
             if ($element['classIndex'] !== $classIndex) {

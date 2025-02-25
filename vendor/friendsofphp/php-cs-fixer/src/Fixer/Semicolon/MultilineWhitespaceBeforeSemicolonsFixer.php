@@ -176,6 +176,9 @@ $object->method1()
         $lineEnding = $this->whitespacesConfig->getLineEnding();
 
         for ($index, $count = \count($tokens); $index < $count; ++$index) {
+            if (!$tokens[$index]->isWhitespace() && !$tokens[$index]->isComment()) {
+                break;
+            }
             if (false !== strstr($tokens[$index]->getContent(), $lineEnding)) {
                 return $index;
             }
@@ -232,7 +235,7 @@ $object->method1()
 
             if ($tokens[$index]->isObjectOperator() || $tokens[$index]->isGivenKind(T_DOUBLE_COLON)) {
                 $prevIndex = $tokens->getPrevMeaningfulToken($index);
-                $isMultilineCall |= $tokens->isPartialCodeMultiline($prevIndex, $index);
+                $isMultilineCall = $isMultilineCall || $tokens->isPartialCodeMultiline($prevIndex, $index);
             }
         }
 

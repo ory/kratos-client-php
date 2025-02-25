@@ -25,7 +25,7 @@ use PhpCsFixer\Console\Output\Progress\ProgressOutputFactory;
 use PhpCsFixer\Console\Output\Progress\ProgressOutputType;
 use PhpCsFixer\Console\Report\FixReport\ReportSummary;
 use PhpCsFixer\Error\ErrorsManager;
-use PhpCsFixer\FixerFileProcessedEvent;
+use PhpCsFixer\Runner\Event\FileProcessed;
 use PhpCsFixer\Runner\Runner;
 use PhpCsFixer\ToolInfoInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -52,10 +52,8 @@ use Symfony\Component\Stopwatch\Stopwatch;
 #[AsCommand(name: 'fix', description: 'Fixes a directory or a file.')]
 /* final */ class FixCommand extends Command
 {
-    /** @var string */
     protected static $defaultName = 'fix';
 
-    /** @var string */
     protected static $defaultDescription = 'Fixes a directory or a file.';
 
     private EventDispatcherInterface $eventDispatcher;
@@ -263,10 +261,10 @@ use Symfony\Component\Stopwatch\Stopwatch;
             $stdErr->writeln(Application::getAboutWithRuntime(true));
             $isParallel = $resolver->getParallelConfig()->getMaxProcesses() > 1;
 
-            $stdErr->writeln(sprintf(
+            $stdErr->writeln(\sprintf(
                 'Running analysis on %d core%s.',
                 $resolver->getParallelConfig()->getMaxProcesses(),
-                $isParallel ? sprintf(
+                $isParallel ? \sprintf(
                     's with %d file%s per process',
                     $resolver->getParallelConfig()->getFilesPerProcess(),
                     $resolver->getParallelConfig()->getFilesPerProcess() > 1 ? 's' : ''
@@ -275,26 +273,26 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
             /** @TODO v4 remove warnings related to parallel runner */
             $usageDocs = 'https://cs.symfony.com/doc/usage.html';
-            $stdErr->writeln(sprintf(
+            $stdErr->writeln(\sprintf(
                 $stdErr->isDecorated() ? '<bg=yellow;fg=black;>%s</>' : '%s',
                 $isParallel
                     ? 'Parallel runner is an experimental feature and may be unstable, use it at your own risk. Feedback highly appreciated!'
-                    : sprintf(
+                    : \sprintf(
                         'You can enable parallel runner and speed up the analysis! Please see %s for more information.',
                         $stdErr->isDecorated()
-                            ? sprintf('<href=%s;bg=yellow;fg=red;bold>usage docs</>', OutputFormatter::escape($usageDocs))
+                            ? \sprintf('<href=%s;bg=yellow;fg=red;bold>usage docs</>', OutputFormatter::escape($usageDocs))
                             : $usageDocs
                     )
             ));
 
             $configFile = $resolver->getConfigFile();
-            $stdErr->writeln(sprintf('Loaded config <comment>%s</comment>%s.', $resolver->getConfig()->getName(), null === $configFile ? '' : ' from "'.$configFile.'"'));
+            $stdErr->writeln(\sprintf('Loaded config <comment>%s</comment>%s.', $resolver->getConfig()->getName(), null === $configFile ? '' : ' from "'.$configFile.'"'));
 
             if ($resolver->getUsingCache()) {
                 $cacheFile = $resolver->getCacheFile();
 
                 if (is_file($cacheFile)) {
-                    $stdErr->writeln(sprintf('Using cache file "%s".', $cacheFile));
+                    $stdErr->writeln(\sprintf('Using cache file "%s".', $cacheFile));
                 }
             }
         }
@@ -303,7 +301,7 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
         if (null !== $stdErr && $resolver->configFinderIsOverridden()) {
             $stdErr->writeln(
-                sprintf($stdErr->isDecorated() ? '<bg=yellow;fg=black;>%s</>' : '%s', 'Paths from configuration file have been overridden by paths provided as command arguments.')
+                \sprintf($stdErr->isDecorated() ? '<bg=yellow;fg=black;>%s</>' : '%s', 'Paths from configuration file have been overridden by paths provided as command arguments.')
             );
         }
 
@@ -333,11 +331,11 @@ use Symfony\Component\Stopwatch\Stopwatch;
             $resolver->getConfigFile()
         );
 
-        $this->eventDispatcher->addListener(FixerFileProcessedEvent::NAME, [$progressOutput, 'onFixerFileProcessed']);
+        $this->eventDispatcher->addListener(FileProcessed::NAME, [$progressOutput, 'onFixerFileProcessed']);
         $this->stopwatch->start('fixFiles');
         $changed = $runner->fix();
         $this->stopwatch->stop('fixFiles');
-        $this->eventDispatcher->removeListener(FixerFileProcessedEvent::NAME, [$progressOutput, 'onFixerFileProcessed']);
+        $this->eventDispatcher->removeListener(FileProcessed::NAME, [$progressOutput, 'onFixerFileProcessed']);
 
         $progressOutput->printLegend();
 
@@ -390,6 +388,6 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
     protected function isDryRun(InputInterface $input): bool
     {
-        return $input->getOption('dry-run');
+        return $input->getOption('dry-run'); // @phpstan-ignore symfonyConsole.optionNotFound (Because PHPStan doesn't recognise the method is overridden in the child class and this parameter is _not_ used in the child class.)
     }
 }

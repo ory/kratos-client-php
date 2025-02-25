@@ -24,7 +24,6 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tokenizer\Analyzer\ArgumentsAnalyzer;
-use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
@@ -49,7 +48,7 @@ final class PhpUnitDedicateAssertFixer extends AbstractPhpUnitFixer implements C
     /**
      * @var array<string, array{positive: string, negative: false|string, argument_count?: int, swap_arguments?: true}|true>
      */
-    private static array $fixMap = [
+    private const FIX_MAP = [
         'array_key_exists' => [
             'positive' => 'assertArrayHasKey',
             'negative' => 'assertArrayNotHasKey',
@@ -171,7 +170,7 @@ final class MyTest extends \PHPUnit_Framework_TestCase
     /**
      * {@inheritdoc}
      *
-     * Must run before NoUnusedImportsFixer, PhpUnitDedicateAssertInternalTypeFixer.
+     * Must run before NoUnusedImportsFixer, PhpUnitAssertNewNamesFixer, PhpUnitDedicateAssertInternalTypeFixer.
      * Must run after ModernizeStrposFixer, NoAliasFunctionsFixer, PhpUnitConstructFixer.
      */
     public function getPriority(): int
@@ -241,21 +240,18 @@ final class MyTest extends \PHPUnit_Framework_TestCase
 
         foreach ($this->getPreviousAssertCall($tokens, $startIndex, $endIndex) as $assertCall) {
             // test and fix for assertTrue/False to dedicated asserts
-            if ('asserttrue' === $assertCall['loweredName'] || 'assertfalse' === $assertCall['loweredName']) {
+            if (\in_array($assertCall['loweredName'], ['asserttrue', 'assertfalse'], true)) {
                 $this->fixAssertTrueFalse($tokens, $argumentsAnalyzer, $assertCall);
 
                 continue;
             }
 
-            if (
-                'assertsame' === $assertCall['loweredName']
-                || 'assertnotsame' === $assertCall['loweredName']
-                || 'assertequals' === $assertCall['loweredName']
-                || 'assertnotequals' === $assertCall['loweredName']
-            ) {
+            if (\in_array(
+                $assertCall['loweredName'],
+                ['assertsame', 'assertnotsame', 'assertequals', 'assertnotequals'],
+                true
+            )) {
                 $this->fixAssertSameEquals($tokens, $assertCall);
-
-                continue;
             }
         }
     }
@@ -325,8 +321,9 @@ final class MyTest extends \PHPUnit_Framework_TestCase
         $arguments = $argumentsAnalyzer->getArguments($tokens, $testOpenIndex, $testCloseIndex);
         $isPositive = 'asserttrue' === $assertCall['loweredName'];
 
-        if (\is_array(self::$fixMap[$content])) {
-            $expectedCount = self::$fixMap[$content]['argument_count'] ?? 1;
+        if (isset(self::FIX_MAP[$content]) && \is_array(self::FIX_MAP[$content])) {
+            $fixDetails = self::FIX_MAP[$content];
+            $expectedCount = $fixDetails['argument_count'] ?? 1;
 
             if ($expectedCount !== \count($arguments)) {
                 return;
@@ -334,14 +331,14 @@ final class MyTest extends \PHPUnit_Framework_TestCase
 
             $isPositive = $isPositive ? 'positive' : 'negative';
 
-            if (false === self::$fixMap[$content][$isPositive]) {
+            if (false === $fixDetails[$isPositive]) {
                 return;
             }
 
-            $tokens[$assertCall['index']] = new Token([T_STRING, self::$fixMap[$content][$isPositive]]);
+            $tokens[$assertCall['index']] = new Token([T_STRING, $fixDetails[$isPositive]]);
             $this->removeFunctionCall($tokens, $testDefaultNamespaceTokenIndex, $testIndex, $testOpenIndex, $testCloseIndex);
 
-            if (self::$fixMap[$content]['swap_arguments'] ?? false) {
+            if ($fixDetails['swap_arguments'] ?? false) {
                 if (2 !== $expectedCount) {
                     throw new \RuntimeException('Can only swap two arguments, please update map or logic.');
                 }
@@ -495,7 +492,7 @@ final class MyTest extends \PHPUnit_Framework_TestCase
 
         $lowerContent = strtolower($tokens[$countCallIndex]->getContent());
 
-        if ('count' !== $lowerContent && 'sizeof' !== $lowerContent) {
+        if (!\in_array($lowerContent, ['count', 'sizeof'], true)) {
             return; // not a call to "count" or "sizeOf"
         }
 
@@ -525,52 +522,6 @@ final class MyTest extends \PHPUnit_Framework_TestCase
             T_STRING,
             false === strpos($assertCall['loweredName'], 'not', 6) ? 'assertCount' : 'assertNotCount',
         ]);
-    }
-
-    /**
-     * @return iterable<array{
-     *     index: int,
-     *     loweredName: string,
-     *     openBraceIndex: int,
-     *     closeBraceIndex: int,
-     * }>
-     */
-    private function getPreviousAssertCall(Tokens $tokens, int $startIndex, int $endIndex): iterable
-    {
-        $functionsAnalyzer = new FunctionsAnalyzer();
-
-        for ($index = $endIndex; $index > $startIndex; --$index) {
-            $index = $tokens->getPrevTokenOfKind($index, [[T_STRING]]);
-
-            if (null === $index) {
-                return;
-            }
-
-            // test if "assert" something call
-            $loweredContent = strtolower($tokens[$index]->getContent());
-
-            if (!str_starts_with($loweredContent, 'assert')) {
-                continue;
-            }
-
-            // test candidate for simple calls like: ([\]+'some fixable call'(...))
-            $openBraceIndex = $tokens->getNextMeaningfulToken($index);
-
-            if (!$tokens[$openBraceIndex]->equals('(')) {
-                continue;
-            }
-
-            if (!$functionsAnalyzer->isTheSameClassCall($tokens, $index)) {
-                continue;
-            }
-
-            yield [
-                'index' => $index,
-                'loweredName' => $loweredContent,
-                'openBraceIndex' => $openBraceIndex,
-                'closeBraceIndex' => $tokens->findBlockEnd(Tokens::BLOCK_TYPE_PARENTHESIS_BRACE, $openBraceIndex),
-            ];
-        }
     }
 
     private function removeFunctionCall(Tokens $tokens, ?int $callNSIndex, int $callIndex, int $openIndex, int $closeIndex): void

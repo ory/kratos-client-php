@@ -25,6 +25,8 @@ use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
+use PhpCsFixer\FixerDefinition\VersionSpecification;
+use PhpCsFixer\FixerDefinition\VersionSpecificCodeSample;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
@@ -78,6 +80,29 @@ class MyTest extends \PhpUnit\FrameWork\TestCase
     public function testMyCode() {}
 }
 ',
+                    ['case' => self::SNAKE_CASE]
+                ),
+                new VersionSpecificCodeSample(
+                    '<?php
+use \PHPUnit\Framework\Attributes\Test;
+class MyTest extends \PhpUnit\FrameWork\TestCase
+{
+    #[PHPUnit\Framework\Attributes\Test]
+    public function test_my_code() {}
+}
+',
+                    new VersionSpecification(8_00_00),
+                ),
+                new VersionSpecificCodeSample(
+                    '<?php
+use \PHPUnit\Framework\Attributes\Test;
+class MyTest extends \PhpUnit\FrameWork\TestCase
+{
+    #[PHPUnit\Framework\Attributes\Test]
+    public function testMyCode() {}
+}
+',
+                    new VersionSpecification(8_00_00),
                     ['case' => self::SNAKE_CASE]
                 ),
             ]
@@ -162,6 +187,10 @@ class MyTest extends \PhpUnit\FrameWork\TestCase
             return true;
         }
 
+        if (\defined('T_ATTRIBUTE') && $this->isTestAttributePresent($tokens, $index)) {
+            return true;
+        }
+
         $docBlockIndex = $this->getDocBlockIndex($tokens, $index);
 
         return
@@ -188,7 +217,7 @@ class MyTest extends \PhpUnit\FrameWork\TestCase
                 continue;
             }
 
-            $newLineContent = Preg::replaceCallback('/(@depends\s+)(.+)(\b)/', fn (array $matches): string => sprintf(
+            $newLineContent = Preg::replaceCallback('/(@depends\s+)(.+)(\b)/', fn (array $matches): string => \sprintf(
                 '%s%s%s',
                 $matches[1],
                 $this->updateMethodCasing($matches[2]),

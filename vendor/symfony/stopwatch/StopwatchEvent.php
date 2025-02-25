@@ -137,6 +137,18 @@ class StopwatchEvent
     }
 
     /**
+     * Gets the last event period.
+     */
+    public function getLastPeriod(): ?StopwatchPeriod
+    {
+        if ([] === $this->periods) {
+            return null;
+        }
+
+        return $this->periods[array_key_last($this->periods)];
+    }
+
+    /**
      * Gets the relative time of the start of the first period in milliseconds.
      */
     public function getStartTime(): int|float
@@ -225,6 +237,6 @@ class StopwatchEvent
 
     public function __toString(): string
     {
-        return sprintf('%s/%s: %.2F MiB - %d ms', $this->getCategory(), $this->getName(), $this->getMemory() / 1024 / 1024, $this->getDuration());
+        return \sprintf('%s/%s: %.2F MiB - %d ms', $this->getCategory(), $this->getName(), $this->getMemory() / 1024 / 1024, $this->getDuration());
     }
 }

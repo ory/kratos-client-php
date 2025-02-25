@@ -49,7 +49,7 @@ final class PhpdocReturnSelfReferenceFixer extends AbstractFixer implements Conf
     /**
      * @var list<string>
      */
-    private static array $toTypes = [
+    private const TO_TYPES = [
         '$this',
         'static',
         'self',
@@ -159,18 +159,18 @@ class Sample
                         }
 
                         if (!isset($default[$from])) {
-                            throw new InvalidOptionsException(sprintf(
+                            throw new InvalidOptionsException(\sprintf(
                                 'Unknown key "%s", expected any of %s.',
                                 \gettype($from).'#'.$from,
                                 Utils::naturalLanguageJoin(array_keys($default))
                             ));
                         }
 
-                        if (!\in_array($to, self::$toTypes, true)) {
-                            throw new InvalidOptionsException(sprintf(
+                        if (!\in_array($to, self::TO_TYPES, true)) {
+                            throw new InvalidOptionsException(\sprintf(
                                 'Unknown value "%s", expected any of %s.',
                                 \is_object($to) ? \get_class($to) : \gettype($to).(\is_resource($to) ? '' : '#'.$to),
-                                Utils::naturalLanguageJoin(self::$toTypes)
+                                Utils::naturalLanguageJoin(self::TO_TYPES)
                             ));
                         }
 

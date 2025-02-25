@@ -31,7 +31,7 @@ final class Annotation
      *
      * @var list<string>
      */
-    private static array $tags = [
+    private const TAGS = [
         'method',
         'param',
         'property',
@@ -52,43 +52,32 @@ final class Annotation
 
     /**
      * The position of the first line of the annotation in the docblock.
-     *
-     * @var int
      */
-    private $start;
+    private int $start;
 
     /**
      * The position of the last line of the annotation in the docblock.
-     *
-     * @var int
      */
-    private $end;
+    private int $end;
 
     /**
      * The associated tag.
-     *
-     * @var null|Tag
      */
-    private $tag;
+    private ?Tag $tag = null;
 
     /**
      * Lazy loaded, cached types content.
-     *
-     * @var null|string
      */
-    private $typesContent;
+    private ?string $typesContent = null;
 
     /**
      * The cached types.
      *
      * @var null|list<string>
      */
-    private $types;
+    private ?array $types = null;
 
-    /**
-     * @var null|NamespaceAnalysis
-     */
-    private $namespace;
+    private ?NamespaceAnalysis $namespace = null;
 
     /**
      * @var list<NamespaceUseAnalysis>
@@ -127,7 +116,7 @@ final class Annotation
      */
     public static function getTagsWithTypes(): array
     {
-        return self::$tags;
+        return self::TAGS;
     }
 
     /**
@@ -176,7 +165,7 @@ final class Annotation
     public function getVariableName(): ?string
     {
         $type = preg_quote($this->getTypesContent() ?? '', '/');
-        $regex = sprintf(
+        $regex = \sprintf(
             '/@%s\s+(%s\s*)?(&\s*)?(\.{3}\s*)?(?<variable>\$%s)(?:.*|$)/',
             $this->tag->getName(),
             $type,
@@ -214,9 +203,21 @@ final class Annotation
      */
     public function setTypes(array $types): void
     {
-        $pattern = '/'.preg_quote($this->getTypesContent(), '/').'/';
+        $origTypesContent = $this->getTypesContent();
+        $newTypesContent = implode(
+            // Fallback to union type is provided for backward compatibility (previously glue was set to `|` by default even when type was not composite)
+            // @TODO Better handling for cases where type is fixed (original type is not composite, but was made composite during fix)
+            $this->getTypeExpression()->getTypesGlue() ?? '|',
+            $types
+        );
 
-        $this->lines[0]->setContent(Preg::replace($pattern, implode($this->getTypeExpression()->getTypesGlue(), $types), $this->lines[0]->getContent(), 1));
+        if ($origTypesContent === $newTypesContent) {
+            return;
+        }
+
+        $pattern = '/'.preg_quote($origTypesContent, '/').'/';
+
+        $this->lines[0]->setContent(Preg::replace($pattern, $newTypesContent, $this->lines[0]->getContent(), 1));
 
         $this->clearCache();
     }
@@ -228,11 +229,17 @@ final class Annotation
      */
     public function getNormalizedTypes(): array
     {
-        $normalized = array_map(static fn (string $type): string => strtolower($type), $this->getTypes());
+        $typeExpression = $this->getTypeExpression();
+        if (null === $typeExpression) {
+            return [];
+        }
 
-        sort($normalized);
+        $normalizedTypeExpression = $typeExpression
+            ->mapTypes(static fn (TypeExpression $v) => new TypeExpression(strtolower($v->toString()), null, []))
+            ->sortTypes(static fn (TypeExpression $a, TypeExpression $b) => $a->toString() <=> $b->toString())
+        ;
 
-        return $normalized;
+        return $normalizedTypeExpression->getTypes();
     }
 
     /**
@@ -273,7 +280,7 @@ final class Annotation
 
     public function supportTypes(): bool
     {
-        return \in_array($this->getTag()->getName(), self::$tags, true);
+        return \in_array($this->getTag()->getName(), self::TAGS, true);
     }
 
     /**

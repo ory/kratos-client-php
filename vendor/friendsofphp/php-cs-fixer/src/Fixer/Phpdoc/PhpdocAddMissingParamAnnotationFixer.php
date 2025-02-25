@@ -119,7 +119,7 @@ function f9(string $foo, $bar, $baz) {}
 
             $tokenContent = $token->getContent();
 
-            if (false !== stripos($tokenContent, 'inheritdoc')) {
+            if (str_contains(strtolower($tokenContent), strtolower('inheritdoc'))) {
                 continue;
             }
 
@@ -199,7 +199,7 @@ function f9(string $foo, $bar, $baz) {}
                     $type = 'null|'.$type;
                 }
 
-                $newLines[] = new Line(sprintf(
+                $newLines[] = new Line(\sprintf(
                     '%s* @param %s %s%s',
                     $indent,
                     $type,
