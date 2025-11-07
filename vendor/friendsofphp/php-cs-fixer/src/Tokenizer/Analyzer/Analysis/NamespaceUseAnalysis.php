@@ -15,16 +15,18 @@ declare(strict_types=1);
 namespace PhpCsFixer\Tokenizer\Analyzer\Analysis;
 
 /**
- * @author VeeWee <toonverwerft@gmail.com>
- * @author Greg Korba <greg@codito.dev>
- *
  * @readonly
  *
  * @internal
  *
  * @phpstan-type _ImportType 'class'|'constant'|'function'
+ *
+ * @author VeeWee <toonverwerft@gmail.com>
+ * @author Greg Korba <greg@codito.dev>
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
-final class NamespaceUseAnalysis implements StartEndTokenAwareAnalysis
+final class NamespaceUseAnalysis
 {
     public const TYPE_CLASS = 1; // "classy" could be class, interface or trait
     public const TYPE_FUNCTION = 2;
@@ -33,12 +35,14 @@ final class NamespaceUseAnalysis implements StartEndTokenAwareAnalysis
     /**
      * The fully qualified use namespace.
      *
-     * @var class-string
+     * @var non-empty-string
      */
     private string $fullName;
 
     /**
      * The short version of use namespace or the alias name in case of aliased use statements.
+     *
+     * @var non-empty-string
      */
     private string $shortName;
 
@@ -53,12 +57,12 @@ final class NamespaceUseAnalysis implements StartEndTokenAwareAnalysis
     private bool $isAliased;
 
     /**
-     * The start index of the namespace declaration in the analyzed Tokens.
+     * The start index of the namespace declaration in the analysed Tokens.
      */
     private int $startIndex;
 
     /**
-     * The end index of the namespace declaration in the analyzed Tokens.
+     * The end index of the namespace declaration in the analysed Tokens.
      */
     private int $endIndex;
 
@@ -80,8 +84,9 @@ final class NamespaceUseAnalysis implements StartEndTokenAwareAnalysis
     private int $type;
 
     /**
-     * @param self::TYPE_* $type
-     * @param class-string $fullName
+     * @param self::TYPE_*     $type
+     * @param non-empty-string $fullName
+     * @param non-empty-string $shortName
      */
     public function __construct(
         int $type,
@@ -110,13 +115,16 @@ final class NamespaceUseAnalysis implements StartEndTokenAwareAnalysis
     }
 
     /**
-     * @return class-string
+     * @return non-empty-string
      */
     public function getFullName(): string
     {
         return $this->fullName;
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function getShortName(): string
     {
         return $this->shortName;

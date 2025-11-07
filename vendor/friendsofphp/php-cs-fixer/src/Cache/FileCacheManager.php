@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace PhpCsFixer\Cache;
 
-use PhpCsFixer\Tokenizer\CodeHasher;
+use PhpCsFixer\Hasher;
 
 /**
  * Class supports caching information about state of fixing files.
@@ -31,6 +31,8 @@ use PhpCsFixer\Tokenizer\CodeHasher;
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  *
  * @internal
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 final class FileCacheManager implements CacheManagerInterface
 {
@@ -138,6 +140,6 @@ final class FileCacheManager implements CacheManagerInterface
 
     private function calcHash(string $content): string
     {
-        return CodeHasher::calculateCodeHash($content);
+        return Hasher::calculate($content);
     }
 }

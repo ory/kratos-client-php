@@ -52,6 +52,9 @@ docs/Model/IdentityWithCredentialsOidcConfig.md
 docs/Model/IdentityWithCredentialsOidcConfigProvider.md
 docs/Model/IdentityWithCredentialsPassword.md
 docs/Model/IdentityWithCredentialsPasswordConfig.md
+docs/Model/IdentityWithCredentialsSaml.md
+docs/Model/IdentityWithCredentialsSamlConfig.md
+docs/Model/IdentityWithCredentialsSamlConfigProvider.md
 docs/Model/IsAlive200Response.md
 docs/Model/IsReady503Response.md
 docs/Model/JsonPatch.md
@@ -89,6 +92,7 @@ docs/Model/UiContainer.md
 docs/Model/UiNode.md
 docs/Model/UiNodeAnchorAttributes.md
 docs/Model/UiNodeAttributes.md
+docs/Model/UiNodeDivisionAttributes.md
 docs/Model/UiNodeImageAttributes.md
 docs/Model/UiNodeInputAttributes.md
 docs/Model/UiNodeMeta.md
@@ -104,6 +108,7 @@ docs/Model/UpdateLoginFlowWithLookupSecretMethod.md
 docs/Model/UpdateLoginFlowWithOidcMethod.md
 docs/Model/UpdateLoginFlowWithPasskeyMethod.md
 docs/Model/UpdateLoginFlowWithPasswordMethod.md
+docs/Model/UpdateLoginFlowWithSamlMethod.md
 docs/Model/UpdateLoginFlowWithTotpMethod.md
 docs/Model/UpdateLoginFlowWithWebAuthnMethod.md
 docs/Model/UpdateRecoveryFlowBody.md
@@ -115,6 +120,7 @@ docs/Model/UpdateRegistrationFlowWithOidcMethod.md
 docs/Model/UpdateRegistrationFlowWithPasskeyMethod.md
 docs/Model/UpdateRegistrationFlowWithPasswordMethod.md
 docs/Model/UpdateRegistrationFlowWithProfileMethod.md
+docs/Model/UpdateRegistrationFlowWithSamlMethod.md
 docs/Model/UpdateRegistrationFlowWithWebAuthnMethod.md
 docs/Model/UpdateSettingsFlowBody.md
 docs/Model/UpdateSettingsFlowWithLookupMethod.md
@@ -122,6 +128,7 @@ docs/Model/UpdateSettingsFlowWithOidcMethod.md
 docs/Model/UpdateSettingsFlowWithPasskeyMethod.md
 docs/Model/UpdateSettingsFlowWithPasswordMethod.md
 docs/Model/UpdateSettingsFlowWithProfileMethod.md
+docs/Model/UpdateSettingsFlowWithSamlMethod.md
 docs/Model/UpdateSettingsFlowWithTotpMethod.md
 docs/Model/UpdateSettingsFlowWithWebAuthnMethod.md
 docs/Model/UpdateVerificationFlowBody.md
@@ -183,6 +190,9 @@ lib/Model/IdentityWithCredentialsOidcConfig.php
 lib/Model/IdentityWithCredentialsOidcConfigProvider.php
 lib/Model/IdentityWithCredentialsPassword.php
 lib/Model/IdentityWithCredentialsPasswordConfig.php
+lib/Model/IdentityWithCredentialsSaml.php
+lib/Model/IdentityWithCredentialsSamlConfig.php
+lib/Model/IdentityWithCredentialsSamlConfigProvider.php
 lib/Model/IsAlive200Response.php
 lib/Model/IsReady503Response.php
 lib/Model/JsonPatch.php
@@ -221,6 +231,7 @@ lib/Model/UiContainer.php
 lib/Model/UiNode.php
 lib/Model/UiNodeAnchorAttributes.php
 lib/Model/UiNodeAttributes.php
+lib/Model/UiNodeDivisionAttributes.php
 lib/Model/UiNodeImageAttributes.php
 lib/Model/UiNodeInputAttributes.php
 lib/Model/UiNodeMeta.php
@@ -236,6 +247,7 @@ lib/Model/UpdateLoginFlowWithLookupSecretMethod.php
 lib/Model/UpdateLoginFlowWithOidcMethod.php
 lib/Model/UpdateLoginFlowWithPasskeyMethod.php
 lib/Model/UpdateLoginFlowWithPasswordMethod.php
+lib/Model/UpdateLoginFlowWithSamlMethod.php
 lib/Model/UpdateLoginFlowWithTotpMethod.php
 lib/Model/UpdateLoginFlowWithWebAuthnMethod.php
 lib/Model/UpdateRecoveryFlowBody.php
@@ -247,6 +259,7 @@ lib/Model/UpdateRegistrationFlowWithOidcMethod.php
 lib/Model/UpdateRegistrationFlowWithPasskeyMethod.php
 lib/Model/UpdateRegistrationFlowWithPasswordMethod.php
 lib/Model/UpdateRegistrationFlowWithProfileMethod.php
+lib/Model/UpdateRegistrationFlowWithSamlMethod.php
 lib/Model/UpdateRegistrationFlowWithWebAuthnMethod.php
 lib/Model/UpdateSettingsFlowBody.php
 lib/Model/UpdateSettingsFlowWithLookupMethod.php
@@ -254,6 +267,7 @@ lib/Model/UpdateSettingsFlowWithOidcMethod.php
 lib/Model/UpdateSettingsFlowWithPasskeyMethod.php
 lib/Model/UpdateSettingsFlowWithPasswordMethod.php
 lib/Model/UpdateSettingsFlowWithProfileMethod.php
+lib/Model/UpdateSettingsFlowWithSamlMethod.php
 lib/Model/UpdateSettingsFlowWithTotpMethod.php
 lib/Model/UpdateSettingsFlowWithWebAuthnMethod.php
 lib/Model/UpdateVerificationFlowBody.php
@@ -312,6 +326,9 @@ test/Model/IdentityWithCredentialsOidcConfigTest.php
 test/Model/IdentityWithCredentialsOidcTest.php
 test/Model/IdentityWithCredentialsPasswordConfigTest.php
 test/Model/IdentityWithCredentialsPasswordTest.php
+test/Model/IdentityWithCredentialsSamlConfigProviderTest.php
+test/Model/IdentityWithCredentialsSamlConfigTest.php
+test/Model/IdentityWithCredentialsSamlTest.php
 test/Model/IdentityWithCredentialsTest.php
 test/Model/IsAlive200ResponseTest.php
 test/Model/IsReady503ResponseTest.php
@@ -349,6 +366,7 @@ test/Model/TokenPaginationTest.php
 test/Model/UiContainerTest.php
 test/Model/UiNodeAnchorAttributesTest.php
 test/Model/UiNodeAttributesTest.php
+test/Model/UiNodeDivisionAttributesTest.php
 test/Model/UiNodeImageAttributesTest.php
 test/Model/UiNodeInputAttributesTest.php
 test/Model/UiNodeMetaTest.php
@@ -365,6 +383,7 @@ test/Model/UpdateLoginFlowWithLookupSecretMethodTest.php
 test/Model/UpdateLoginFlowWithOidcMethodTest.php
 test/Model/UpdateLoginFlowWithPasskeyMethodTest.php
 test/Model/UpdateLoginFlowWithPasswordMethodTest.php
+test/Model/UpdateLoginFlowWithSamlMethodTest.php
 test/Model/UpdateLoginFlowWithTotpMethodTest.php
 test/Model/UpdateLoginFlowWithWebAuthnMethodTest.php
 test/Model/UpdateRecoveryFlowBodyTest.php
@@ -376,6 +395,7 @@ test/Model/UpdateRegistrationFlowWithOidcMethodTest.php
 test/Model/UpdateRegistrationFlowWithPasskeyMethodTest.php
 test/Model/UpdateRegistrationFlowWithPasswordMethodTest.php
 test/Model/UpdateRegistrationFlowWithProfileMethodTest.php
+test/Model/UpdateRegistrationFlowWithSamlMethodTest.php
 test/Model/UpdateRegistrationFlowWithWebAuthnMethodTest.php
 test/Model/UpdateSettingsFlowBodyTest.php
 test/Model/UpdateSettingsFlowWithLookupMethodTest.php
@@ -383,6 +403,7 @@ test/Model/UpdateSettingsFlowWithOidcMethodTest.php
 test/Model/UpdateSettingsFlowWithPasskeyMethodTest.php
 test/Model/UpdateSettingsFlowWithPasswordMethodTest.php
 test/Model/UpdateSettingsFlowWithProfileMethodTest.php
+test/Model/UpdateSettingsFlowWithSamlMethodTest.php
 test/Model/UpdateSettingsFlowWithTotpMethodTest.php
 test/Model/UpdateSettingsFlowWithWebAuthnMethodTest.php
 test/Model/UpdateVerificationFlowBodyTest.php

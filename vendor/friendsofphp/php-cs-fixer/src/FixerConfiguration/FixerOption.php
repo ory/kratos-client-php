@@ -16,6 +16,8 @@ namespace PhpCsFixer\FixerConfiguration;
 
 /**
  * @readonly
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 final class FixerOption implements FixerOptionInterface
 {
@@ -36,16 +38,16 @@ final class FixerOption implements FixerOptionInterface
     private ?array $allowedTypes;
 
     /**
-     * @var null|list<null|(callable(mixed): bool)|scalar>
+     * @var null|non-empty-list<null|(callable(mixed): bool)|scalar>
      */
     private ?array $allowedValues;
 
     private ?\Closure $normalizer;
 
     /**
-     * @param mixed                                          $default
-     * @param null|list<string>                              $allowedTypes
-     * @param null|list<null|(callable(mixed): bool)|scalar> $allowedValues
+     * @param mixed                                                    $default
+     * @param null|list<string>                                        $allowedTypes
+     * @param null|non-empty-list<null|(callable(mixed): bool)|scalar> $allowedValues
      */
     public function __construct(
         string $name,
