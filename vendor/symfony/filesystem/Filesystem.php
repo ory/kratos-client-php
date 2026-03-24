@@ -70,7 +70,7 @@ class Filesystem
 
             if ($originIsLocal) {
                 // Like `cp`, preserve executable permission bits
-                self::box('chmod', $targetFile, fileperms($targetFile) | (fileperms($originFile) & 0111));
+                self::box('chmod', $targetFile, fileperms($targetFile) | (fileperms($originFile) & 0o111));
 
                 // Like `cp`, preserve the file modification time
                 self::box('touch', $targetFile, filemtime($originFile));
@@ -87,7 +87,7 @@ class Filesystem
      *
      * @throws IOException On any directory creation failure
      */
-    public function mkdir(string|iterable $dirs, int $mode = 0777): void
+    public function mkdir(string|iterable $dirs, int $mode = 0o777): void
     {
         foreach ($this->toIterable($dirs) as $dir) {
             if (is_dir($dir)) {
@@ -208,7 +208,7 @@ class Filesystem
      *
      * @throws IOException When the change fails
      */
-    public function chmod(string|iterable $files, int $mode, int $umask = 0000, bool $recursive = false): void
+    public function chmod(string|iterable $files, int $mode, int $umask = 0o000, bool $recursive = false): void
     {
         foreach ($this->toIterable($files) as $file) {
             if (!self::box('chmod', $file, $mode & ~$umask)) {
@@ -443,6 +443,8 @@ class Filesystem
             throw new InvalidArgumentException(\sprintf('The end path "%s" is not absolute.', $endPath));
         }
 
+        $originalEndPath = $endPath;
+
         // Normalize separators on Windows
         if ('\\' === \DIRECTORY_SEPARATOR) {
             $endPath = str_replace('\\', '/', $endPath);
@@ -498,6 +500,11 @@ class Filesystem
 
         // Construct $endPath from traversing to the common path, then to the remaining $endPath
         $relativePath = $traverser.('' !== $endPathRemainder ? $endPathRemainder.'/' : '');
+
+        // Remove ending "/" if $endPath points to an existing file
+        if (str_ends_with($relativePath, '/') && is_file($originalEndPath)) {
+            $relativePath = substr($relativePath, 0, -1);
+        }
 
         return '' === $relativePath ? './' : $relativePath;
     }
@@ -664,13 +671,13 @@ class Filesystem
                 throw new IOException(\sprintf('Failed to write file "%s": ', $filename).self::$lastError, 0, null, $filename);
             }
 
-            self::box('chmod', $tmpFile, self::box('fileperms', $filename) ?: 0666 & ~umask());
+            self::box('chmod', $tmpFile, self::box('fileperms', $filename) ?: 0o666 & ~umask());
 
             $this->rename($tmpFile, $filename, true);
         } finally {
             if (file_exists($tmpFile)) {
                 if ('\\' === \DIRECTORY_SEPARATOR && !is_writable($tmpFile)) {
-                    self::box('chmod', $tmpFile, self::box('fileperms', $tmpFile) | 0200);
+                    self::box('chmod', $tmpFile, self::box('fileperms', $tmpFile) | 0o200);
                 }
 
                 self::box('unlink', $tmpFile);
